@@ -1,0 +1,10 @@
+{
+	"node": "n8n-nodes-meshy.meshyTrigger",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Development", "Miscellaneous"],
+	"resources": {
+		"credentialDocumentation": [{ "url": "https://docs.meshy.ai/api/authentication" }],
+		"primaryDocumentation": [{ "url": "https://docs.meshy.ai/api/webhooks" }]
+	}
+}

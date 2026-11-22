@@ -44,7 +44,8 @@
 			"dist/credentials/MeshyApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/Meshy/Meshy.node.js"
+			"dist/nodes/Meshy/Meshy.node.js",
+			"dist/nodes/MeshyTrigger/MeshyTrigger.node.js"
 		]
 	},
 	"devDependencies": {
