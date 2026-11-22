@@ -67,14 +67,19 @@ export function assertSafeUrl(url: string, allowAnyHost: boolean): URL {
 	return parsed;
 }
 
-const EXTENSIONS: Partial<Record<DownloadFormat, string>> = { pre_remeshed_glb: 'glb', depth_map: 'png' };
+const EXTENSIONS: Partial<Record<DownloadFormat, string>> = {
+	pre_remeshed_glb: 'glb',
+	depth_map: 'png',
+};
 
 export function fileNameFor(task: DownloadSource, format: DownloadFormat, url: URL): string {
 	const fromPath = url.pathname.split('.').pop()?.toLowerCase();
 	let ext = EXTENSIONS[format] ?? format;
-	if (format === 'thumbnail' || format === 'image') ext = fromPath && /^[a-z0-9]{2,5}$/.test(fromPath) ? fromPath : 'png';
+	if (format === 'thumbnail' || format === 'image')
+		ext = fromPath && /^[a-z0-9]{2,5}$/.test(fromPath) ? fromPath : 'png';
 	const base = (task.name || task.id || 'meshy').replace(/[^A-Za-z0-9._-]+/g, '_').slice(0, 100);
-	const suffix = format === 'pre_remeshed_glb' ? '_pre_remeshed' : format === 'thumbnail' ? '_thumbnail' : '';
+	const suffix =
+		format === 'pre_remeshed_glb' ? '_pre_remeshed' : format === 'thumbnail' ? '_thumbnail' : '';
 	return `${base}${suffix}.${ext}`;
 }
 
@@ -99,6 +104,7 @@ export function mimeFor(fileName: string, headerType?: string): string {
 	const ext = fileName.split('.').pop() ?? '';
 	// Prefer our map for 3D formats: storage often labels them application/octet-stream.
 	if (MIME[ext] && MIME[ext] !== 'application/octet-stream') return MIME[ext];
-	if (headerType && !headerType.startsWith('application/octet-stream')) return headerType.split(';')[0];
+	if (headerType && !headerType.startsWith('application/octet-stream'))
+		return headerType.split(';')[0];
 	return MIME[ext] ?? 'application/octet-stream';
 }

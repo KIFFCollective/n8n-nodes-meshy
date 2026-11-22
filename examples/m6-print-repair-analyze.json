@@ -1,0 +1,158 @@
+{
+	"name": "Meshy: repair and analyze for 3D printing",
+	"nodes": [
+		{
+			"id": "meshy-repair-and-analyze-for-3d-printing-0",
+			"name": "Start",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [
+				0,
+				0
+			],
+			"parameters": {}
+		},
+		{
+			"id": "meshy-repair-and-analyze-for-3d-printing-1",
+			"name": "Repair",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				240,
+				0
+			],
+			"parameters": {
+				"resource": "printRepair",
+				"operation": "create",
+				"inputType": "taskId",
+				"inputTaskId": "PASTE_A_SUCCEEDED_IMAGE_TO_3D_TASK_ID",
+				"additionalFields": {
+					"printerType": "fdm",
+					"intendedPrintHeightMm": 80
+				}
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-repair-and-analyze-for-3d-printing-2",
+			"name": "Wait for Repair",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				480,
+				0
+			],
+			"parameters": {
+				"resource": "printRepair",
+				"operation": "wait",
+				"taskId": "={{ $json.id }}",
+				"timeoutMinutes": 15
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-repair-and-analyze-for-3d-printing-3",
+			"name": "Analyze",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				720,
+				0
+			],
+			"parameters": {
+				"resource": "printAnalyze",
+				"operation": "create",
+				"inputType": "taskId",
+				"inputTaskId": "={{ $json.id }}"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-repair-and-analyze-for-3d-printing-4",
+			"name": "Wait for Analysis",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				960,
+				0
+			],
+			"parameters": {
+				"resource": "printAnalyze",
+				"operation": "wait",
+				"taskId": "={{ $json.id }}",
+				"timeoutMinutes": 15
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		}
+	],
+	"connections": {
+		"Start": {
+			"main": [
+				[
+					{
+						"node": "Repair",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Repair": {
+			"main": [
+				[
+					{
+						"node": "Wait for Repair",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Wait for Repair": {
+			"main": [
+				[
+					{
+						"node": "Analyze",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Analyze": {
+			"main": [
+				[
+					{
+						"node": "Wait for Analysis",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"pinData": {}
+}

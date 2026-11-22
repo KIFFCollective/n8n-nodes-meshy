@@ -1,0 +1,331 @@
+{
+	"name": "Meshy: image to animated FBX",
+	"nodes": [
+		{
+			"id": "meshy-image-to-animated-fbx-0",
+			"name": "Start",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [
+				0,
+				0
+			],
+			"parameters": {}
+		},
+		{
+			"id": "meshy-image-to-animated-fbx-1",
+			"name": "Create Image to 3D",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				240,
+				0
+			],
+			"parameters": {
+				"resource": "imageTo3d",
+				"operation": "create",
+				"inputType": "url",
+				"sourceUrl": "https://example.com/character-t-pose.png",
+				"aiModel": "meshy-6-lite",
+				"additionalFields": {
+					"shouldTexture": false,
+					"poseMode": "t-pose"
+				}
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-image-to-animated-fbx-2",
+			"name": "Wait for Model",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				480,
+				0
+			],
+			"parameters": {
+				"resource": "imageTo3d",
+				"operation": "wait",
+				"taskId": "={{ $json.id }}",
+				"timeoutMinutes": 15
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-image-to-animated-fbx-3",
+			"name": "Remesh",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				720,
+				0
+			],
+			"parameters": {
+				"resource": "remesh",
+				"operation": "create",
+				"inputType": "taskId",
+				"inputTaskId": "={{ $json.id }}",
+				"additionalFields": {
+					"targetPolycount": 20000,
+					"targetFormats": [
+						"glb"
+					]
+				}
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-image-to-animated-fbx-4",
+			"name": "Wait for Remesh",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				960,
+				0
+			],
+			"parameters": {
+				"resource": "remesh",
+				"operation": "wait",
+				"taskId": "={{ $json.id }}",
+				"timeoutMinutes": 15
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-image-to-animated-fbx-5",
+			"name": "Rig",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				1200,
+				0
+			],
+			"parameters": {
+				"resource": "rigging",
+				"operation": "create",
+				"inputType": "taskId",
+				"inputTaskId": "={{ $json.id }}"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-image-to-animated-fbx-6",
+			"name": "Wait for Rig",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				1440,
+				0
+			],
+			"parameters": {
+				"resource": "rigging",
+				"operation": "wait",
+				"taskId": "={{ $json.id }}",
+				"timeoutMinutes": 15
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-image-to-animated-fbx-7",
+			"name": "Animate",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				1680,
+				0
+			],
+			"parameters": {
+				"resource": "animation",
+				"operation": "create",
+				"rigTaskId": "={{ $json.id }}",
+				"actionId": 1
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-image-to-animated-fbx-8",
+			"name": "Wait for Animation",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				1920,
+				0
+			],
+			"parameters": {
+				"resource": "animation",
+				"operation": "wait",
+				"taskId": "={{ $json.id }}",
+				"timeoutMinutes": 15
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-image-to-animated-fbx-9",
+			"name": "Download FBX",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				2160,
+				0
+			],
+			"parameters": {
+				"resource": "animation",
+				"operation": "download",
+				"downloadSource": "item",
+				"format": "fbx",
+				"binaryPropertyOutput": "data"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		}
+	],
+	"connections": {
+		"Start": {
+			"main": [
+				[
+					{
+						"node": "Create Image to 3D",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Create Image to 3D": {
+			"main": [
+				[
+					{
+						"node": "Wait for Model",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Wait for Model": {
+			"main": [
+				[
+					{
+						"node": "Remesh",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Remesh": {
+			"main": [
+				[
+					{
+						"node": "Wait for Remesh",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Wait for Remesh": {
+			"main": [
+				[
+					{
+						"node": "Rig",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Rig": {
+			"main": [
+				[
+					{
+						"node": "Wait for Rig",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Wait for Rig": {
+			"main": [
+				[
+					{
+						"node": "Animate",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Animate": {
+			"main": [
+				[
+					{
+						"node": "Wait for Animation",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Wait for Animation": {
+			"main": [
+				[
+					{
+						"node": "Download FBX",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"pinData": {}
+}

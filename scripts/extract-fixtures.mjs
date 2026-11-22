@@ -58,12 +58,16 @@ for (let i = 0; i < starts.length; i++) {
 	const written = [];
 	const save = (name, data) => {
 		// Scrub account ids embedded in asset paths (SPEC section 8).
-		const json = JSON.stringify(data, null, '\t').replace(/(assets\.meshy\.ai\/)[0-9a-f-]{36}\//g, '$1***/');
+		const json = JSON.stringify(data, null, '\t').replace(
+			/(assets\.meshy\.ai\/)[0-9a-f-]{36}\//g,
+			'$1***/',
+		);
 		writeFileSync(join(outDir, `${family}.${name}.json`), json + '\n');
 		written.push(name);
 	};
 	// Use the richest succeeded example (most keys) as the "get" fixture.
-	if (succeeded.length) save('get', succeeded.sort((a, b) => Object.keys(b).length - Object.keys(a).length)[0]);
+	if (succeeded.length)
+		save('get', succeeded.sort((a, b) => Object.keys(b).length - Object.keys(a).length)[0]);
 	if (created) save('create', created);
 	if (list) save('list', list);
 	if (!succeeded.length && !list) {

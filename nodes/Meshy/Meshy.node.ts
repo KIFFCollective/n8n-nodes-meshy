@@ -1,4 +1,9 @@
-import type { IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription } from 'n8n-workflow';
+import type {
+	IExecuteFunctions,
+	INodeExecutionData,
+	INodeType,
+	INodeTypeDescription,
+} from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
 import { nodeProperties } from './descriptions';
 import { asNodeError, runOperation } from './operations';
@@ -13,7 +18,8 @@ export class Meshy implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Generate 3D models, textures, rigs, animations and images with the Meshy API (unofficial)',
+		description:
+			'Generate 3D models, textures, rigs, animations and images with the Meshy API (unofficial)',
 		defaults: {
 			name: 'Meshy',
 		},
@@ -36,7 +42,10 @@ export class Meshy implements INodeType {
 			} catch (error) {
 				if (this.continueOnFail()) {
 					returnData.push({
-						json: { error: (error as Error).message, description: (error as { description?: string }).description },
+						json: {
+							error: (error as Error).message,
+							description: (error as { description?: string }).description,
+						},
 						pairedItem: { item: i },
 					});
 					continue;

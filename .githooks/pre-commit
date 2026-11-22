@@ -1,0 +1,10 @@
+#!/bin/sh
+# Lint (with autofix check) before each commit. Enable with: npm run hooks:install
+npm run lint --silent || {
+	echo "Lint failed. Run: npm run lint:fix"
+	exit 1
+}
+npx prettier --check "nodes/**/*.ts" "credentials/**/*.ts" "test/**/*.ts" >/dev/null || {
+	echo "Formatting is off. Run: npm run format"
+	exit 1
+}

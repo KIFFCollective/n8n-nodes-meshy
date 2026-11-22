@@ -1,0 +1,190 @@
+{
+	"name": "Meshy: text to textured 3D",
+	"nodes": [
+		{
+			"id": "meshy-text-to-textured-3d-0",
+			"name": "Start",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [
+				0,
+				0
+			],
+			"parameters": {}
+		},
+		{
+			"id": "meshy-text-to-textured-3d-1",
+			"name": "Preview",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				240,
+				0
+			],
+			"parameters": {
+				"resource": "textTo3d",
+				"operation": "create",
+				"mode": "preview",
+				"prompt": "a small wooden treasure chest",
+				"aiModel": "meshy-6-lite"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-text-to-textured-3d-2",
+			"name": "Wait for Preview",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				480,
+				0
+			],
+			"parameters": {
+				"resource": "textTo3d",
+				"operation": "wait",
+				"taskId": "={{ $json.id }}",
+				"timeoutMinutes": 15
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-text-to-textured-3d-3",
+			"name": "Refine",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				720,
+				0
+			],
+			"parameters": {
+				"resource": "textTo3d",
+				"operation": "create",
+				"mode": "refine",
+				"previewTaskId": "={{ $json.id }}",
+				"aiModel": "latest"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-text-to-textured-3d-4",
+			"name": "Wait for Refine",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				960,
+				0
+			],
+			"parameters": {
+				"resource": "textTo3d",
+				"operation": "wait",
+				"taskId": "={{ $json.id }}",
+				"timeoutMinutes": 15
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-text-to-textured-3d-5",
+			"name": "Download GLB",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				1200,
+				0
+			],
+			"parameters": {
+				"resource": "textTo3d",
+				"operation": "download",
+				"downloadSource": "item",
+				"format": "glb",
+				"binaryPropertyOutput": "data"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		}
+	],
+	"connections": {
+		"Start": {
+			"main": [
+				[
+					{
+						"node": "Preview",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Preview": {
+			"main": [
+				[
+					{
+						"node": "Wait for Preview",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Wait for Preview": {
+			"main": [
+				[
+					{
+						"node": "Refine",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Refine": {
+			"main": [
+				[
+					{
+						"node": "Wait for Refine",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Wait for Refine": {
+			"main": [
+				[
+					{
+						"node": "Download GLB",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"pinData": {}
+}

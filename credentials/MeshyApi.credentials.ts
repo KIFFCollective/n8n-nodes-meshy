@@ -1,11 +1,19 @@
-import type { IAuthenticateGeneric, ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow';
+import type {
+	IAuthenticateGeneric,
+	ICredentialTestRequest,
+	ICredentialType,
+	INodeProperties,
+} from 'n8n-workflow';
 
 export class MeshyApi implements ICredentialType {
 	name = 'meshyApi';
 
 	displayName = 'Meshy API';
 
-	icon = { light: 'file:../nodes/Meshy/meshy.svg', dark: 'file:../nodes/Meshy/meshy.dark.svg' } as const;
+	icon = {
+		light: 'file:../nodes/Meshy/meshy.svg',
+		dark: 'file:../nodes/Meshy/meshy.dark.svg',
+	} as const;
 
 	documentationUrl = 'https://docs.meshy.ai/api/authentication';
 

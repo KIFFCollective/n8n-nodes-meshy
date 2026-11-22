@@ -30,9 +30,12 @@
 		"prepublishOnly": "n8n-node prerelease",
 		"test": "vitest run",
 		"test:watch": "vitest",
-		"generate": "tsx scripts/generate-from-openapi.mts",
+		"generate": "tsx scripts/generate-from-openapi.mts && prettier --write nodes/Meshy/generated/fields.ts",
 		"generate:check": "tsx scripts/generate-from-openapi.mts --check",
-		"fixtures": "node scripts/extract-fixtures.mjs"
+		"fixtures": "node scripts/extract-fixtures.mjs",
+		"hooks:install": "git config core.hooksPath .githooks",
+		"format": "prettier --write \"nodes/**/*.ts\" \"credentials/**/*.ts\" \"test/**/*.ts\" \"scripts/**/*.{mjs,mts}\"",
+		"check:pack": "node scripts/check-pack.mjs"
 	},
 	"files": [
 		"dist"
@@ -53,6 +56,7 @@
 		"eslint": "9.32.0",
 		"prettier": "3.6.2",
 		"release-it": "^21.1.0",
+		"title-case": "^3.0.3",
 		"tsx": "^4.23.15",
 		"typescript": "5.9.2",
 		"vitest": "^3.2.7",

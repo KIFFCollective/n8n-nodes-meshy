@@ -1,11 +1,21 @@
 import type { IDataObject, IWebhookFunctions } from 'n8n-workflow';
 import { describe, expect, it, vi } from 'vitest';
-import { decide, emptyState, secretMatches, type DeliveryFilters } from '../nodes/MeshyTrigger/delivery';
+import {
+	decide,
+	emptyState,
+	secretMatches,
+	type DeliveryFilters,
+} from '../nodes/MeshyTrigger/delivery';
 import { MeshyTrigger } from '../nodes/MeshyTrigger/MeshyTrigger.node';
 import { fakeNode } from './helpers';
 
 const all: DeliveryFilters = { taskTypes: [], statuses: [] };
-const task = (id: string, status: string, type = 'image-to-3d'): IDataObject => ({ id, status, type, progress: 50 });
+const task = (id: string, status: string, type = 'image-to-3d'): IDataObject => ({
+	id,
+	status,
+	type,
+	progress: 50,
+});
 
 describe('secretMatches', () => {
 	it('accepts the exact secret and rejects anything else', () => {
@@ -32,13 +42,19 @@ describe('decide', () => {
 	it('drops duplicate deliveries of the same id and status', () => {
 		const state = emptyState();
 		decide(state, task('a', 'SUCCEEDED'), all);
-		expect(decide(state, task('a', 'SUCCEEDED'), all)).toEqual({ accept: false, reason: 'duplicate' });
+		expect(decide(state, task('a', 'SUCCEEDED'), all)).toEqual({
+			accept: false,
+			reason: 'duplicate',
+		});
 	});
 
 	it('drops a stale IN_PROGRESS that arrives after the final status', () => {
 		const state = emptyState();
 		decide(state, task('a', 'SUCCEEDED'), all);
-		expect(decide(state, task('a', 'IN_PROGRESS'), all)).toEqual({ accept: false, reason: 'stale' });
+		expect(decide(state, task('a', 'IN_PROGRESS'), all)).toEqual({
+			accept: false,
+			reason: 'stale',
+		});
 	});
 
 	it('keeps tasks independent', () => {
@@ -48,20 +64,34 @@ describe('decide', () => {
 	});
 
 	it('rejects bodies without id or status', () => {
-		expect(decide(emptyState(), { status: 'SUCCEEDED' }, all)).toEqual({ accept: false, reason: 'invalid' });
+		expect(decide(emptyState(), { status: 'SUCCEEDED' }, all)).toEqual({
+			accept: false,
+			reason: 'invalid',
+		});
 	});
 
 	it('filters by task type prefix and status, but still records the delivery', () => {
 		const state = emptyState();
-		const filters = { taskTypes: ['text-to-3d-preview', 'text-to-3d-refine'], statuses: ['SUCCEEDED'] };
-		expect(decide(state, task('a', 'SUCCEEDED', 'image-to-3d'), filters)).toEqual({ accept: false, reason: 'filtered' });
+		const filters = {
+			taskTypes: ['text-to-3d-preview', 'text-to-3d-refine'],
+			statuses: ['SUCCEEDED'],
+		};
+		expect(decide(state, task('a', 'SUCCEEDED', 'image-to-3d'), filters)).toEqual({
+			accept: false,
+			reason: 'filtered',
+		});
 		expect(decide(state, task('b', 'IN_PROGRESS', 'text-to-3d-preview'), filters)).toEqual({
 			accept: false,
 			reason: 'filtered',
 		});
-		expect(decide(state, task('b', 'SUCCEEDED', 'text-to-3d-preview'), filters)).toEqual({ accept: true });
+		expect(decide(state, task('b', 'SUCCEEDED', 'text-to-3d-preview'), filters)).toEqual({
+			accept: true,
+		});
 		// The filtered final for "a" still counts for stale detection.
-		expect(decide(state, task('a', 'IN_PROGRESS', 'image-to-3d'), all)).toEqual({ accept: false, reason: 'stale' });
+		expect(decide(state, task('a', 'IN_PROGRESS', 'image-to-3d'), all)).toEqual({
+			accept: false,
+			reason: 'stale',
+		});
 	});
 
 	it('stays bounded', () => {
@@ -72,12 +102,20 @@ describe('decide', () => {
 	});
 });
 
-function webhookContext(opts: { secret: string; header?: string; body: IDataObject; params?: IDataObject; staticData?: IDataObject }) {
+function webhookContext(opts: {
+	secret: string;
+	header?: string;
+	body: IDataObject;
+	params?: IDataObject;
+	staticData?: IDataObject;
+}) {
 	const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
 	const staticData = opts.staticData ?? {};
 	const ctx = {
 		getCredentials: async () => ({ apiKey: 'msy_x', webhookSecret: opts.secret }),
-		getRequestObject: () => ({ headers: opts.header === undefined ? {} : { 'x-meshy-api-webhook-secret-key': opts.header } }),
+		getRequestObject: () => ({
+			headers: opts.header === undefined ? {} : { 'x-meshy-api-webhook-secret-key': opts.header },
+		}),
 		getResponseObject: () => res,
 		getBodyData: () => opts.body,
 		getNodeParameter: (name: string, fallback: unknown) => opts.params?.[name] ?? fallback,
@@ -89,7 +127,14 @@ function webhookContext(opts: { secret: string; header?: string; body: IDataObje
 
 describe('MeshyTrigger.webhook', () => {
 	const node = new MeshyTrigger();
-	const body = { id: 'task-1', type: 'rig', status: 'SUCCEEDED', progress: 100, created_at: 1747032400453, result: {} };
+	const body = {
+		id: 'task-1',
+		type: 'rig',
+		status: 'SUCCEEDED',
+		progress: 100,
+		created_at: 1747032400453,
+		result: {},
+	};
 
 	it('rejects a wrong secret with 401 and does not start the workflow', async () => {
 		const { ctx, res } = webhookContext({ secret: 'right', header: 'wrong', body });
@@ -106,11 +151,15 @@ describe('MeshyTrigger.webhook', () => {
 
 	it('starts the workflow with a normalised task, then ignores the repeat', async () => {
 		const staticData: IDataObject = {};
-		const first = await node.webhook.call(webhookContext({ secret: 's', header: 's', body, staticData }).ctx);
+		const first = await node.webhook.call(
+			webhookContext({ secret: 's', header: 's', body, staticData }).ctx,
+		);
 		const json = first.workflowData?.[0][0].json as IDataObject;
 		expect(json).toMatchObject({ id: 'task-1', family: 'rigging', status: 'SUCCEEDED' });
 
-		const again = await node.webhook.call(webhookContext({ secret: 's', header: 's', body, staticData }).ctx);
+		const again = await node.webhook.call(
+			webhookContext({ secret: 's', header: 's', body, staticData }).ctx,
+		);
 		expect(again).toEqual({ webhookResponse: { received: true, ignored: 'duplicate' } });
 	});
 

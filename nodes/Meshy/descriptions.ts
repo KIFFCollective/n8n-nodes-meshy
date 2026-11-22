@@ -5,6 +5,8 @@ import { DOWNLOAD_FORMATS } from './download';
 import { DEFAULT_WAIT_MINUTES, MAX_WAIT_MINUTES } from './wait';
 
 const familyValues = FAMILIES.map((f) => f.value);
+/** Families plus the generic "Any Task Type" resource, which shares the task operations. */
+const taskResources = [...familyValues, 'task'];
 
 export const resourceProperty: INodeProperties = {
 	displayName: 'Resource',
@@ -13,6 +15,7 @@ export const resourceProperty: INodeProperties = {
 	noDataExpression: true,
 	options: [
 		{ name: 'Account', value: 'account' },
+		{ name: 'Any Task Type', value: 'task' },
 		...FAMILIES.map((f) => ({ name: f.name, value: f.value })),
 	].sort((a, b) => a.name.localeCompare(b.name)),
 	default: 'imageTo3d',
@@ -42,7 +45,12 @@ function taskOperations(family: FamilyDef): INodePropertyOptions[] {
 			action: `Download a ${n} result`,
 		},
 		{ name: 'Get', value: 'get', description: 'Get a task by ID', action: `Get a ${n}` },
-		{ name: 'Get Many', value: 'getAll', description: 'List tasks, newest first', action: `Get many ${n}s` },
+		{
+			name: 'Get Many',
+			value: 'getAll',
+			description: 'List tasks, newest first',
+			action: `Get many ${n}s`,
+		},
 		{
 			name: 'Wait',
 			value: 'wait',
@@ -73,6 +81,15 @@ export const operationProperties: INodeProperties[] = [
 			default: 'create',
 		}),
 	),
+	{
+		displayName: 'Operation',
+		name: 'operation',
+		type: 'options',
+		noDataExpression: true,
+		displayOptions: { show: { resource: ['task'] } },
+		options: taskOperations({ value: 'task', noun: 'task' } as FamilyDef),
+		default: 'wait',
+	},
 	{
 		displayName: 'Operation',
 		name: 'operation',
@@ -187,7 +204,7 @@ function sourceProperties(family: FamilyDef): INodeProperties[] {
 	return props;
 }
 
-const taskOps = (ops: string[]) => ({ show: { resource: familyValues, operation: ops } });
+const taskOps = (ops: string[]) => ({ show: { resource: taskResources, operation: ops } });
 
 const sharedTaskProperties: INodeProperties[] = [
 	{
@@ -207,7 +224,9 @@ const sharedTaskProperties: INodeProperties[] = [
 		type: 'boolean',
 		default: false,
 		description: 'Whether to return all results or only up to a given limit',
-		displayOptions: { show: { resource: [...familyValues, 'account'], operation: ['getAll', 'getUsage'] } },
+		displayOptions: {
+			show: { resource: [...taskResources, 'account'], operation: ['getAll', 'getUsage'] },
+		},
 	},
 	{
 		displayName: 'Limit',
@@ -217,7 +236,11 @@ const sharedTaskProperties: INodeProperties[] = [
 		default: 50,
 		description: 'Max number of results to return',
 		displayOptions: {
-			show: { resource: [...familyValues, 'account'], operation: ['getAll', 'getUsage'], returnAll: [false] },
+			show: {
+				resource: [...taskResources, 'account'],
+				operation: ['getAll', 'getUsage'],
+				returnAll: [false],
+			},
 		},
 	},
 	{
@@ -229,7 +252,9 @@ const sharedTaskProperties: INodeProperties[] = [
 			{ name: 'Oldest First', value: '+created_at' },
 		],
 		default: '-created_at',
-		displayOptions: { show: { resource: [...familyValues, 'account'], operation: ['getAll', 'getUsage'] } },
+		displayOptions: {
+			show: { resource: [...taskResources, 'account'], operation: ['getAll', 'getUsage'] },
+		},
 	},
 
 	// Download
@@ -243,7 +268,8 @@ const sharedTaskProperties: INodeProperties[] = [
 			{
 				name: 'Input Item',
 				value: 'item',
-				description: 'Use the task data in the incoming item, for example the output of Get or Wait',
+				description:
+					'Use the task data in the incoming item, for example the output of Get or Wait',
 			},
 		],
 		default: 'taskId',
@@ -256,14 +282,25 @@ const sharedTaskProperties: INodeProperties[] = [
 		required: true,
 		default: '',
 		description: 'ID of the Meshy task',
-		displayOptions: { show: { resource: familyValues, operation: ['download'], downloadSource: ['taskId'] } },
+		displayOptions: {
+			show: { resource: taskResources, operation: ['download'], downloadSource: ['taskId'] },
+		},
 	},
 	{
 		displayName: 'Format',
 		name: 'format',
 		type: 'options',
 		options: DOWNLOAD_FORMATS.map((f) => ({
-			name: f === 'pre_remeshed_glb' ? 'GLB (Before Remesh)' : f === 'depth_map' ? 'Depth Map (Relief)' : f === 'image' ? 'Image (Image Tasks)' : f === 'thumbnail' ? 'Thumbnail' : f.toUpperCase(),
+			name:
+				f === 'pre_remeshed_glb'
+					? 'GLB (Before Remesh)'
+					: f === 'depth_map'
+						? 'Depth Map (Relief)'
+						: f === 'image'
+							? 'Image (Image Tasks)'
+							: f === 'thumbnail'
+								? 'Thumbnail'
+								: f.toUpperCase(),
 			value: f,
 		})).sort((a, b) => a.name.localeCompare(b.name)),
 		default: 'glb',
@@ -277,7 +314,9 @@ const sharedTaskProperties: INodeProperties[] = [
 		typeOptions: { minValue: 0 },
 		default: 0,
 		description: 'Which image to download, starting at 0, when the task made several',
-		displayOptions: { show: { resource: familyValues, operation: ['download'], format: ['image'] } },
+		displayOptions: {
+			show: { resource: taskResources, operation: ['download'], format: ['image'] },
+		},
 	},
 	{
 		displayName: 'Put Output File in Field',
@@ -301,7 +340,8 @@ const sharedTaskProperties: INodeProperties[] = [
 				name: 'allowAnyHost',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to allow downloads from hosts other than meshy.ai. Off by default for safety.',
+				description:
+					'Whether to allow downloads from hosts other than meshy.ai. Off by default for safety.',
 			},
 		],
 	},
@@ -356,10 +396,12 @@ const animationLibraryProperties: INodeProperties[] = [
 				displayName: 'Category',
 				name: 'category',
 				type: 'options',
-				options: ['BodyMovements', 'DailyActions', 'Dancing', 'Fighting', 'WalkAndRun'].map((c) => ({
-					name: c.replace(/([a-z])([A-Z])/g, '$1 $2'),
-					value: c,
-				})),
+				options: ['BodyMovements', 'DailyActions', 'Dancing', 'Fighting', 'WalkAndRun'].map(
+					(c) => ({
+						name: c.replace(/([a-z])([A-Z])/g, '$1 $2'),
+						value: c,
+					}),
+				),
 				default: 'WalkAndRun',
 			},
 			{
@@ -424,10 +466,38 @@ const usageProperties: INodeProperties[] = [
 	},
 ];
 
+// "Any Task Type" lets one node handle every family, with the type set by an
+// expression. Useful in reusable sub-workflows (see examples/meshy-run-task.json).
+const anyTaskProperties: INodeProperties[] = [
+	{
+		displayName: 'Task Type',
+		name: 'taskType',
+		type: 'options',
+		options: FAMILIES.map((f) => ({ name: f.name, value: f.value })).sort((a, b) =>
+			a.name.localeCompare(b.name),
+		),
+		default: 'imageTo3d',
+		description:
+			'The kind of Meshy task. Can be set with an expression, for example from a sub-workflow input.',
+		displayOptions: { show: { resource: ['task'] } },
+	},
+	{
+		displayName: 'Request Body',
+		name: 'requestBody',
+		type: 'json',
+		required: true,
+		default: '{\n  "image_url": "https://example.com/input.png"\n}',
+		description:
+			'The JSON body Meshy expects for this task type, with API field names. See https://docs.meshy.ai.',
+		displayOptions: { show: { resource: ['task'], operation: ['create'] } },
+	},
+];
+
 export const nodeProperties: INodeProperties[] = [
 	resourceProperty,
 	...operationProperties,
 	...FAMILIES.flatMap((f) => [...sourceProperties(f), ...(createFields[f.value] ?? [])]),
+	...anyTaskProperties,
 	...sharedTaskProperties,
 	...animationLibraryProperties,
 	...usageProperties,

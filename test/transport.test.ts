@@ -22,7 +22,11 @@ describe('meshyRequest', () => {
 	it('retries a read after 429, waiting Retry-After seconds', async () => {
 		const sleepFn = vi.fn(async () => {});
 		const { ctx, httpRequestWithAuthentication } = fakeContext([
-			{ statusCode: 429, body: { message: 'Rate limit exceeded' }, headers: { 'retry-after': '2' } },
+			{
+				statusCode: 429,
+				body: { message: 'Rate limit exceeded' },
+				headers: { 'retry-after': '2' },
+			},
 			{ statusCode: 200, body: { ok: true } },
 		]);
 		const res = await call(ctx, 'GET', '/v1/image-to-3d/abc', { sleepFn });
@@ -33,8 +37,17 @@ describe('meshyRequest', () => {
 
 	it('gives up on reads after 3 retries', async () => {
 		const sleepFn = vi.fn(async () => {});
-		const limited = { statusCode: 429, body: { message: 'Rate limit exceeded' }, headers: { 'retry-after': '1' } };
-		const { ctx, httpRequestWithAuthentication } = fakeContext([limited, limited, limited, limited]);
+		const limited = {
+			statusCode: 429,
+			body: { message: 'Rate limit exceeded' },
+			headers: { 'retry-after': '1' },
+		};
+		const { ctx, httpRequestWithAuthentication } = fakeContext([
+			limited,
+			limited,
+			limited,
+			limited,
+		]);
 		await expect(call(ctx, 'GET', '/v1/remesh', { sleepFn })).rejects.toThrow(/rate limit/i);
 		expect(httpRequestWithAuthentication).toHaveBeenCalledTimes(4);
 	});
@@ -42,7 +55,11 @@ describe('meshyRequest', () => {
 	it('never retries a create call on 429', async () => {
 		const sleepFn = vi.fn(async () => {});
 		const { ctx, httpRequestWithAuthentication } = fakeContext([
-			{ statusCode: 429, body: { message: 'Rate limit exceeded' }, headers: { 'retry-after': '1' } },
+			{
+				statusCode: 429,
+				body: { message: 'Rate limit exceeded' },
+				headers: { 'retry-after': '1' },
+			},
 		]);
 		await expect(call(ctx, 'POST', '/v1/image-to-3d', { isCreate: true, sleepFn })).rejects.toThrow(
 			/not retried/,
@@ -52,7 +69,9 @@ describe('meshyRequest', () => {
 	});
 
 	it('never retries a create call on 5xx and tells the user to check recent tasks', async () => {
-		const { ctx, httpRequestWithAuthentication } = fakeContext([{ statusCode: 503, body: { message: 'busy' } }]);
+		const { ctx, httpRequestWithAuthentication } = fakeContext([
+			{ statusCode: 503, body: { message: 'busy' } },
+		]);
 		await expect(call(ctx, 'POST', '/v1/rigging', { isCreate: true })).rejects.toThrow(/Get Many/);
 		expect(httpRequestWithAuthentication).toHaveBeenCalledTimes(1);
 	});
@@ -66,7 +85,9 @@ describe('meshyRequest', () => {
 	});
 
 	it('throws NodeApiError with the Meshy message and code', async () => {
-		const { ctx } = fakeContext([{ statusCode: 400, body: { message: 'Invalid image', code: 'bad_input' } }]);
+		const { ctx } = fakeContext([
+			{ statusCode: 400, body: { message: 'Invalid image', code: 'bad_input' } },
+		]);
 		const error = await call(ctx, 'POST', '/v1/image-to-3d', { isCreate: true }).catch((e) => e);
 		expect(error).toBeInstanceOf(NodeApiError);
 		expect(error.message).toBe('Meshy rejected the request parameters.');

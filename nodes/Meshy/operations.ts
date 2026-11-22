@@ -1,7 +1,26 @@
 import type { IDataObject, IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
-import { NodeApiError, NodeOperationError, sleepUnlessExecutionCancelled } from 'n8n-workflow';
-import { buildCreateBody, InputError, MAX_IMAGE_BYTES, splitList, toDataUri, type ParamReader } from './body';
-import { assertSafeUrl, fileNameFor, mimeFor, pickUrl, type DownloadFormat, type DownloadSource } from './download';
+import {
+	jsonParse,
+	NodeApiError,
+	NodeOperationError,
+	sleepUnlessExecutionCancelled,
+} from 'n8n-workflow';
+import {
+	buildCreateBody,
+	InputError,
+	MAX_IMAGE_BYTES,
+	splitList,
+	toDataUri,
+	type ParamReader,
+} from './body';
+import {
+	assertSafeUrl,
+	fileNameFor,
+	mimeFor,
+	pickUrl,
+	type DownloadFormat,
+	type DownloadSource,
+} from './download';
 import { getFamily, type FamilyDef } from './families';
 import { normalizeTask, type NormalizedTask } from './normalize';
 import { meshyRequest, retryAfterSeconds } from './transport';
@@ -10,7 +29,11 @@ import { MAX_WAIT_MINUTES, pollUntilTerminal, WaitTimeoutError } from './wait';
 const PAGE_SIZE = 100;
 
 /** Turns our own error types into n8n errors that show up properly in the UI. */
-export function asNodeError(ctx: IExecuteFunctions, error: unknown, i: number): NodeApiError | NodeOperationError {
+export function asNodeError(
+	ctx: IExecuteFunctions,
+	error: unknown,
+	i: number,
+): NodeApiError | NodeOperationError {
 	if (error instanceof NodeApiError || error instanceof NodeOperationError) return error;
 	if (error instanceof WaitTimeoutError) {
 		return new NodeOperationError(ctx.getNode(), error.message, {
@@ -29,7 +52,9 @@ function reader(ctx: IExecuteFunctions, i: number): ParamReader {
 			const meta = ctx.helpers.assertBinaryData(i, prop);
 			const buffer = await ctx.helpers.getBinaryDataBuffer(i, prop);
 			if (asset === 'image' && buffer.length > MAX_IMAGE_BYTES) {
-				throw new InputError(`The image in "${prop}" is ${(buffer.length / 1048576).toFixed(1)} MB. Meshy accepts at most 20 MB.`);
+				throw new InputError(
+					`The image in "${prop}" is ${(buffer.length / 1048576).toFixed(1)} MB. Meshy accepts at most 20 MB.`,
+				);
 			}
 			return toDataUri(buffer.toString('base64'), meta.mimeType);
 		},
@@ -37,11 +62,15 @@ function reader(ctx: IExecuteFunctions, i: number): ParamReader {
 }
 
 async function fetchTask(ctx: IExecuteFunctions, family: FamilyDef, id: string, i: number) {
-	const res = await meshyRequest.call(ctx, 'GET', `${family.path}/${encodeURIComponent(id)}`, { itemIndex: i });
+	const res = await meshyRequest.call(ctx, 'GET', `${family.path}/${encodeURIComponent(id)}`, {
+		itemIndex: i,
+	});
 	return { task: res.body as IDataObject, retryAfterSeconds: retryAfterSeconds(res.headers ?? {}) };
 }
 
-const one = (json: IDataObject, i: number): INodeExecutionData[] => [{ json, pairedItem: { item: i } }];
+const one = (json: IDataObject, i: number): INodeExecutionData[] => [
+	{ json, pairedItem: { item: i } },
+];
 
 async function listPaged(
 	ctx: IExecuteFunctions,
@@ -65,39 +94,83 @@ async function listPaged(
 	return results.slice(0, limit);
 }
 
-export async function create(ctx: IExecuteFunctions, family: FamilyDef, i: number): Promise<INodeExecutionData[]> {
+/** Reads the raw JSON body of the "Any Task Type" resource. */
+function rawBody(ctx: IExecuteFunctions, i: number): IDataObject {
+	const value = ctx.getNodeParameter('requestBody', i);
+	const parsed =
+		typeof value === 'string' ? (jsonParse(value, { fallbackValue: undefined }) as unknown) : value;
+	if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+		throw new InputError('Request Body must be a JSON object.');
+	}
+	return parsed as IDataObject;
+}
+
+export async function create(
+	ctx: IExecuteFunctions,
+	family: FamilyDef,
+	i: number,
+	generic = false,
+): Promise<INodeExecutionData[]> {
 	let body: IDataObject;
 	try {
-		body = await buildCreateBody(family.value, reader(ctx, i));
+		body = generic ? rawBody(ctx, i) : await buildCreateBody(family.value, reader(ctx, i));
 	} catch (error) {
 		throw asNodeError(ctx, error, i);
 	}
-	const res = await meshyRequest.call(ctx, 'POST', family.path, { body, isCreate: true, itemIndex: i });
+	const res = await meshyRequest.call(ctx, 'POST', family.path, {
+		body,
+		isCreate: true,
+		itemIndex: i,
+	});
 	const id = String((res.body as IDataObject)?.result ?? '');
 	return one({ id, status: 'PENDING', family: family.value }, i);
 }
 
-export async function get(ctx: IExecuteFunctions, family: FamilyDef, i: number): Promise<INodeExecutionData[]> {
+export async function get(
+	ctx: IExecuteFunctions,
+	family: FamilyDef,
+	i: number,
+): Promise<INodeExecutionData[]> {
 	const id = ctx.getNodeParameter('taskId', i) as string;
 	const { task } = await fetchTask(ctx, family, id, i);
 	return one(normalizeTask(task, family.value, family.output), i);
 }
 
-export async function getAll(ctx: IExecuteFunctions, family: FamilyDef, i: number): Promise<INodeExecutionData[]> {
+export async function getAll(
+	ctx: IExecuteFunctions,
+	family: FamilyDef,
+	i: number,
+): Promise<INodeExecutionData[]> {
 	const sortBy = ctx.getNodeParameter('sortBy', i, '-created_at') as string;
 	const rows = await listPaged(ctx, family.path, i, { sort_by: sortBy });
-	return rows.map((row) => ({ json: normalizeTask(row, family.value, family.output), pairedItem: { item: i } }));
+	return rows.map((row) => ({
+		json: normalizeTask(row, family.value, family.output),
+		pairedItem: { item: i },
+	}));
 }
 
-export async function cancel(ctx: IExecuteFunctions, family: FamilyDef, i: number): Promise<INodeExecutionData[]> {
+export async function cancel(
+	ctx: IExecuteFunctions,
+	family: FamilyDef,
+	i: number,
+): Promise<INodeExecutionData[]> {
 	const id = ctx.getNodeParameter('taskId', i) as string;
-	await meshyRequest.call(ctx, 'DELETE', `${family.path}/${encodeURIComponent(id)}`, { itemIndex: i });
+	await meshyRequest.call(ctx, 'DELETE', `${family.path}/${encodeURIComponent(id)}`, {
+		itemIndex: i,
+	});
 	return one({ id, family: family.value, canceled: true }, i);
 }
 
-export async function wait(ctx: IExecuteFunctions, family: FamilyDef, i: number): Promise<INodeExecutionData[]> {
+export async function wait(
+	ctx: IExecuteFunctions,
+	family: FamilyDef,
+	i: number,
+): Promise<INodeExecutionData[]> {
 	const id = (ctx.getNodeParameter('taskId', i) as string).trim();
-	const minutes = Math.min(Math.max(ctx.getNodeParameter('timeoutMinutes', i, 10) as number, 1), MAX_WAIT_MINUTES);
+	const minutes = Math.min(
+		Math.max(ctx.getNodeParameter('timeoutMinutes', i, 10) as number, 1),
+		MAX_WAIT_MINUTES,
+	);
 	const options = ctx.getNodeParameter('waitOptions', i, {}) as IDataObject;
 	const failOnTaskError = options.failOnTaskError !== false;
 
@@ -113,16 +186,27 @@ export async function wait(ctx: IExecuteFunctions, family: FamilyDef, i: number)
 
 	const task = normalizeTask(raw, family.value, family.output);
 	if (failOnTaskError && task.status !== 'SUCCEEDED') {
-		const reason = task.error ? `: ${task.error.message}${task.error.code ? ` (code: ${task.error.code})` : ''}` : '';
-		throw new NodeOperationError(ctx.getNode(), `Meshy task ${task.id} ended as ${task.status}${reason}`, {
-			itemIndex: i,
-			description: task.status === 'FAILED' ? 'Meshy refunds the credits for failed tasks.' : undefined,
-		});
+		const reason = task.error
+			? `: ${task.error.message}${task.error.code ? ` (code: ${task.error.code})` : ''}`
+			: '';
+		throw new NodeOperationError(
+			ctx.getNode(),
+			`Meshy task ${task.id} ended as ${task.status}${reason}`,
+			{
+				itemIndex: i,
+				description:
+					task.status === 'FAILED' ? 'Meshy refunds the credits for failed tasks.' : undefined,
+			},
+		);
 	}
 	return one(task, i);
 }
 
-export async function download(ctx: IExecuteFunctions, family: FamilyDef, i: number): Promise<INodeExecutionData[]> {
+export async function download(
+	ctx: IExecuteFunctions,
+	family: FamilyDef,
+	i: number,
+): Promise<INodeExecutionData[]> {
 	const sourceMode = ctx.getNodeParameter('downloadSource', i, 'taskId') as string;
 	const format = ctx.getNodeParameter('format', i) as DownloadFormat;
 	const imageIndex = ctx.getNodeParameter('imageIndex', i, 0) as number;
@@ -163,7 +247,11 @@ export async function download(ctx: IExecuteFunctions, family: FamilyDef, i: num
 
 	const fileName = fileNameFor(task, format, url);
 	const buffer = Buffer.isBuffer(res.body) ? res.body : Buffer.from(res.body);
-	const binary = await ctx.helpers.prepareBinaryData(buffer, fileName, mimeFor(fileName, res.headers?.['content-type']));
+	const binary = await ctx.helpers.prepareBinaryData(
+		buffer,
+		fileName,
+		mimeFor(fileName, res.headers?.['content-type']),
+	);
 
 	const json: IDataObject = sourceMode === 'item' ? { ...task } : (task as NormalizedTask);
 	return [{ json, binary: { [property]: binary }, pairedItem: { item: i } }];
@@ -208,10 +296,11 @@ export async function runOperation(
 		if (operation === 'getBalance') return getBalance(ctx, i);
 		if (operation === 'getUsage') return getUsage(ctx, i);
 	} else {
-		const family = getFamily(resource);
+		const generic = resource === 'task';
+		const family = getFamily(generic ? (ctx.getNodeParameter('taskType', i) as string) : resource);
 		switch (operation) {
 			case 'create':
-				return create(ctx, family, i);
+				return create(ctx, family, i, generic);
 			case 'get':
 				return get(ctx, family, i);
 			case 'getAll':
@@ -226,7 +315,11 @@ export async function runOperation(
 				if (family.value === 'animation') return getLibrary(ctx, i);
 		}
 	}
-	throw new NodeOperationError(ctx.getNode(), `Unsupported operation "${operation}" for resource "${resource}"`, {
-		itemIndex: i,
-	});
+	throw new NodeOperationError(
+		ctx.getNode(),
+		`Unsupported operation "${operation}" for resource "${resource}"`,
+		{
+			itemIndex: i,
+		},
+	);
 }

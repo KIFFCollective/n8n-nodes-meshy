@@ -1,0 +1,126 @@
+{
+	"name": "Meshy: image to 3D GLB",
+	"nodes": [
+		{
+			"id": "meshy-image-to-3d-glb-0",
+			"name": "Start",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [
+				0,
+				0
+			],
+			"parameters": {}
+		},
+		{
+			"id": "meshy-image-to-3d-glb-1",
+			"name": "Create Image to 3D",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				240,
+				0
+			],
+			"parameters": {
+				"resource": "imageTo3d",
+				"operation": "create",
+				"inputType": "url",
+				"sourceUrl": "https://cdn.meshy.ai/webapp-assets/doc/image-to-3d-p0-1.webp",
+				"aiModel": "meshy-6-lite",
+				"additionalFields": {
+					"shouldTexture": false
+				}
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-image-to-3d-glb-2",
+			"name": "Wait for Model",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				480,
+				0
+			],
+			"parameters": {
+				"resource": "imageTo3d",
+				"operation": "wait",
+				"taskId": "={{ $json.id }}",
+				"timeoutMinutes": 15
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-image-to-3d-glb-3",
+			"name": "Download GLB",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				720,
+				0
+			],
+			"parameters": {
+				"resource": "imageTo3d",
+				"operation": "download",
+				"downloadSource": "item",
+				"format": "glb",
+				"binaryPropertyOutput": "data"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		}
+	],
+	"connections": {
+		"Start": {
+			"main": [
+				[
+					{
+						"node": "Create Image to 3D",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Create Image to 3D": {
+			"main": [
+				[
+					{
+						"node": "Wait for Model",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Wait for Model": {
+			"main": [
+				[
+					{
+						"node": "Download GLB",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"pinData": {}
+}

@@ -51,7 +51,10 @@ function stringRecord(value: unknown): Record<string, string> {
 function modelUrlsFor(raw: IDataObject, output: OutputKind): Record<string, string> {
 	const result = (raw.result ?? {}) as Record<string, unknown>;
 	if (output === 'rig') {
-		return stringRecord({ glb: result.rigged_character_glb_url, fbx: result.rigged_character_fbx_url });
+		return stringRecord({
+			glb: result.rigged_character_glb_url,
+			fbx: result.rigged_character_fbx_url,
+		});
 	}
 	if (output === 'animation') {
 		return stringRecord({
@@ -72,7 +75,11 @@ function taskError(raw: IDataObject): TaskError | null {
 	return out;
 }
 
-export function normalizeTask(raw: IDataObject, family: string, output: OutputKind): NormalizedTask {
+export function normalizeTask(
+	raw: IDataObject,
+	family: string,
+	output: OutputKind,
+): NormalizedTask {
 	const task: NormalizedTask = {
 		id: String(raw.id ?? ''),
 		family,
@@ -88,7 +95,9 @@ export function normalizeTask(raw: IDataObject, family: string, output: OutputKi
 		raw,
 	};
 	if (output === 'image') {
-		task.image_urls = Array.isArray(raw.image_urls) ? (raw.image_urls as unknown[]).filter((u): u is string => typeof u === 'string') : [];
+		task.image_urls = Array.isArray(raw.image_urls)
+			? (raw.image_urls as unknown[]).filter((u): u is string => typeof u === 'string')
+			: [];
 	}
 	return task;
 }

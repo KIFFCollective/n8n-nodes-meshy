@@ -54,9 +54,13 @@ describe('file names and mime types', () => {
 		expect(fileNameFor({ id: 'abc', name: 'My Robot!' }, 'glb', url)).toBe('My_Robot_.glb');
 		expect(fileNameFor({ id: 'abc', name: null }, 'glb', url)).toBe('abc.glb');
 		expect(fileNameFor({ id: 'abc' }, 'pre_remeshed_glb', url)).toBe('abc_pre_remeshed.glb');
-		expect(fileNameFor({ id: 'abc' }, 'thumbnail', new URL('https://assets.meshy.ai/x/preview.png?Expires=1'))).toBe(
-			'abc_thumbnail.png',
-		);
+		expect(
+			fileNameFor(
+				{ id: 'abc' },
+				'thumbnail',
+				new URL('https://assets.meshy.ai/x/preview.png?Expires=1'),
+			),
+		).toBe('abc_thumbnail.png');
 	});
 
 	it('prefers known 3D mime types over octet-stream', () => {

@@ -48,16 +48,20 @@ export function retryAfterSeconds(headers: MeshyResponse['headers']): number | u
 /** Plain-language summaries for the status codes users actually hit. */
 export function describeError(statusCode: number, apiMessage: string, isCreate: boolean): string {
 	const msg = apiMessage.toLowerCase();
-	if (statusCode === 401) return 'Meshy rejected the API key. Check the key in the Meshy credential.';
+	if (statusCode === 401)
+		return 'Meshy rejected the API key. Check the key in the Meshy credential.';
 	if (statusCode === 402 || msg.includes('insufficient') || msg.includes('credit')) {
 		return 'Not enough Meshy credits, or your plan does not include this API.';
 	}
-	if (statusCode === 403) return 'Meshy refused the request. Content moderation, an IP allowlist, or your plan can cause this.';
-	if (statusCode === 404) return 'Meshy could not find this task or resource. Check the ID and the resource type.';
+	if (statusCode === 403)
+		return 'Meshy refused the request. Content moderation, an IP allowlist, or your plan can cause this.';
+	if (statusCode === 404)
+		return 'Meshy could not find this task or resource. Check the ID and the resource type.';
 	if (statusCode === 409) {
 		return 'The task is already running, so Meshy will not cancel it. Only PENDING tasks can be canceled.';
 	}
-	if (statusCode === 422) return 'Meshy could not process the input (for example, pose estimation failed).';
+	if (statusCode === 422)
+		return 'Meshy could not process the input (for example, pose estimation failed).';
 	if (statusCode === 429) {
 		if (msg.startsWith('nomorependingtasks') || msg.startsWith('nomoreconcurrenttasks')) {
 			return 'Too many Meshy tasks are running at once. Wait for one to finish, then try again.';
@@ -108,7 +112,10 @@ export async function meshyRequest<T = unknown>(
 		const retryAfter = retryAfterSeconds(response.headers ?? {});
 
 		const canRetry =
-			statusCode === 429 && !options.isCreate && retryAfter !== undefined && attempt < MAX_READ_RETRIES_ON_429;
+			statusCode === 429 &&
+			!options.isCreate &&
+			retryAfter !== undefined &&
+			attempt < MAX_READ_RETRIES_ON_429;
 		if (canRetry) {
 			await wait(retryAfter * 1000);
 			continue;

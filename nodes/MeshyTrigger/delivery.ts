@@ -45,7 +45,11 @@ export function secretMatches(received: unknown, expected: string): boolean {
  * - the same id + status pair is handled once
  * - an IN_PROGRESS update that arrives after the final status is dropped
  */
-export function decide(state: DeliveryState, task: IDataObject, filters: DeliveryFilters): Decision {
+export function decide(
+	state: DeliveryState,
+	task: IDataObject,
+	filters: DeliveryFilters,
+): Decision {
 	const id = typeof task.id === 'string' ? task.id : '';
 	const status = typeof task.status === 'string' ? task.status : '';
 	if (!id || !status) return { accept: false, reason: 'invalid' };
@@ -63,9 +67,13 @@ export function decide(state: DeliveryState, task: IDataObject, filters: Deliver
 	}
 
 	const type = typeof task.type === 'string' ? task.type : '';
-	if (filters.taskTypes.length && !filters.taskTypes.some((t) => type === t || type.startsWith(`${t}-`))) {
+	if (
+		filters.taskTypes.length &&
+		!filters.taskTypes.some((t) => type === t || type.startsWith(`${t}-`))
+	) {
 		return { accept: false, reason: 'filtered' };
 	}
-	if (filters.statuses.length && !filters.statuses.includes(status)) return { accept: false, reason: 'filtered' };
+	if (filters.statuses.length && !filters.statuses.includes(status))
+		return { accept: false, reason: 'filtered' };
 	return { accept: true };
 }

@@ -27,7 +27,11 @@ describe('buildCreateBody', () => {
 	it('image to 3D from a URL', async () => {
 		const body = await buildCreateBody(
 			'imageTo3d',
-			reader({ ...defaults('imageTo3d'), inputType: 'url', sourceUrl: ' https://example.com/a.png ' }),
+			reader({
+				...defaults('imageTo3d'),
+				inputType: 'url',
+				sourceUrl: ' https://example.com/a.png ',
+			}),
 		);
 		expect(body.image_url).toBe('https://example.com/a.png');
 		expect(body.ai_model).toBe('latest');
@@ -37,13 +41,19 @@ describe('buildCreateBody', () => {
 	it('image to 3D from a binary property becomes a data URI', async () => {
 		const body = await buildCreateBody(
 			'imageTo3d',
-			reader({ inputType: 'binary', binaryPropertyName: 'photo' }, { photo: 'data:image/png;base64,AAAA' }),
+			reader(
+				{ inputType: 'binary', binaryPropertyName: 'photo' },
+				{ photo: 'data:image/png;base64,AAAA' },
+			),
 		);
 		expect(body.image_url).toBe('data:image/png;base64,AAAA');
 	});
 
 	it('image to 3D from a previous task', async () => {
-		const body = await buildCreateBody('imageTo3d', reader({ inputType: 'taskId', inputTaskId: 'abc' }));
+		const body = await buildCreateBody(
+			'imageTo3d',
+			reader({ inputType: 'taskId', inputTaskId: 'abc' }),
+		);
 		expect(body).toEqual({ input_task_id: 'abc' });
 	});
 
@@ -56,7 +66,10 @@ describe('buildCreateBody', () => {
 	it('multi-image reads several binary properties', async () => {
 		const body = await buildCreateBody(
 			'multiImageTo3d',
-			reader({ inputType: 'binaries', binaryPropertyNames: 'front, back' }, { front: 'data:a', back: 'data:b' }),
+			reader(
+				{ inputType: 'binaries', binaryPropertyNames: 'front, back' },
+				{ front: 'data:a', back: 'data:b' },
+			),
 		);
 		expect(body.image_urls).toEqual(['data:a', 'data:b']);
 	});
@@ -64,7 +77,12 @@ describe('buildCreateBody', () => {
 	it('sends a custom ai_model when Custom is picked', async () => {
 		const body = await buildCreateBody(
 			'imageTo3d',
-			reader({ inputType: 'taskId', inputTaskId: 'x', aiModel: '__custom', customAiModel: 'meshy-9' }),
+			reader({
+				inputType: 'taskId',
+				inputTaskId: 'x',
+				aiModel: '__custom',
+				customAiModel: 'meshy-9',
+			}),
 		);
 		expect(body.ai_model).toBe('meshy-9');
 	});
@@ -94,9 +112,15 @@ describe('buildCreateBody', () => {
 	});
 
 	it('text to 3D preview sends mode and prompt, refine sends the preview id', async () => {
-		const preview = await buildCreateBody('textTo3d', reader({ mode: 'preview', prompt: 'a red chair', aiModel: 'latest' }));
+		const preview = await buildCreateBody(
+			'textTo3d',
+			reader({ mode: 'preview', prompt: 'a red chair', aiModel: 'latest' }),
+		);
 		expect(preview).toMatchObject({ mode: 'preview', prompt: 'a red chair' });
-		const refine = await buildCreateBody('textTo3d', reader({ mode: 'refine', previewTaskId: 'p1' }));
+		const refine = await buildCreateBody(
+			'textTo3d',
+			reader({ mode: 'refine', previewTaskId: 'p1' }),
+		);
 		expect(refine).toEqual({ mode: 'refine', preview_task_id: 'p1' });
 	});
 
@@ -112,21 +136,30 @@ describe('buildCreateBody', () => {
 
 	it('rejects non-numeric action ids', async () => {
 		await expect(
-			buildCreateBody('animation', reader({ rigTaskId: 'r', additionalFields: { actionIds: '1, two' } })),
+			buildCreateBody(
+				'animation',
+				reader({ rigTaskId: 'r', additionalFields: { actionIds: '1, two' } }),
+			),
 		).rejects.toThrow(/whole numbers/);
 	});
 
 	it('requires an input value', async () => {
-		await expect(buildCreateBody('remesh', reader({ inputType: 'taskId', inputTaskId: ' ' }))).rejects.toThrow(
-			/ID of the input task/,
-		);
+		await expect(
+			buildCreateBody('remesh', reader({ inputType: 'taskId', inputTaskId: ' ' })),
+		).rejects.toThrow(/ID of the input task/);
 	});
 
 	// Every family should produce a body from its defaults plus a minimal input.
 	for (const family of FAMILIES) {
 		it(`${family.value}: builds a body from default parameters`, async () => {
-			const params: IDataObject = { ...defaults(family.value), inputTaskId: 'task-1', sourceUrl: 'https://x.test/a', sourceUrls: 'https://x.test/a' };
-			if (family.source) params.inputType = family.source.modes.includes('taskId') ? 'taskId' : 'url';
+			const params: IDataObject = {
+				...defaults(family.value),
+				inputTaskId: 'task-1',
+				sourceUrl: 'https://x.test/a',
+				sourceUrls: 'https://x.test/a',
+			};
+			if (family.source)
+				params.inputType = family.source.modes.includes('taskId') ? 'taskId' : 'url';
 			const body = await buildCreateBody(family.value, reader(params));
 			expect(Object.keys(body).length).toBeGreaterThan(0);
 			for (const key of Object.keys(body)) expect(key).toMatch(/^[a-z0-9_]+$/);
@@ -141,7 +174,9 @@ describe('helpers', () => {
 	});
 
 	it('toDataUri builds a base64 data URI', () => {
-		expect(toDataUri(Buffer.from('hi').toString('base64'), 'image/png')).toBe('data:image/png;base64,aGk=');
+		expect(toDataUri(Buffer.from('hi').toString('base64'), 'image/png')).toBe(
+			'data:image/png;base64,aGk=',
+		);
 		expect(toDataUri('AA==', '')).toBe('data:application/octet-stream;base64,AA==');
 	});
 });

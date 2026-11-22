@@ -5,8 +5,15 @@
 //      npm run generate -- --check (exit 1 if the output would change)
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { titleCase } from 'title-case';
 import { parse } from 'yaml';
-import { FAMILIES, FIELD_OVERRIDES, type FieldOverride, type FamilyDef } from '../nodes/Meshy/families.ts';
+import {
+	FAMILIES,
+	FIELD_OVERRIDES,
+	type FieldOverride,
+	type FamilyDef,
+} from '../nodes/Meshy/families.ts';
 
 const root = join(import.meta.dirname, '..');
 const specPath = join(root, 'docs/vendor/openapi.yaml');
@@ -27,7 +34,15 @@ interface Schema {
 	$ref?: string;
 }
 
-type Kind = 'string' | 'number' | 'boolean' | 'options' | 'multiOptions' | 'stringList' | 'numberList' | 'object';
+type Kind =
+	| 'string'
+	| 'number'
+	| 'boolean'
+	| 'options'
+	| 'multiOptions'
+	| 'stringList'
+	| 'numberList'
+	| 'object';
 
 interface BodyField {
 	param: string;
@@ -69,6 +84,10 @@ const WORDS: Record<string, string> = {
 };
 
 function displayName(api: string): string {
+	return titleCase(rawDisplayName(api));
+}
+
+function rawDisplayName(api: string): string {
 	return api
 		.split('_')
 		.map((w) => WORDS[w] ?? w.charAt(0).toUpperCase() + w.slice(1))
@@ -80,13 +99,35 @@ const AGENT_SENTENCE = /^(Pick the model|For which texture model|For a game asse
 
 function cleanDescription(text: string | undefined): string {
 	if (!text) return '';
-	const flat = text.replace(/\s+/g, ' ').replace(/\s*—\s*/g, ', ').trim();
+	const flat = text
+		.replace(/\s+/g, ' ')
+		.replace(/\s*—\s*/g, ', ')
+		.trim();
 	const sentences = flat.split(/(?<=\.)\s+(?=[A-Z`])/).filter((s) => !AGENT_SENTENCE.test(s));
 	let out = '';
 	for (const s of sentences) {
 		if (out && out.length + s.length > 320) break;
 		out = out ? `${out} ${s}` : s;
 	}
+	return out;
+}
+
+const BOOLEAN_DESCRIPTIONS: Record<string, string> = {
+	turbo: 'Whether to use turbo (fast) mode',
+	enable_tsr: 'Whether to use the fast-mode TSR option. Only has an effect with turbo.',
+	optimize_texture_seams: 'Whether to optimize texture seams in fast mode. Only has an effect with turbo.',
+	alpha_thumbnail: 'Whether to also make a preview image with a transparent background',
+};
+
+/** Applies n8n's description rules: capital first letter, no period on one sentence, booleans start with "Whether". */
+function polishDescription(api: string, kind: Kind, text: string): string {
+	let out = text.trim();
+	if (kind === 'boolean') {
+		if (BOOLEAN_DESCRIPTIONS[api]) out = BOOLEAN_DESCRIPTIONS[api];
+		else if (!/^Whether/.test(out)) out = `Whether to ${out.charAt(0).toLowerCase()}${out.slice(1)}`;
+	}
+	if (/^[a-z]/.test(out)) out = out.charAt(0).toUpperCase() + out.slice(1);
+	if (out.replace('e.g.', '').split('. ').length === 1 && out.endsWith('.')) out = out.slice(0, -1);
 	return out;
 }
 
@@ -107,11 +148,14 @@ function kindOf(s: Schema): Kind | undefined {
 	return undefined;
 }
 
+// Same order as n8n's node-param-options-type-unsorted-items lint rule.
+const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name);
+
 function enumOptions(values: Array<string | number>) {
-	return [...values]
+	return values
 		.filter((v) => v !== null)
-		.sort((a, b) => String(a).localeCompare(String(b)))
-		.map((v) => ({ name: String(v), value: v }));
+		.map((v) => ({ name: titleCase(String(v)), value: v }))
+		.sort(byName);
 }
 
 function defaultFor(kind: Kind, s: Schema, override?: FieldOverride): unknown {
@@ -136,13 +180,19 @@ const N8N_TYPE: Record<Kind, string> = {
 	object: 'collection',
 };
 
-function buildProperty(api: string, s: Schema, override: FieldOverride | undefined): Record<string, unknown> | undefined {
+function buildProperty(
+	api: string,
+	s: Schema,
+	override: FieldOverride | undefined,
+): Record<string, unknown> | undefined {
 	const kind = kindOf(s);
 	if (!kind) return undefined;
 	let description = override?.description ?? cleanDescription(s.description);
 	if (kind === 'stringList' || kind === 'numberList') {
 		description = `${description}${description ? ' ' : ''}Separate several values with commas.`;
 	}
+	description = description ? polishDescription(api, kind, description) : '';
+	if (description.toLowerCase() === displayName(api).toLowerCase()) description = '';
 	const prop: Record<string, unknown> = {
 		displayName: displayName(api),
 		name: camel(api),
@@ -153,7 +203,7 @@ function buildProperty(api: string, s: Schema, override: FieldOverride | undefin
 	if (kind === 'options') {
 		const options = enumOptions(s.enum ?? []);
 		if (override?.allowCustom) options.push({ name: 'Custom', value: '__custom' });
-		prop.options = options;
+		prop.options = options.sort(byName);
 	}
 	if (kind === 'multiOptions') prop.options = enumOptions(resolve(s.items ?? {}).enum ?? []);
 	if (kind === 'number') {
@@ -281,10 +331,12 @@ export const bodyFields: Record<string, BodyField[]> = ${JSON.stringify(bodyFiel
 `;
 
 if (process.argv.includes('--check')) {
-	const current = existsSync(outPath) ? readFileSync(outPath, 'utf8') : '';
-	// Prettier may reformat the file after generation, so compare the JSON payloads.
-	const strip = (t: string) => t.replace(/\s+/g, '').replace(/,(?=[}\]])/g, '').replace(/["']/g, '');
-	if (strip(current) !== strip(output)) {
+	// Compare the exported data, not the text, so formatting by Prettier does not count as drift.
+	const current = existsSync(outPath) ? await import(pathToFileURL(outPath).href) : {};
+	const same =
+		JSON.stringify(current.createFields) === JSON.stringify(createFields) &&
+		JSON.stringify(current.bodyFields) === JSON.stringify(bodyFields);
+	if (!same) {
 		console.error('nodes/Meshy/generated/fields.ts is out of date. Run: npm run generate');
 		process.exit(1);
 	}

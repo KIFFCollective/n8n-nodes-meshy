@@ -1,0 +1,139 @@
+{
+	"name": "Meshy: run task (sub-workflow)",
+	"nodes": [
+		{
+			"id": "meshy-run-task-sub-workflow--0",
+			"name": "When Called",
+			"type": "n8n-nodes-base.executeWorkflowTrigger",
+			"typeVersion": 1.1,
+			"position": [
+				0,
+				0
+			],
+			"parameters": {
+				"workflowInputs": {
+					"values": [
+						{
+							"name": "taskType"
+						},
+						{
+							"name": "body",
+							"type": "object"
+						},
+						{
+							"name": "format"
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": "meshy-run-task-sub-workflow--1",
+			"name": "Create Task",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				240,
+				0
+			],
+			"parameters": {
+				"resource": "task",
+				"taskType": "={{ $json.taskType }}",
+				"operation": "create",
+				"requestBody": "={{ JSON.stringify($json.body) }}"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-run-task-sub-workflow--2",
+			"name": "Wait for Task",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				480,
+				0
+			],
+			"parameters": {
+				"resource": "task",
+				"taskType": "={{ $('When Called').item.json.taskType }}",
+				"operation": "wait",
+				"taskId": "={{ $json.id }}",
+				"timeoutMinutes": 20
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-run-task-sub-workflow--3",
+			"name": "Download File",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				720,
+				0
+			],
+			"parameters": {
+				"resource": "task",
+				"taskType": "={{ $('When Called').item.json.taskType }}",
+				"operation": "download",
+				"downloadSource": "item",
+				"format": "={{ $('When Called').item.json.format || 'glb' }}",
+				"binaryPropertyOutput": "data"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		}
+	],
+	"connections": {
+		"When Called": {
+			"main": [
+				[
+					{
+						"node": "Create Task",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Create Task": {
+			"main": [
+				[
+					{
+						"node": "Wait for Task",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Wait for Task": {
+			"main": [
+				[
+					{
+						"node": "Download File",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"pinData": {}
+}

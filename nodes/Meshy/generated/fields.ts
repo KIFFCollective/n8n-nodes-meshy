@@ -3,7 +3,15 @@
 
 import type { INodeProperties } from 'n8n-workflow';
 
-export type BodyFieldKind = 'string' | 'number' | 'boolean' | 'options' | 'multiOptions' | 'stringList' | 'numberList' | 'object';
+export type BodyFieldKind =
+	| 'string'
+	| 'number'
+	| 'boolean'
+	| 'options'
+	| 'multiOptions'
+	| 'stringList'
+	| 'numberList'
+	| 'object';
 
 export interface BodyField {
 	/** n8n parameter name */
@@ -18,4053 +26,3951 @@ export interface BodyField {
 }
 
 export const createFields: Record<string, INodeProperties[]> = {
-	"textTo3d": [
+	textTo3d: [
 		{
-			"displayName": "Mode",
-			"name": "mode",
-			"type": "options",
-			"default": "preview",
-			"description": "Phase. `preview` generates geometry; `refine` textures a preview.",
-			"options": [
+			displayName: 'Mode',
+			name: 'mode',
+			type: 'options',
+			default: 'preview',
+			description: 'Phase. `preview` generates geometry; `refine` textures a preview.',
+			options: [
 				{
-					"name": "preview",
-					"value": "preview"
+					name: 'Preview',
+					value: 'preview',
 				},
 				{
-					"name": "refine",
-					"value": "refine"
-				}
+					name: 'Refine',
+					value: 'refine',
+				},
 			],
-			"required": true,
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"textTo3d"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
-		},
-		{
-			"displayName": "Prompt",
-			"name": "prompt",
-			"type": "string",
-			"default": "",
-			"description": "Text description of the object. Required for preview / fused tasks.",
-			"typeOptions": {
-				"rows": 3
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['textTo3d'],
+					operation: ['create'],
+				},
 			},
-			"required": true,
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"textTo3d"
-					],
-					"operation": [
-						"create"
-					],
-					"mode": [
-						"preview"
-					]
-				}
-			}
 		},
 		{
-			"displayName": "Preview Task ID",
-			"name": "previewTaskId",
-			"type": "string",
-			"default": "",
-			"description": "ID of the succeeded preview task to texture",
-			"required": true,
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"textTo3d"
-					],
-					"operation": [
-						"create"
-					],
-					"mode": [
-						"refine"
-					]
-				}
-			}
+			displayName: 'Prompt',
+			name: 'prompt',
+			type: 'string',
+			default: '',
+			description: 'Text description of the object. Required for preview / fused tasks.',
+			typeOptions: {
+				rows: 3,
+			},
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['textTo3d'],
+					operation: ['create'],
+					mode: ['preview'],
+				},
+			},
 		},
 		{
-			"displayName": "AI Model",
-			"name": "aiModel",
-			"type": "options",
-			"default": "latest",
-			"description": "Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.",
-			"options": [
+			displayName: 'Preview Task ID',
+			name: 'previewTaskId',
+			type: 'string',
+			default: '',
+			description: 'ID of the succeeded preview task to texture',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['textTo3d'],
+					operation: ['create'],
+					mode: ['refine'],
+				},
+			},
+		},
+		{
+			displayName: 'AI Model',
+			name: 'aiModel',
+			type: 'options',
+			default: 'latest',
+			description:
+				'Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.',
+			options: [
 				{
-					"name": "latest",
-					"value": "latest"
+					name: 'Custom',
+					value: '__custom',
 				},
 				{
-					"name": "meshy-6",
-					"value": "meshy-6"
+					name: 'Latest',
+					value: 'latest',
 				},
 				{
-					"name": "meshy-6-lite",
-					"value": "meshy-6-lite"
+					name: 'Meshy-6',
+					value: 'meshy-6',
 				},
 				{
-					"name": "meshy-7",
-					"value": "meshy-7"
+					name: 'Meshy-6-Lite',
+					value: 'meshy-6-lite',
 				},
 				{
-					"name": "meshy-7.1",
-					"value": "meshy-7.1"
+					name: 'Meshy-7',
+					value: 'meshy-7',
 				},
 				{
-					"name": "meshy-t2",
-					"value": "meshy-t2"
+					name: 'Meshy-7.1',
+					value: 'meshy-7.1',
 				},
 				{
-					"name": "meshy-t2.5",
-					"value": "meshy-t2.5"
+					name: 'Meshy-T2',
+					value: 'meshy-t2',
 				},
 				{
-					"name": "Custom",
-					"value": "__custom"
-				}
+					name: 'Meshy-t2.5',
+					value: 'meshy-t2.5',
+				},
 			],
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"textTo3d"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
-		},
-		{
-			"displayName": "Custom AI Model",
-			"name": "customAiModel",
-			"type": "string",
-			"required": true,
-			"default": "",
-			"placeholder": "e.g. meshy-7.1",
-			"description": "Any model name Meshy accepts",
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"textTo3d"
-					],
-					"operation": [
-						"create"
-					],
-					"aiModel": [
-						"__custom"
-					]
-				}
-			}
-		},
-		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"textTo3d"
-					],
-					"operation": [
-						"create"
-					]
-				}
+			displayOptions: {
+				show: {
+					resource: ['textTo3d'],
+					operation: ['create'],
+				},
 			},
-			"options": [
-				{
-					"displayName": "Alpha Thumbnail",
-					"name": "alphaThumbnail",
-					"type": "boolean",
-					"default": false,
-					"description": "Opt in to a transparent-background preview."
-				},
-				{
-					"displayName": "Auto Size",
-					"name": "autoSize",
-					"type": "boolean",
-					"default": false,
-					"description": "Auto-estimate real-world size."
-				},
-				{
-					"displayName": "Decimation Mode",
-					"name": "decimationMode",
-					"type": "options",
-					"default": 1,
-					"description": "Decimation algorithm selector.",
-					"options": [
-						{
-							"name": "1",
-							"value": 1
-						},
-						{
-							"name": "2",
-							"value": 2
-						},
-						{
-							"name": "3",
-							"value": 3
-						},
-						{
-							"name": "4",
-							"value": 4
-						}
-					]
-				},
-				{
-					"displayName": "Enable PBR",
-					"name": "enablePbr",
-					"type": "boolean",
-					"default": false,
-					"description": "Produce PBR texture maps."
-				},
-				{
-					"displayName": "Experimental",
-					"name": "experimental",
-					"type": "collection",
-					"default": {},
-					"description": "Experimental toggles. Subject to change.",
-					"placeholder": "Add Option",
-					"options": [
-						{
-							"displayName": "Enable TSR",
-							"name": "enableTsr",
-							"type": "boolean",
-							"default": false,
-							"description": "Fast-mode TSR option (only meaningful with turbo)."
-						},
-						{
-							"displayName": "Optimize Texture Seams",
-							"name": "optimizeTextureSeams",
-							"type": "boolean",
-							"default": false,
-							"description": "Fast-mode texture-seam optimization (only meaningful with turbo)."
-						},
-						{
-							"displayName": "Turbo",
-							"name": "turbo",
-							"type": "boolean",
-							"default": false,
-							"description": "Turbo (fast) mode."
-						}
-					]
-				},
-				{
-					"displayName": "Geometry Resolution",
-					"name": "geometryResolution",
-					"type": "options",
-					"default": "standard",
-					"description": "Geometry detail tier, preview stage only. `2k` is equivalent to the deprecated `ultra_mode: true`. Requires `meshy-7.1` or `latest`. Either Ultra tier adds 5 credits and requires account entitlement.",
-					"options": [
-						{
-							"name": "2k",
-							"value": "2k"
-						},
-						{
-							"name": "4k",
-							"value": "4k"
-						},
-						{
-							"name": "standard",
-							"value": "standard"
-						}
-					]
-				},
-				{
-					"displayName": "Model Type",
-					"name": "modelType",
-					"type": "options",
-					"default": "standard",
-					"description": "Pipeline. `smart-topology` implies the meshy-t2 model family (`meshy-t2.5` by default, or `meshy-t2`).",
-					"options": [
-						{
-							"name": "smart-topology",
-							"value": "smart-topology"
-						},
-						{
-							"name": "standard",
-							"value": "standard"
-						}
-					]
-				},
-				{
-					"displayName": "Moderation",
-					"name": "moderation",
-					"type": "boolean",
-					"default": false,
-					"description": "Run content moderation."
-				},
-				{
-					"displayName": "Name",
-					"name": "name",
-					"type": "string",
-					"default": "",
-					"description": "Task name."
-				},
-				{
-					"displayName": "Origin At",
-					"name": "originAt",
-					"type": "options",
-					"default": "bottom",
-					"description": "Where to place the model origin.",
-					"options": [
-						{
-							"name": "bottom",
-							"value": "bottom"
-						},
-						{
-							"name": "center",
-							"value": "center"
-						}
-					]
-				},
-				{
-					"displayName": "Pose Mode",
-					"name": "poseMode",
-					"type": "options",
-					"default": "a-pose",
-					"description": "Force a rest pose for characters.",
-					"options": [
-						{
-							"name": "a-pose",
-							"value": "a-pose"
-						},
-						{
-							"name": "t-pose",
-							"value": "t-pose"
-						}
-					]
-				},
-				{
-					"displayName": "Remove Lighting",
-					"name": "removeLighting",
-					"type": "boolean",
-					"default": false,
-					"description": "Remove baked lighting from textures."
-				},
-				{
-					"displayName": "Seed",
-					"name": "seed",
-					"type": "number",
-					"default": 0,
-					"description": "RNG seed; randomized when 0.",
-					"typeOptions": {
-						"minValue": 0
-					}
-				},
-				{
-					"displayName": "Should Remesh",
-					"name": "shouldRemesh",
-					"type": "boolean",
-					"default": false,
-					"description": "Remesh after the draft stage. Default depends on model."
-				},
-				{
-					"displayName": "Should Texture",
-					"name": "shouldTexture",
-					"type": "boolean",
-					"default": false,
-					"description": "Not generally available yet: ignored unless the one-call textured path is enabled for your account. Use `mode: preview`, then `mode: refine`."
-				},
-				{
-					"displayName": "Target Formats",
-					"name": "targetFormats",
-					"type": "multiOptions",
-					"default": [],
-					"description": "Additional export formats.",
-					"options": [
-						{
-							"name": "3mf",
-							"value": "3mf"
-						},
-						{
-							"name": "fbx",
-							"value": "fbx"
-						},
-						{
-							"name": "glb",
-							"value": "glb"
-						},
-						{
-							"name": "obj",
-							"value": "obj"
-						},
-						{
-							"name": "stl",
-							"value": "stl"
-						},
-						{
-							"name": "usdz",
-							"value": "usdz"
-						}
-					]
-				},
-				{
-					"displayName": "Target Polycount",
-					"name": "targetPolycount",
-					"type": "number",
-					"default": 100,
-					"description": "Target polygon count. Defaults to 30000. Smart Topology models use their own range and default: meshy-t2 accepts 100 to 15000 (default 4000); meshy-t2.5 accepts 100 to 30000 (default 15000).",
-					"typeOptions": {
-						"minValue": 100,
-						"maxValue": 300000
-					}
-				},
-				{
-					"displayName": "Texture Image URL",
-					"name": "textureImageUrl",
-					"type": "string",
-					"default": "",
-					"description": "Texture reference image URL."
-				},
-				{
-					"displayName": "Texture Prompt",
-					"name": "texturePrompt",
-					"type": "string",
-					"default": "",
-					"description": "Texture description.",
-					"typeOptions": {
-						"rows": 3
-					}
-				},
-				{
-					"displayName": "Texture Resolution",
-					"name": "textureResolution",
-					"type": "options",
-					"default": "2k",
-					"description": "Texture resolution tier. Only valid when mode=refine.",
-					"options": [
-						{
-							"name": "2k",
-							"value": "2k"
-						},
-						{
-							"name": "4k",
-							"value": "4k"
-						},
-						{
-							"name": "8k",
-							"value": "8k"
-						}
-					]
-				},
-				{
-					"displayName": "Topology",
-					"name": "topology",
-					"type": "options",
-					"default": "triangle",
-					"description": "Output mesh topology. `quad` is not supported for meshy-t2 or meshy-t2.5.",
-					"options": [
-						{
-							"name": "quad",
-							"value": "quad"
-						},
-						{
-							"name": "triangle",
-							"value": "triangle"
-						}
-					]
-				}
-			]
-		}
-	],
-	"imageTo3d": [
+		},
 		{
-			"displayName": "AI Model",
-			"name": "aiModel",
-			"type": "options",
-			"default": "latest",
-			"description": "Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.",
-			"options": [
+			displayName: 'Custom AI Model',
+			name: 'customAiModel',
+			type: 'string',
+			required: true,
+			default: '',
+			placeholder: 'e.g. meshy-7.1',
+			description: 'Any model name Meshy accepts',
+			displayOptions: {
+				show: {
+					resource: ['textTo3d'],
+					operation: ['create'],
+					aiModel: ['__custom'],
+				},
+			},
+		},
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['textTo3d'],
+					operation: ['create'],
+				},
+			},
+			options: [
 				{
-					"name": "latest",
-					"value": "latest"
+					displayName: 'Alpha Thumbnail',
+					name: 'alphaThumbnail',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to also make a preview image with a transparent background',
 				},
 				{
-					"name": "meshy-6",
-					"value": "meshy-6"
+					displayName: 'Auto Size',
+					name: 'autoSize',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to auto-estimate real-world size',
 				},
 				{
-					"name": "meshy-6-lite",
-					"value": "meshy-6-lite"
+					displayName: 'Decimation Mode',
+					name: 'decimationMode',
+					type: 'options',
+					default: 1,
+					description: 'Decimation algorithm selector',
+					options: [
+						{
+							name: '1',
+							value: 1,
+						},
+						{
+							name: '2',
+							value: 2,
+						},
+						{
+							name: '3',
+							value: 3,
+						},
+						{
+							name: '4',
+							value: 4,
+						},
+					],
 				},
 				{
-					"name": "meshy-7",
-					"value": "meshy-7"
+					displayName: 'Enable PBR',
+					name: 'enablePbr',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to produce PBR texture maps',
 				},
 				{
-					"name": "meshy-7.1",
-					"value": "meshy-7.1"
+					displayName: 'Experimental',
+					name: 'experimental',
+					type: 'collection',
+					default: {},
+					description: 'Experimental toggles. Subject to change.',
+					placeholder: 'Add Option',
+					options: [
+						{
+							displayName: 'Enable TSR',
+							name: 'enableTsr',
+							type: 'boolean',
+							default: false,
+							description:
+								'Whether to use the fast-mode TSR option. Only has an effect with turbo.',
+						},
+						{
+							displayName: 'Optimize Texture Seams',
+							name: 'optimizeTextureSeams',
+							type: 'boolean',
+							default: false,
+							description:
+								'Whether to optimize texture seams in fast mode. Only has an effect with turbo.',
+						},
+						{
+							displayName: 'Turbo',
+							name: 'turbo',
+							type: 'boolean',
+							default: false,
+							description: 'Whether to use turbo (fast) mode',
+						},
+					],
 				},
 				{
-					"name": "meshy-t2",
-					"value": "meshy-t2"
+					displayName: 'Geometry Resolution',
+					name: 'geometryResolution',
+					type: 'options',
+					default: 'standard',
+					description:
+						'Geometry detail tier, preview stage only. `2k` is equivalent to the deprecated `ultra_mode: true`. Requires `meshy-7.1` or `latest`. Either Ultra tier adds 5 credits and requires account entitlement.',
+					options: [
+						{
+							name: '2k',
+							value: '2k',
+						},
+						{
+							name: '4k',
+							value: '4k',
+						},
+						{
+							name: 'Standard',
+							value: 'standard',
+						},
+					],
 				},
 				{
-					"name": "meshy-t2.5",
-					"value": "meshy-t2.5"
+					displayName: 'Model Type',
+					name: 'modelType',
+					type: 'options',
+					default: 'standard',
+					description:
+						'Pipeline. `smart-topology` implies the meshy-t2 model family (`meshy-t2.5` by default, or `meshy-t2`).',
+					options: [
+						{
+							name: 'Smart-Topology',
+							value: 'smart-topology',
+						},
+						{
+							name: 'Standard',
+							value: 'standard',
+						},
+					],
 				},
 				{
-					"name": "Custom",
-					"value": "__custom"
-				}
+					displayName: 'Moderation',
+					name: 'moderation',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to run content moderation',
+				},
+				{
+					displayName: 'Name',
+					name: 'name',
+					type: 'string',
+					default: '',
+					description: 'Task name',
+				},
+				{
+					displayName: 'Origin At',
+					name: 'originAt',
+					type: 'options',
+					default: 'bottom',
+					description: 'Where to place the model origin',
+					options: [
+						{
+							name: 'Bottom',
+							value: 'bottom',
+						},
+						{
+							name: 'Center',
+							value: 'center',
+						},
+					],
+				},
+				{
+					displayName: 'Pose Mode',
+					name: 'poseMode',
+					type: 'options',
+					default: 'a-pose',
+					description: 'Force a rest pose for characters',
+					options: [
+						{
+							name: 'A-Pose',
+							value: 'a-pose',
+						},
+						{
+							name: 'T-Pose',
+							value: 't-pose',
+						},
+					],
+				},
+				{
+					displayName: 'Remove Lighting',
+					name: 'removeLighting',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to remove baked lighting from textures',
+				},
+				{
+					displayName: 'Seed',
+					name: 'seed',
+					type: 'number',
+					default: 0,
+					description: 'RNG seed; randomized when 0',
+					typeOptions: {
+						minValue: 0,
+					},
+				},
+				{
+					displayName: 'Should Remesh',
+					name: 'shouldRemesh',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to remesh after the draft stage. Default depends on model.',
+				},
+				{
+					displayName: 'Should Texture',
+					name: 'shouldTexture',
+					type: 'boolean',
+					default: false,
+					description:
+						'Whether to not generally available yet: ignored unless the one-call textured path is enabled for your account. Use `mode: preview`, then `mode: refine`.',
+				},
+				{
+					displayName: 'Target Formats',
+					name: 'targetFormats',
+					type: 'multiOptions',
+					default: [],
+					description: 'Additional export formats',
+					options: [
+						{
+							name: '3mf',
+							value: '3mf',
+						},
+						{
+							name: 'Fbx',
+							value: 'fbx',
+						},
+						{
+							name: 'Glb',
+							value: 'glb',
+						},
+						{
+							name: 'Obj',
+							value: 'obj',
+						},
+						{
+							name: 'Stl',
+							value: 'stl',
+						},
+						{
+							name: 'Usdz',
+							value: 'usdz',
+						},
+					],
+				},
+				{
+					displayName: 'Target Polycount',
+					name: 'targetPolycount',
+					type: 'number',
+					default: 100,
+					description:
+						'Target polygon count. Defaults to 30000. Smart Topology models use their own range and default: meshy-t2 accepts 100 to 15000 (default 4000); meshy-t2.5 accepts 100 to 30000 (default 15000).',
+					typeOptions: {
+						minValue: 100,
+						maxValue: 300000,
+					},
+				},
+				{
+					displayName: 'Texture Image URL',
+					name: 'textureImageUrl',
+					type: 'string',
+					default: '',
+					description: 'Texture reference image URL',
+				},
+				{
+					displayName: 'Texture Prompt',
+					name: 'texturePrompt',
+					type: 'string',
+					default: '',
+					description: 'Texture description',
+					typeOptions: {
+						rows: 3,
+					},
+				},
+				{
+					displayName: 'Texture Resolution',
+					name: 'textureResolution',
+					type: 'options',
+					default: '2k',
+					description: 'Texture resolution tier. Only valid when mode=refine.',
+					options: [
+						{
+							name: '2k',
+							value: '2k',
+						},
+						{
+							name: '4k',
+							value: '4k',
+						},
+						{
+							name: '8k',
+							value: '8k',
+						},
+					],
+				},
+				{
+					displayName: 'Topology',
+					name: 'topology',
+					type: 'options',
+					default: 'triangle',
+					description: 'Output mesh topology. `quad` is not supported for meshy-t2 or meshy-t2.5.',
+					options: [
+						{
+							name: 'Quad',
+							value: 'quad',
+						},
+						{
+							name: 'Triangle',
+							value: 'triangle',
+						},
+					],
+				},
 			],
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"imageTo3d"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
 		},
-		{
-			"displayName": "Custom AI Model",
-			"name": "customAiModel",
-			"type": "string",
-			"required": true,
-			"default": "",
-			"placeholder": "e.g. meshy-7.1",
-			"description": "Any model name Meshy accepts",
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"imageTo3d"
-					],
-					"operation": [
-						"create"
-					],
-					"aiModel": [
-						"__custom"
-					]
-				}
-			}
-		},
-		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"imageTo3d"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			},
-			"options": [
-				{
-					"displayName": "Alpha Thumbnail",
-					"name": "alphaThumbnail",
-					"type": "boolean",
-					"default": false,
-					"description": "Opt in to a transparent-background preview."
-				},
-				{
-					"displayName": "Auto Size",
-					"name": "autoSize",
-					"type": "boolean",
-					"default": false,
-					"description": "Auto-estimate real-world size."
-				},
-				{
-					"displayName": "Decimation Mode",
-					"name": "decimationMode",
-					"type": "options",
-					"default": 1,
-					"description": "Decimation algorithm selector.",
-					"options": [
-						{
-							"name": "1",
-							"value": 1
-						},
-						{
-							"name": "2",
-							"value": 2
-						},
-						{
-							"name": "3",
-							"value": 3
-						},
-						{
-							"name": "4",
-							"value": 4
-						}
-					]
-				},
-				{
-					"displayName": "Enable PBR",
-					"name": "enablePbr",
-					"type": "boolean",
-					"default": false,
-					"description": "Produce PBR texture maps."
-				},
-				{
-					"displayName": "Experimental",
-					"name": "experimental",
-					"type": "collection",
-					"default": {},
-					"description": "Experimental toggles. Subject to change.",
-					"placeholder": "Add Option",
-					"options": [
-						{
-							"displayName": "Enable TSR",
-							"name": "enableTsr",
-							"type": "boolean",
-							"default": false,
-							"description": "Fast-mode TSR option (only meaningful with turbo)."
-						},
-						{
-							"displayName": "Optimize Texture Seams",
-							"name": "optimizeTextureSeams",
-							"type": "boolean",
-							"default": false,
-							"description": "Fast-mode texture-seam optimization (only meaningful with turbo)."
-						},
-						{
-							"displayName": "Turbo",
-							"name": "turbo",
-							"type": "boolean",
-							"default": false,
-							"description": "Turbo (fast) mode."
-						}
-					]
-				},
-				{
-					"displayName": "Geometry Resolution",
-					"name": "geometryResolution",
-					"type": "options",
-					"default": "standard",
-					"description": "Geometry detail tier. `2k` is equivalent to the deprecated `ultra_mode: true`. Requires `meshy-7.1` or `latest`. Either Ultra tier adds 5 credits and requires account entitlement.",
-					"options": [
-						{
-							"name": "2k",
-							"value": "2k"
-						},
-						{
-							"name": "4k",
-							"value": "4k"
-						},
-						{
-							"name": "standard",
-							"value": "standard"
-						}
-					]
-				},
-				{
-					"displayName": "Image Enhancement",
-					"name": "imageEnhancement",
-					"type": "boolean",
-					"default": false,
-					"description": "Enhance the input image. Not supported under smart-topology."
-				},
-				{
-					"displayName": "Model Type",
-					"name": "modelType",
-					"type": "options",
-					"default": "standard",
-					"description": "Pipeline selector. `smart-topology` implies the meshy-t2 model family (`meshy-t2.5` by default, or `meshy-t2`).",
-					"options": [
-						{
-							"name": "smart-topology",
-							"value": "smart-topology"
-						},
-						{
-							"name": "standard",
-							"value": "standard"
-						}
-					]
-				},
-				{
-					"displayName": "Moderation",
-					"name": "moderation",
-					"type": "boolean",
-					"default": false,
-					"description": "Run content moderation."
-				},
-				{
-					"displayName": "Multi View Thumbnails",
-					"name": "multiViewThumbnails",
-					"type": "boolean",
-					"default": false,
-					"description": "Render front/right/back/left thumbnails (single image only)."
-				},
-				{
-					"displayName": "Name",
-					"name": "name",
-					"type": "string",
-					"default": "",
-					"description": "Task name."
-				},
-				{
-					"displayName": "Origin At",
-					"name": "originAt",
-					"type": "options",
-					"default": "bottom",
-					"description": "Where to place the model origin.",
-					"options": [
-						{
-							"name": "bottom",
-							"value": "bottom"
-						},
-						{
-							"name": "center",
-							"value": "center"
-						}
-					]
-				},
-				{
-					"displayName": "Pose Mode",
-					"name": "poseMode",
-					"type": "options",
-					"default": "a-pose",
-					"description": "Force a rest pose for characters.",
-					"options": [
-						{
-							"name": "a-pose",
-							"value": "a-pose"
-						},
-						{
-							"name": "t-pose",
-							"value": "t-pose"
-						}
-					]
-				},
-				{
-					"displayName": "Remove Lighting",
-					"name": "removeLighting",
-					"type": "boolean",
-					"default": false,
-					"description": "Remove baked lighting. Not supported under smart-topology."
-				},
-				{
-					"displayName": "Save Pre Remeshed Model",
-					"name": "savePreRemeshedModel",
-					"type": "boolean",
-					"default": false,
-					"description": "Also return the pre-remesh model."
-				},
-				{
-					"displayName": "Should Remesh",
-					"name": "shouldRemesh",
-					"type": "boolean",
-					"default": false,
-					"description": "Remesh after the draft stage. Default depends on model."
-				},
-				{
-					"displayName": "Should Texture",
-					"name": "shouldTexture",
-					"type": "boolean",
-					"default": true,
-					"description": "Run the texture stage."
-				},
-				{
-					"displayName": "Target Formats",
-					"name": "targetFormats",
-					"type": "multiOptions",
-					"default": [],
-					"description": "Additional export formats.",
-					"options": [
-						{
-							"name": "3mf",
-							"value": "3mf"
-						},
-						{
-							"name": "fbx",
-							"value": "fbx"
-						},
-						{
-							"name": "glb",
-							"value": "glb"
-						},
-						{
-							"name": "obj",
-							"value": "obj"
-						},
-						{
-							"name": "stl",
-							"value": "stl"
-						},
-						{
-							"name": "usdz",
-							"value": "usdz"
-						}
-					]
-				},
-				{
-					"displayName": "Target Polycount",
-					"name": "targetPolycount",
-					"type": "number",
-					"default": 100,
-					"description": "Target polygon count. Defaults to 30000. Smart Topology models use their own range and default: meshy-t2 accepts 100 to 15000 (default 4000); meshy-t2.5 accepts 100 to 30000 (default 15000).",
-					"typeOptions": {
-						"minValue": 100,
-						"maxValue": 300000
-					}
-				},
-				{
-					"displayName": "Texture Image URL",
-					"name": "textureImageUrl",
-					"type": "string",
-					"default": "",
-					"description": "Texture reference image URL."
-				},
-				{
-					"displayName": "Texture Model",
-					"name": "textureModel",
-					"type": "options",
-					"default": "meshy-6",
-					"description": "Texture model, in the same task. Omitted means the `ai_model`'s default: `meshy-7` for `meshy-7.1`, `latest`, `meshy-7`, `meshy-t2` and `meshy-t2.5`; `meshy-6` for `meshy-6`; `meshy-6-lite` for `meshy-6-lite`. Sending the default is a no-op.",
-					"options": [
-						{
-							"name": "meshy-6",
-							"value": "meshy-6"
-						},
-						{
-							"name": "meshy-6-lite",
-							"value": "meshy-6-lite"
-						},
-						{
-							"name": "meshy-7",
-							"value": "meshy-7"
-						},
-						{
-							"name": "meshy-n1",
-							"value": "meshy-n1"
-						}
-					]
-				},
-				{
-					"displayName": "Texture Prompt",
-					"name": "texturePrompt",
-					"type": "string",
-					"default": "",
-					"description": "Texture description.",
-					"typeOptions": {
-						"rows": 3
-					}
-				},
-				{
-					"displayName": "Texture Resolution",
-					"name": "textureResolution",
-					"type": "options",
-					"default": "2k",
-					"description": "Texture resolution tier.",
-					"options": [
-						{
-							"name": "2k",
-							"value": "2k"
-						},
-						{
-							"name": "4k",
-							"value": "4k"
-						},
-						{
-							"name": "8k",
-							"value": "8k"
-						}
-					]
-				},
-				{
-					"displayName": "Topology",
-					"name": "topology",
-					"type": "options",
-					"default": "triangle",
-					"description": "Output mesh topology. `quad` is not supported for meshy-t2 or meshy-t2.5.",
-					"options": [
-						{
-							"name": "quad",
-							"value": "quad"
-						},
-						{
-							"name": "triangle",
-							"value": "triangle"
-						}
-					]
-				}
-			]
-		}
 	],
-	"multiImageTo3d": [
+	imageTo3d: [
 		{
-			"displayName": "AI Model",
-			"name": "aiModel",
-			"type": "options",
-			"default": "latest",
-			"description": "Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.",
-			"options": [
+			displayName: 'AI Model',
+			name: 'aiModel',
+			type: 'options',
+			default: 'latest',
+			description:
+				'Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.',
+			options: [
 				{
-					"name": "latest",
-					"value": "latest"
+					name: 'Custom',
+					value: '__custom',
 				},
 				{
-					"name": "meshy-6",
-					"value": "meshy-6"
+					name: 'Latest',
+					value: 'latest',
 				},
 				{
-					"name": "meshy-6-lite",
-					"value": "meshy-6-lite"
+					name: 'Meshy-6',
+					value: 'meshy-6',
 				},
 				{
-					"name": "meshy-7",
-					"value": "meshy-7"
+					name: 'Meshy-6-Lite',
+					value: 'meshy-6-lite',
 				},
 				{
-					"name": "meshy-7.1",
-					"value": "meshy-7.1"
+					name: 'Meshy-7',
+					value: 'meshy-7',
 				},
 				{
-					"name": "Custom",
-					"value": "__custom"
-				}
+					name: 'Meshy-7.1',
+					value: 'meshy-7.1',
+				},
+				{
+					name: 'Meshy-T2',
+					value: 'meshy-t2',
+				},
+				{
+					name: 'Meshy-t2.5',
+					value: 'meshy-t2.5',
+				},
 			],
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"multiImageTo3d"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
-		},
-		{
-			"displayName": "Custom AI Model",
-			"name": "customAiModel",
-			"type": "string",
-			"required": true,
-			"default": "",
-			"placeholder": "e.g. meshy-7.1",
-			"description": "Any model name Meshy accepts",
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"multiImageTo3d"
-					],
-					"operation": [
-						"create"
-					],
-					"aiModel": [
-						"__custom"
-					]
-				}
-			}
-		},
-		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"multiImageTo3d"
-					],
-					"operation": [
-						"create"
-					]
-				}
+			displayOptions: {
+				show: {
+					resource: ['imageTo3d'],
+					operation: ['create'],
+				},
 			},
-			"options": [
-				{
-					"displayName": "Alpha Thumbnail",
-					"name": "alphaThumbnail",
-					"type": "boolean",
-					"default": false,
-					"description": "Opt in to a transparent-background preview."
-				},
-				{
-					"displayName": "Auto Size",
-					"name": "autoSize",
-					"type": "boolean",
-					"default": false,
-					"description": "Auto-estimate real-world size."
-				},
-				{
-					"displayName": "Decimation Mode",
-					"name": "decimationMode",
-					"type": "options",
-					"default": 1,
-					"description": "Decimation algorithm selector.",
-					"options": [
-						{
-							"name": "1",
-							"value": 1
-						},
-						{
-							"name": "2",
-							"value": 2
-						},
-						{
-							"name": "3",
-							"value": 3
-						},
-						{
-							"name": "4",
-							"value": 4
-						}
-					]
-				},
-				{
-					"displayName": "Enable PBR",
-					"name": "enablePbr",
-					"type": "boolean",
-					"default": false,
-					"description": "Produce PBR texture maps."
-				},
-				{
-					"displayName": "Geometry Resolution",
-					"name": "geometryResolution",
-					"type": "options",
-					"default": "standard",
-					"description": "Geometry detail tier. `2k` is equivalent to the deprecated `ultra_mode: true` and adds 5 credits (requires entitlement). Requires `meshy-7.1` or `latest`.",
-					"options": [
-						{
-							"name": "2k",
-							"value": "2k"
-						},
-						{
-							"name": "standard",
-							"value": "standard"
-						}
-					]
-				},
-				{
-					"displayName": "Image Enhancement",
-					"name": "imageEnhancement",
-					"type": "boolean",
-					"default": false,
-					"description": "Enhance the input images."
-				},
-				{
-					"displayName": "Moderation",
-					"name": "moderation",
-					"type": "boolean",
-					"default": false,
-					"description": "Run content moderation."
-				},
-				{
-					"displayName": "Multi View Thumbnails",
-					"name": "multiViewThumbnails",
-					"type": "boolean",
-					"default": false,
-					"description": "Render front/right/back/left thumbnails."
-				},
-				{
-					"displayName": "Name",
-					"name": "name",
-					"type": "string",
-					"default": "",
-					"description": "Task name."
-				},
-				{
-					"displayName": "Origin At",
-					"name": "originAt",
-					"type": "options",
-					"default": "bottom",
-					"description": "Where to place the model origin.",
-					"options": [
-						{
-							"name": "bottom",
-							"value": "bottom"
-						},
-						{
-							"name": "center",
-							"value": "center"
-						}
-					]
-				},
-				{
-					"displayName": "Pose Mode",
-					"name": "poseMode",
-					"type": "options",
-					"default": "a-pose",
-					"description": "Force a rest pose for characters.",
-					"options": [
-						{
-							"name": "a-pose",
-							"value": "a-pose"
-						},
-						{
-							"name": "t-pose",
-							"value": "t-pose"
-						}
-					]
-				},
-				{
-					"displayName": "Remove Lighting",
-					"name": "removeLighting",
-					"type": "boolean",
-					"default": false,
-					"description": "Remove baked lighting."
-				},
-				{
-					"displayName": "Save Pre Remeshed Model",
-					"name": "savePreRemeshedModel",
-					"type": "boolean",
-					"default": false,
-					"description": "Also return the pre-remesh model."
-				},
-				{
-					"displayName": "Should Remesh",
-					"name": "shouldRemesh",
-					"type": "boolean",
-					"default": false,
-					"description": "Remesh after the draft stage. Default depends on model."
-				},
-				{
-					"displayName": "Should Texture",
-					"name": "shouldTexture",
-					"type": "boolean",
-					"default": true,
-					"description": "Run the texture stage."
-				},
-				{
-					"displayName": "Target Formats",
-					"name": "targetFormats",
-					"type": "multiOptions",
-					"default": [],
-					"description": "Additional export formats.",
-					"options": [
-						{
-							"name": "3mf",
-							"value": "3mf"
-						},
-						{
-							"name": "fbx",
-							"value": "fbx"
-						},
-						{
-							"name": "glb",
-							"value": "glb"
-						},
-						{
-							"name": "obj",
-							"value": "obj"
-						},
-						{
-							"name": "stl",
-							"value": "stl"
-						},
-						{
-							"name": "usdz",
-							"value": "usdz"
-						}
-					]
-				},
-				{
-					"displayName": "Target Polycount",
-					"name": "targetPolycount",
-					"type": "number",
-					"default": 30000,
-					"description": "Target polygon count.",
-					"typeOptions": {
-						"minValue": 100,
-						"maxValue": 300000
-					}
-				},
-				{
-					"displayName": "Texture Image URL",
-					"name": "textureImageUrl",
-					"type": "string",
-					"default": "",
-					"description": "Single texture reference. Mutually exclusive with texture_prompt and texture_image_urls."
-				},
-				{
-					"displayName": "Texture Image URLs",
-					"name": "textureImageUrls",
-					"type": "string",
-					"default": "",
-					"description": "1-4 texture reference views (primary first). Requires should_texture and the Meshy 7 or Meshy N1 texture model: an `ai_model` of `meshy-7.1`, `latest` or `meshy-7`, or `texture_model` `meshy-7` or `meshy-n1`. Mutually exclusive with texture_image_url/texture_prompt. Separate several values with commas."
-				},
-				{
-					"displayName": "Texture Model",
-					"name": "textureModel",
-					"type": "options",
-					"default": "meshy-7",
-					"description": "Texture model, in the same task. Only the multi-view texture models, `meshy-7` and `meshy-n1`, each with every `ai_model`; a textured request with `meshy-6` or `meshy-6-lite` returns 400.",
-					"options": [
-						{
-							"name": "meshy-7",
-							"value": "meshy-7"
-						},
-						{
-							"name": "meshy-n1",
-							"value": "meshy-n1"
-						}
-					]
-				},
-				{
-					"displayName": "Texture Prompt",
-					"name": "texturePrompt",
-					"type": "string",
-					"default": "",
-					"description": "Texture description. Mutually exclusive with texture_image_url(s).",
-					"typeOptions": {
-						"rows": 3
-					}
-				},
-				{
-					"displayName": "Texture Resolution",
-					"name": "textureResolution",
-					"type": "options",
-					"default": "2k",
-					"description": "Texture resolution tier.",
-					"options": [
-						{
-							"name": "2k",
-							"value": "2k"
-						},
-						{
-							"name": "4k",
-							"value": "4k"
-						},
-						{
-							"name": "8k",
-							"value": "8k"
-						}
-					]
-				},
-				{
-					"displayName": "Topology",
-					"name": "topology",
-					"type": "options",
-					"default": "triangle",
-					"description": "Output mesh topology.",
-					"options": [
-						{
-							"name": "quad",
-							"value": "quad"
-						},
-						{
-							"name": "triangle",
-							"value": "triangle"
-						}
-					]
-				}
-			]
-		}
-	],
-	"retexture": [
-		{
-			"displayName": "Text Style Prompt",
-			"name": "textStylePrompt",
-			"type": "string",
-			"default": "",
-			"description": "Text style description. Mutually exclusive with multiview_image_urls.",
-			"typeOptions": {
-				"rows": 3
-			},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"retexture"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
 		},
 		{
-			"displayName": "AI Model",
-			"name": "aiModel",
-			"type": "options",
-			"default": "latest",
-			"description": "Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.",
-			"options": [
+			displayName: 'Custom AI Model',
+			name: 'customAiModel',
+			type: 'string',
+			required: true,
+			default: '',
+			placeholder: 'e.g. meshy-7.1',
+			description: 'Any model name Meshy accepts',
+			displayOptions: {
+				show: {
+					resource: ['imageTo3d'],
+					operation: ['create'],
+					aiModel: ['__custom'],
+				},
+			},
+		},
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['imageTo3d'],
+					operation: ['create'],
+				},
+			},
+			options: [
 				{
-					"name": "latest",
-					"value": "latest"
+					displayName: 'Alpha Thumbnail',
+					name: 'alphaThumbnail',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to also make a preview image with a transparent background',
 				},
 				{
-					"name": "meshy-6",
-					"value": "meshy-6"
+					displayName: 'Auto Size',
+					name: 'autoSize',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to auto-estimate real-world size',
 				},
 				{
-					"name": "meshy-6-lite",
-					"value": "meshy-6-lite"
+					displayName: 'Decimation Mode',
+					name: 'decimationMode',
+					type: 'options',
+					default: 1,
+					description: 'Decimation algorithm selector',
+					options: [
+						{
+							name: '1',
+							value: 1,
+						},
+						{
+							name: '2',
+							value: 2,
+						},
+						{
+							name: '3',
+							value: 3,
+						},
+						{
+							name: '4',
+							value: 4,
+						},
+					],
 				},
 				{
-					"name": "meshy-7",
-					"value": "meshy-7"
+					displayName: 'Enable PBR',
+					name: 'enablePbr',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to produce PBR texture maps',
 				},
 				{
-					"name": "meshy-n1",
-					"value": "meshy-n1"
+					displayName: 'Experimental',
+					name: 'experimental',
+					type: 'collection',
+					default: {},
+					description: 'Experimental toggles. Subject to change.',
+					placeholder: 'Add Option',
+					options: [
+						{
+							displayName: 'Enable TSR',
+							name: 'enableTsr',
+							type: 'boolean',
+							default: false,
+							description:
+								'Whether to use the fast-mode TSR option. Only has an effect with turbo.',
+						},
+						{
+							displayName: 'Optimize Texture Seams',
+							name: 'optimizeTextureSeams',
+							type: 'boolean',
+							default: false,
+							description:
+								'Whether to optimize texture seams in fast mode. Only has an effect with turbo.',
+						},
+						{
+							displayName: 'Turbo',
+							name: 'turbo',
+							type: 'boolean',
+							default: false,
+							description: 'Whether to use turbo (fast) mode',
+						},
+					],
 				},
 				{
-					"name": "Custom",
-					"value": "__custom"
-				}
+					displayName: 'Geometry Resolution',
+					name: 'geometryResolution',
+					type: 'options',
+					default: 'standard',
+					description:
+						'Geometry detail tier. `2k` is equivalent to the deprecated `ultra_mode: true`. Requires `meshy-7.1` or `latest`. Either Ultra tier adds 5 credits and requires account entitlement.',
+					options: [
+						{
+							name: '2k',
+							value: '2k',
+						},
+						{
+							name: '4k',
+							value: '4k',
+						},
+						{
+							name: 'Standard',
+							value: 'standard',
+						},
+					],
+				},
+				{
+					displayName: 'Image Enhancement',
+					name: 'imageEnhancement',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to enhance the input image. Not supported under smart-topology.',
+				},
+				{
+					displayName: 'Model Type',
+					name: 'modelType',
+					type: 'options',
+					default: 'standard',
+					description:
+						'Pipeline selector. `smart-topology` implies the meshy-t2 model family (`meshy-t2.5` by default, or `meshy-t2`).',
+					options: [
+						{
+							name: 'Smart-Topology',
+							value: 'smart-topology',
+						},
+						{
+							name: 'Standard',
+							value: 'standard',
+						},
+					],
+				},
+				{
+					displayName: 'Moderation',
+					name: 'moderation',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to run content moderation',
+				},
+				{
+					displayName: 'Multi View Thumbnails',
+					name: 'multiViewThumbnails',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to render front/right/back/left thumbnails (single image only)',
+				},
+				{
+					displayName: 'Name',
+					name: 'name',
+					type: 'string',
+					default: '',
+					description: 'Task name',
+				},
+				{
+					displayName: 'Origin At',
+					name: 'originAt',
+					type: 'options',
+					default: 'bottom',
+					description: 'Where to place the model origin',
+					options: [
+						{
+							name: 'Bottom',
+							value: 'bottom',
+						},
+						{
+							name: 'Center',
+							value: 'center',
+						},
+					],
+				},
+				{
+					displayName: 'Pose Mode',
+					name: 'poseMode',
+					type: 'options',
+					default: 'a-pose',
+					description: 'Force a rest pose for characters',
+					options: [
+						{
+							name: 'A-Pose',
+							value: 'a-pose',
+						},
+						{
+							name: 'T-Pose',
+							value: 't-pose',
+						},
+					],
+				},
+				{
+					displayName: 'Remove Lighting',
+					name: 'removeLighting',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to remove baked lighting. Not supported under smart-topology.',
+				},
+				{
+					displayName: 'Save Pre Remeshed Model',
+					name: 'savePreRemeshedModel',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to also return the pre-remesh model',
+				},
+				{
+					displayName: 'Should Remesh',
+					name: 'shouldRemesh',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to remesh after the draft stage. Default depends on model.',
+				},
+				{
+					displayName: 'Should Texture',
+					name: 'shouldTexture',
+					type: 'boolean',
+					default: true,
+					description: 'Whether to run the texture stage',
+				},
+				{
+					displayName: 'Target Formats',
+					name: 'targetFormats',
+					type: 'multiOptions',
+					default: [],
+					description: 'Additional export formats',
+					options: [
+						{
+							name: '3mf',
+							value: '3mf',
+						},
+						{
+							name: 'Fbx',
+							value: 'fbx',
+						},
+						{
+							name: 'Glb',
+							value: 'glb',
+						},
+						{
+							name: 'Obj',
+							value: 'obj',
+						},
+						{
+							name: 'Stl',
+							value: 'stl',
+						},
+						{
+							name: 'Usdz',
+							value: 'usdz',
+						},
+					],
+				},
+				{
+					displayName: 'Target Polycount',
+					name: 'targetPolycount',
+					type: 'number',
+					default: 100,
+					description:
+						'Target polygon count. Defaults to 30000. Smart Topology models use their own range and default: meshy-t2 accepts 100 to 15000 (default 4000); meshy-t2.5 accepts 100 to 30000 (default 15000).',
+					typeOptions: {
+						minValue: 100,
+						maxValue: 300000,
+					},
+				},
+				{
+					displayName: 'Texture Image URL',
+					name: 'textureImageUrl',
+					type: 'string',
+					default: '',
+					description: 'Texture reference image URL',
+				},
+				{
+					displayName: 'Texture Model',
+					name: 'textureModel',
+					type: 'options',
+					default: 'meshy-6',
+					description:
+						"Texture model, in the same task. Omitted means the `ai_model`'s default: `meshy-7` for `meshy-7.1`, `latest`, `meshy-7`, `meshy-t2` and `meshy-t2.5`; `meshy-6` for `meshy-6`; `meshy-6-lite` for `meshy-6-lite`. Sending the default is a no-op.",
+					options: [
+						{
+							name: 'Meshy-6',
+							value: 'meshy-6',
+						},
+						{
+							name: 'Meshy-6-Lite',
+							value: 'meshy-6-lite',
+						},
+						{
+							name: 'Meshy-7',
+							value: 'meshy-7',
+						},
+						{
+							name: 'Meshy-N1',
+							value: 'meshy-n1',
+						},
+					],
+				},
+				{
+					displayName: 'Texture Prompt',
+					name: 'texturePrompt',
+					type: 'string',
+					default: '',
+					description: 'Texture description',
+					typeOptions: {
+						rows: 3,
+					},
+				},
+				{
+					displayName: 'Texture Resolution',
+					name: 'textureResolution',
+					type: 'options',
+					default: '2k',
+					description: 'Texture resolution tier',
+					options: [
+						{
+							name: '2k',
+							value: '2k',
+						},
+						{
+							name: '4k',
+							value: '4k',
+						},
+						{
+							name: '8k',
+							value: '8k',
+						},
+					],
+				},
+				{
+					displayName: 'Topology',
+					name: 'topology',
+					type: 'options',
+					default: 'triangle',
+					description: 'Output mesh topology. `quad` is not supported for meshy-t2 or meshy-t2.5.',
+					options: [
+						{
+							name: 'Quad',
+							value: 'quad',
+						},
+						{
+							name: 'Triangle',
+							value: 'triangle',
+						},
+					],
+				},
 			],
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"retexture"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
 		},
-		{
-			"displayName": "Custom AI Model",
-			"name": "customAiModel",
-			"type": "string",
-			"required": true,
-			"default": "",
-			"placeholder": "e.g. meshy-7.1",
-			"description": "Any model name Meshy accepts",
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"retexture"
-					],
-					"operation": [
-						"create"
-					],
-					"aiModel": [
-						"__custom"
-					]
-				}
-			}
-		},
-		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"retexture"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			},
-			"options": [
-				{
-					"displayName": "Alpha Thumbnail",
-					"name": "alphaThumbnail",
-					"type": "boolean",
-					"default": false,
-					"description": "Opt in to a transparent-background preview."
-				},
-				{
-					"displayName": "Art Style",
-					"name": "artStyle",
-					"type": "options",
-					"default": "realistic",
-					"description": "Art style.",
-					"options": [
-						{
-							"name": "cartoon",
-							"value": "cartoon"
-						},
-						{
-							"name": "realistic",
-							"value": "realistic"
-						}
-					]
-				},
-				{
-					"displayName": "Enable Original UV",
-					"name": "enableOriginalUv",
-					"type": "boolean",
-					"default": false,
-					"description": "Reuse the source mesh UVs."
-				},
-				{
-					"displayName": "Enable PBR",
-					"name": "enablePbr",
-					"type": "boolean",
-					"default": false,
-					"description": "Produce PBR texture maps. `true` with `meshy-n1` returns 400."
-				},
-				{
-					"displayName": "Image Style URL",
-					"name": "imageStyleUrl",
-					"type": "string",
-					"default": "",
-					"description": "Style reference image, at least 32 pixels on each side. Mutually exclusive with multiview_image_urls."
-				},
-				{
-					"displayName": "Multiview Image URLs",
-					"name": "multiviewImageUrls",
-					"type": "string",
-					"default": "",
-					"description": "1-4 views of the same object (primary first). Requires an explicit `ai_model` of `meshy-7` or `meshy-n1`. Mutually exclusive with the prompt/style-image inputs. Separate several values with commas."
-				},
-				{
-					"displayName": "Remove Lighting",
-					"name": "removeLighting",
-					"type": "boolean",
-					"default": false,
-					"description": "Remove baked lighting (model-dependent support)."
-				},
-				{
-					"displayName": "Target Formats",
-					"name": "targetFormats",
-					"type": "multiOptions",
-					"default": [],
-					"description": "Additional export formats.",
-					"options": [
-						{
-							"name": "3mf",
-							"value": "3mf"
-						},
-						{
-							"name": "fbx",
-							"value": "fbx"
-						},
-						{
-							"name": "glb",
-							"value": "glb"
-						},
-						{
-							"name": "obj",
-							"value": "obj"
-						},
-						{
-							"name": "stl",
-							"value": "stl"
-						},
-						{
-							"name": "usdz",
-							"value": "usdz"
-						}
-					]
-				},
-				{
-					"displayName": "Texture Resolution",
-					"name": "textureResolution",
-					"type": "options",
-					"default": "2k",
-					"description": "Texture resolution tier (defaults to 2k). `4k` and `8k` aren't available with `meshy-6-lite` or `meshy-n1` and return 400.",
-					"options": [
-						{
-							"name": "2k",
-							"value": "2k"
-						},
-						{
-							"name": "4k",
-							"value": "4k"
-						},
-						{
-							"name": "8k",
-							"value": "8k"
-						}
-					]
-				}
-			]
-		}
 	],
-	"remesh": [
+	multiImageTo3d: [
 		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"remesh"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			},
-			"options": [
+			displayName: 'AI Model',
+			name: 'aiModel',
+			type: 'options',
+			default: 'latest',
+			description:
+				'Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.',
+			options: [
 				{
-					"displayName": "Alpha Thumbnail",
-					"name": "alphaThumbnail",
-					"type": "boolean",
-					"default": false,
-					"description": "Opt in to a transparent-background preview."
+					name: 'Custom',
+					value: '__custom',
 				},
 				{
-					"displayName": "Auto Size",
-					"name": "autoSize",
-					"type": "boolean",
-					"default": false,
-					"description": "Auto-estimate real-world size. Mutually exclusive with resize_height."
+					name: 'Latest',
+					value: 'latest',
 				},
 				{
-					"displayName": "Convert Format Only",
-					"name": "convertFormatOnly",
-					"type": "boolean",
-					"default": false,
-					"description": "Only re-export formats (no remesh). When true, sizing/topology/polycount are ignored."
+					name: 'Meshy-6',
+					value: 'meshy-6',
 				},
 				{
-					"displayName": "Decimation Mode",
-					"name": "decimationMode",
-					"type": "options",
-					"default": 1,
-					"description": "Decimation algorithm selector.",
-					"options": [
-						{
-							"name": "1",
-							"value": 1
-						},
-						{
-							"name": "2",
-							"value": 2
-						},
-						{
-							"name": "3",
-							"value": 3
-						},
-						{
-							"name": "4",
-							"value": 4
-						}
-					]
+					name: 'Meshy-6-Lite',
+					value: 'meshy-6-lite',
 				},
 				{
-					"displayName": "Origin At",
-					"name": "originAt",
-					"type": "options",
-					"default": "bottom",
-					"description": "Where to place the model origin.",
-					"options": [
-						{
-							"name": "bottom",
-							"value": "bottom"
-						},
-						{
-							"name": "center",
-							"value": "center"
-						}
-					]
+					name: 'Meshy-7',
+					value: 'meshy-7',
 				},
 				{
-					"displayName": "Resize Height",
-					"name": "resizeHeight",
-					"type": "number",
-					"default": 0,
-					"description": "Target height (meters). Mutually exclusive with resize_longest_side and auto_size.",
-					"typeOptions": {
-						"numberPrecision": 2
-					}
+					name: 'Meshy-7.1',
+					value: 'meshy-7.1',
 				},
-				{
-					"displayName": "Resize Longest Side",
-					"name": "resizeLongestSide",
-					"type": "number",
-					"default": 0,
-					"description": "Target longest side (meters). Mutually exclusive with the other sizing options.",
-					"typeOptions": {
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Target Formats",
-					"name": "targetFormats",
-					"type": "multiOptions",
-					"default": [],
-					"description": "Output formats. Defaults to [\"glb\"].",
-					"options": [
-						{
-							"name": "3mf",
-							"value": "3mf"
-						},
-						{
-							"name": "blend",
-							"value": "blend"
-						},
-						{
-							"name": "fbx",
-							"value": "fbx"
-						},
-						{
-							"name": "glb",
-							"value": "glb"
-						},
-						{
-							"name": "obj",
-							"value": "obj"
-						},
-						{
-							"name": "stl",
-							"value": "stl"
-						},
-						{
-							"name": "usdz",
-							"value": "usdz"
-						}
-					]
-				},
-				{
-					"displayName": "Target Polycount",
-					"name": "targetPolycount",
-					"type": "number",
-					"default": 30000,
-					"description": "Target polygon count.",
-					"typeOptions": {
-						"minValue": 100,
-						"maxValue": 300000
-					}
-				},
-				{
-					"displayName": "Topology",
-					"name": "topology",
-					"type": "options",
-					"default": "triangle",
-					"description": "Output mesh topology.",
-					"options": [
-						{
-							"name": "quad",
-							"value": "quad"
-						},
-						{
-							"name": "triangle",
-							"value": "triangle"
-						}
-					]
-				}
-			]
-		}
-	],
-	"convert": [
-		{
-			"displayName": "Target Formats",
-			"name": "targetFormats",
-			"type": "multiOptions",
-			"default": [],
-			"description": "Output formats (at least one).",
-			"options": [
-				{
-					"name": "3mf",
-					"value": "3mf"
-				},
-				{
-					"name": "blend",
-					"value": "blend"
-				},
-				{
-					"name": "fbx",
-					"value": "fbx"
-				},
-				{
-					"name": "glb",
-					"value": "glb"
-				},
-				{
-					"name": "obj",
-					"value": "obj"
-				},
-				{
-					"name": "stl",
-					"value": "stl"
-				},
-				{
-					"name": "usdz",
-					"value": "usdz"
-				}
 			],
-			"required": true,
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"convert"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
-		}
-	],
-	"resize": [
-		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"resize"
-					],
-					"operation": [
-						"create"
-					]
-				}
+			displayOptions: {
+				show: {
+					resource: ['multiImageTo3d'],
+					operation: ['create'],
+				},
 			},
-			"options": [
-				{
-					"displayName": "Auto Size",
-					"name": "autoSize",
-					"type": "boolean",
-					"default": false,
-					"description": "Auto-estimate real-world size."
-				},
-				{
-					"displayName": "Origin At",
-					"name": "originAt",
-					"type": "options",
-					"default": "bottom",
-					"description": "Where to place the model origin.",
-					"options": [
-						{
-							"name": "bottom",
-							"value": "bottom"
-						},
-						{
-							"name": "center",
-							"value": "center"
-						}
-					]
-				},
-				{
-					"displayName": "Resize Height",
-					"name": "resizeHeight",
-					"type": "number",
-					"default": 0,
-					"description": "Target height (meters). Mutually exclusive with auto_size.",
-					"typeOptions": {
-						"minValue": 0,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Resize Longest Side",
-					"name": "resizeLongestSide",
-					"type": "number",
-					"default": 0,
-					"description": "Target longest side (meters). Mutually exclusive with the other sizing options.",
-					"typeOptions": {
-						"minValue": 0,
-						"numberPrecision": 2
-					}
-				}
-			]
-		}
-	],
-	"uvUnwrap": [],
-	"rigging": [
-		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"rigging"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			},
-			"options": [
-				{
-					"displayName": "Animation Type",
-					"name": "animationType",
-					"type": "options",
-					"default": "biped",
-					"description": "The kind of character to rig: `biped` (a humanoid) or `quadruped` (a four-legged animal). A quadruped rig takes no `skeleton_template` or `include_fingers: true` (each returns 400).",
-					"options": [
-						{
-							"name": "biped",
-							"value": "biped"
-						},
-						{
-							"name": "quadruped",
-							"value": "quadruped"
-						}
-					]
-				},
-				{
-					"displayName": "Height Meters",
-					"name": "heightMeters",
-					"type": "number",
-					"default": 0,
-					"description": "The model's height in meters. Meshy scales the rigged model to this height. Biped rig: defaults to 1.7. Quadruped rig: no default; without it, or with 0, the animal keeps its own size. A negative value returns 400.",
-					"typeOptions": {
-						"minValue": 0,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Include Fingers",
-					"name": "includeFingers",
-					"type": "boolean",
-					"default": false,
-					"description": "Whether to add finger bones to a biped character's hands. `true` with a quadruped rig, `texture_image_url`, or a quad-topology input task returns 400."
-				},
-				{
-					"displayName": "Name",
-					"name": "name",
-					"type": "string",
-					"default": "",
-					"description": "Task name."
-				},
-				{
-					"displayName": "Skeleton Template",
-					"name": "skeletonTemplate",
-					"type": "options",
-					"default": "meshyrig",
-					"description": "Skeleton to deliver the biped rig on. Sending it with a quadruped rig returns 400.",
-					"options": [
-						{
-							"name": "blender_rigify_basic_human",
-							"value": "blender_rigify_basic_human"
-						},
-						{
-							"name": "cc5_hd_neutral_base",
-							"value": "cc5_hd_neutral_base"
-						},
-						{
-							"name": "daz_genesis9",
-							"value": "daz_genesis9"
-						},
-						{
-							"name": "max_biped",
-							"value": "max_biped"
-						},
-						{
-							"name": "maya_human_ik",
-							"value": "maya_human_ik"
-						},
-						{
-							"name": "meshyrig",
-							"value": "meshyrig"
-						},
-						{
-							"name": "mixamo",
-							"value": "mixamo"
-						},
-						{
-							"name": "ue5_mannequin",
-							"value": "ue5_mannequin"
-						},
-						{
-							"name": "unity_humanoid",
-							"value": "unity_humanoid"
-						}
-					]
-				}
-			]
-		}
-	],
-	"animation": [
-		{
-			"displayName": "Rig Task ID",
-			"name": "rigTaskId",
-			"type": "string",
-			"default": "",
-			"description": "A completed Rigging task ID.",
-			"required": true,
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"animation"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
 		},
 		{
-			"displayName": "Action ID",
-			"name": "actionId",
-			"type": "number",
-			"default": 0,
-			"description": "Library animation to apply. Use the Get Library operation to list IDs. Ignored when Action IDs or Motion Task ID is set.",
-			"typeOptions": {
-				"minValue": 0,
-				"maxValue": 32767
+			displayName: 'Custom AI Model',
+			name: 'customAiModel',
+			type: 'string',
+			required: true,
+			default: '',
+			placeholder: 'e.g. meshy-7.1',
+			description: 'Any model name Meshy accepts',
+			displayOptions: {
+				show: {
+					resource: ['multiImageTo3d'],
+					operation: ['create'],
+					aiModel: ['__custom'],
+				},
 			},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"animation"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
 		},
 		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"animation"
-					],
-					"operation": [
-						"create"
-					]
-				}
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['multiImageTo3d'],
+					operation: ['create'],
+				},
 			},
-			"options": [
+			options: [
 				{
-					"displayName": "Action IDs",
-					"name": "actionIds",
-					"type": "string",
-					"default": "",
-					"description": "Several animations to apply at once, returned as a single file with one clip per action, in the order given here. Costs 3 credits per action. Valid IDs are data-driven; see the Animation Library at https://docs.meshy.ai/en/api/animation-library. Each animation's `rig_type` must match the rig; another returns 400. Separate several values with commas."
+					displayName: 'Alpha Thumbnail',
+					name: 'alphaThumbnail',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to also make a preview image with a transparent background',
 				},
 				{
-					"displayName": "Motion Task ID",
-					"name": "motionTaskId",
-					"type": "string",
-					"default": "",
-					"description": "ID of a SUCCEEDED Text to Motion task you own, whose clip to apply instead of a library animation. The rig must be a biped. Meshy keeps the clip for 3 days; an expired clip returns 404."
+					displayName: 'Auto Size',
+					name: 'autoSize',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to auto-estimate real-world size',
 				},
 				{
-					"displayName": "Name",
-					"name": "name",
-					"type": "string",
-					"default": "",
-					"description": "Task name."
-				},
-				{
-					"displayName": "Post Process",
-					"name": "postProcess",
-					"type": "collection",
-					"default": {},
-					"description": "Optional post-processing. Applies to the merged file when action_ids is used.",
-					"placeholder": "Add Option",
-					"options": [
+					displayName: 'Decimation Mode',
+					name: 'decimationMode',
+					type: 'options',
+					default: 1,
+					description: 'Decimation algorithm selector',
+					options: [
 						{
-							"displayName": "FPS",
-							"name": "fps",
-							"type": "options",
-							"default": 30,
-							"description": "Frame rate for change_fps.",
-							"options": [
+							name: '1',
+							value: 1,
+						},
+						{
+							name: '2',
+							value: 2,
+						},
+						{
+							name: '3',
+							value: 3,
+						},
+						{
+							name: '4',
+							value: 4,
+						},
+					],
+				},
+				{
+					displayName: 'Enable PBR',
+					name: 'enablePbr',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to produce PBR texture maps',
+				},
+				{
+					displayName: 'Geometry Resolution',
+					name: 'geometryResolution',
+					type: 'options',
+					default: 'standard',
+					description:
+						'Geometry detail tier. `2k` is equivalent to the deprecated `ultra_mode: true` and adds 5 credits (requires entitlement). Requires `meshy-7.1` or `latest`.',
+					options: [
+						{
+							name: '2k',
+							value: '2k',
+						},
+						{
+							name: 'Standard',
+							value: 'standard',
+						},
+					],
+				},
+				{
+					displayName: 'Image Enhancement',
+					name: 'imageEnhancement',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to enhance the input images',
+				},
+				{
+					displayName: 'Moderation',
+					name: 'moderation',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to run content moderation',
+				},
+				{
+					displayName: 'Multi View Thumbnails',
+					name: 'multiViewThumbnails',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to render front/right/back/left thumbnails',
+				},
+				{
+					displayName: 'Name',
+					name: 'name',
+					type: 'string',
+					default: '',
+					description: 'Task name',
+				},
+				{
+					displayName: 'Origin At',
+					name: 'originAt',
+					type: 'options',
+					default: 'bottom',
+					description: 'Where to place the model origin',
+					options: [
+						{
+							name: 'Bottom',
+							value: 'bottom',
+						},
+						{
+							name: 'Center',
+							value: 'center',
+						},
+					],
+				},
+				{
+					displayName: 'Pose Mode',
+					name: 'poseMode',
+					type: 'options',
+					default: 'a-pose',
+					description: 'Force a rest pose for characters',
+					options: [
+						{
+							name: 'A-Pose',
+							value: 'a-pose',
+						},
+						{
+							name: 'T-Pose',
+							value: 't-pose',
+						},
+					],
+				},
+				{
+					displayName: 'Remove Lighting',
+					name: 'removeLighting',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to remove baked lighting',
+				},
+				{
+					displayName: 'Save Pre Remeshed Model',
+					name: 'savePreRemeshedModel',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to also return the pre-remesh model',
+				},
+				{
+					displayName: 'Should Remesh',
+					name: 'shouldRemesh',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to remesh after the draft stage. Default depends on model.',
+				},
+				{
+					displayName: 'Should Texture',
+					name: 'shouldTexture',
+					type: 'boolean',
+					default: true,
+					description: 'Whether to run the texture stage',
+				},
+				{
+					displayName: 'Target Formats',
+					name: 'targetFormats',
+					type: 'multiOptions',
+					default: [],
+					description: 'Additional export formats',
+					options: [
+						{
+							name: '3mf',
+							value: '3mf',
+						},
+						{
+							name: 'Fbx',
+							value: 'fbx',
+						},
+						{
+							name: 'Glb',
+							value: 'glb',
+						},
+						{
+							name: 'Obj',
+							value: 'obj',
+						},
+						{
+							name: 'Stl',
+							value: 'stl',
+						},
+						{
+							name: 'Usdz',
+							value: 'usdz',
+						},
+					],
+				},
+				{
+					displayName: 'Target Polycount',
+					name: 'targetPolycount',
+					type: 'number',
+					default: 30000,
+					description: 'Target polygon count',
+					typeOptions: {
+						minValue: 100,
+						maxValue: 300000,
+					},
+				},
+				{
+					displayName: 'Texture Image URL',
+					name: 'textureImageUrl',
+					type: 'string',
+					default: '',
+					description:
+						'Single texture reference. Mutually exclusive with texture_prompt and texture_image_urls.',
+				},
+				{
+					displayName: 'Texture Image URLs',
+					name: 'textureImageUrls',
+					type: 'string',
+					default: '',
+					description:
+						'1-4 texture reference views (primary first). Requires should_texture and the Meshy 7 or Meshy N1 texture model: an `ai_model` of `meshy-7.1`, `latest` or `meshy-7`, or `texture_model` `meshy-7` or `meshy-n1`. Mutually exclusive with texture_image_url/texture_prompt. Separate several values with commas.',
+				},
+				{
+					displayName: 'Texture Model',
+					name: 'textureModel',
+					type: 'options',
+					default: 'meshy-7',
+					description:
+						'Texture model, in the same task. Only the multi-view texture models, `meshy-7` and `meshy-n1`, each with every `ai_model`; a textured request with `meshy-6` or `meshy-6-lite` returns 400.',
+					options: [
+						{
+							name: 'Meshy-7',
+							value: 'meshy-7',
+						},
+						{
+							name: 'Meshy-N1',
+							value: 'meshy-n1',
+						},
+					],
+				},
+				{
+					displayName: 'Texture Prompt',
+					name: 'texturePrompt',
+					type: 'string',
+					default: '',
+					description: 'Texture description. Mutually exclusive with texture_image_url(s).',
+					typeOptions: {
+						rows: 3,
+					},
+				},
+				{
+					displayName: 'Texture Resolution',
+					name: 'textureResolution',
+					type: 'options',
+					default: '2k',
+					description: 'Texture resolution tier',
+					options: [
+						{
+							name: '2k',
+							value: '2k',
+						},
+						{
+							name: '4k',
+							value: '4k',
+						},
+						{
+							name: '8k',
+							value: '8k',
+						},
+					],
+				},
+				{
+					displayName: 'Topology',
+					name: 'topology',
+					type: 'options',
+					default: 'triangle',
+					description: 'Output mesh topology',
+					options: [
+						{
+							name: 'Quad',
+							value: 'quad',
+						},
+						{
+							name: 'Triangle',
+							value: 'triangle',
+						},
+					],
+				},
+			],
+		},
+	],
+	retexture: [
+		{
+			displayName: 'Text Style Prompt',
+			name: 'textStylePrompt',
+			type: 'string',
+			default: '',
+			description: 'Text style description. Mutually exclusive with multiview_image_urls.',
+			typeOptions: {
+				rows: 3,
+			},
+			displayOptions: {
+				show: {
+					resource: ['retexture'],
+					operation: ['create'],
+				},
+			},
+		},
+		{
+			displayName: 'AI Model',
+			name: 'aiModel',
+			type: 'options',
+			default: 'latest',
+			description:
+				'Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.',
+			options: [
+				{
+					name: 'Custom',
+					value: '__custom',
+				},
+				{
+					name: 'Latest',
+					value: 'latest',
+				},
+				{
+					name: 'Meshy-6',
+					value: 'meshy-6',
+				},
+				{
+					name: 'Meshy-6-Lite',
+					value: 'meshy-6-lite',
+				},
+				{
+					name: 'Meshy-7',
+					value: 'meshy-7',
+				},
+				{
+					name: 'Meshy-N1',
+					value: 'meshy-n1',
+				},
+			],
+			displayOptions: {
+				show: {
+					resource: ['retexture'],
+					operation: ['create'],
+				},
+			},
+		},
+		{
+			displayName: 'Custom AI Model',
+			name: 'customAiModel',
+			type: 'string',
+			required: true,
+			default: '',
+			placeholder: 'e.g. meshy-7.1',
+			description: 'Any model name Meshy accepts',
+			displayOptions: {
+				show: {
+					resource: ['retexture'],
+					operation: ['create'],
+					aiModel: ['__custom'],
+				},
+			},
+		},
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['retexture'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					displayName: 'Alpha Thumbnail',
+					name: 'alphaThumbnail',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to also make a preview image with a transparent background',
+				},
+				{
+					displayName: 'Art Style',
+					name: 'artStyle',
+					type: 'options',
+					default: 'realistic',
+					options: [
+						{
+							name: 'Cartoon',
+							value: 'cartoon',
+						},
+						{
+							name: 'Realistic',
+							value: 'realistic',
+						},
+					],
+				},
+				{
+					displayName: 'Enable Original UV',
+					name: 'enableOriginalUv',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to reuse the source mesh UVs',
+				},
+				{
+					displayName: 'Enable PBR',
+					name: 'enablePbr',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to produce PBR texture maps. `true` with `meshy-n1` returns 400.',
+				},
+				{
+					displayName: 'Image Style URL',
+					name: 'imageStyleUrl',
+					type: 'string',
+					default: '',
+					description:
+						'Style reference image, at least 32 pixels on each side. Mutually exclusive with multiview_image_urls.',
+				},
+				{
+					displayName: 'Multiview Image URLs',
+					name: 'multiviewImageUrls',
+					type: 'string',
+					default: '',
+					description:
+						'1-4 views of the same object (primary first). Requires an explicit `ai_model` of `meshy-7` or `meshy-n1`. Mutually exclusive with the prompt/style-image inputs. Separate several values with commas.',
+				},
+				{
+					displayName: 'Remove Lighting',
+					name: 'removeLighting',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to remove baked lighting (model-dependent support)',
+				},
+				{
+					displayName: 'Target Formats',
+					name: 'targetFormats',
+					type: 'multiOptions',
+					default: [],
+					description: 'Additional export formats',
+					options: [
+						{
+							name: '3mf',
+							value: '3mf',
+						},
+						{
+							name: 'Fbx',
+							value: 'fbx',
+						},
+						{
+							name: 'Glb',
+							value: 'glb',
+						},
+						{
+							name: 'Obj',
+							value: 'obj',
+						},
+						{
+							name: 'Stl',
+							value: 'stl',
+						},
+						{
+							name: 'Usdz',
+							value: 'usdz',
+						},
+					],
+				},
+				{
+					displayName: 'Texture Resolution',
+					name: 'textureResolution',
+					type: 'options',
+					default: '2k',
+					description:
+						"Texture resolution tier (defaults to 2k). `4k` and `8k` aren't available with `meshy-6-lite` or `meshy-n1` and return 400.",
+					options: [
+						{
+							name: '2k',
+							value: '2k',
+						},
+						{
+							name: '4k',
+							value: '4k',
+						},
+						{
+							name: '8k',
+							value: '8k',
+						},
+					],
+				},
+			],
+		},
+	],
+	remesh: [
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['remesh'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					displayName: 'Alpha Thumbnail',
+					name: 'alphaThumbnail',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to also make a preview image with a transparent background',
+				},
+				{
+					displayName: 'Auto Size',
+					name: 'autoSize',
+					type: 'boolean',
+					default: false,
+					description:
+						'Whether to auto-estimate real-world size. Mutually exclusive with resize_height.',
+				},
+				{
+					displayName: 'Convert Format Only',
+					name: 'convertFormatOnly',
+					type: 'boolean',
+					default: false,
+					description:
+						'Whether to only re-export formats (no remesh). When true, sizing/topology/polycount are ignored.',
+				},
+				{
+					displayName: 'Decimation Mode',
+					name: 'decimationMode',
+					type: 'options',
+					default: 1,
+					description: 'Decimation algorithm selector',
+					options: [
+						{
+							name: '1',
+							value: 1,
+						},
+						{
+							name: '2',
+							value: 2,
+						},
+						{
+							name: '3',
+							value: 3,
+						},
+						{
+							name: '4',
+							value: 4,
+						},
+					],
+				},
+				{
+					displayName: 'Origin At',
+					name: 'originAt',
+					type: 'options',
+					default: 'bottom',
+					description: 'Where to place the model origin',
+					options: [
+						{
+							name: 'Bottom',
+							value: 'bottom',
+						},
+						{
+							name: 'Center',
+							value: 'center',
+						},
+					],
+				},
+				{
+					displayName: 'Resize Height',
+					name: 'resizeHeight',
+					type: 'number',
+					default: 0,
+					description:
+						'Target height (meters). Mutually exclusive with resize_longest_side and auto_size.',
+					typeOptions: {
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Resize Longest Side',
+					name: 'resizeLongestSide',
+					type: 'number',
+					default: 0,
+					description:
+						'Target longest side (meters). Mutually exclusive with the other sizing options.',
+					typeOptions: {
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Target Formats',
+					name: 'targetFormats',
+					type: 'multiOptions',
+					default: [],
+					description: 'Output formats. Defaults to ["glb"].',
+					options: [
+						{
+							name: '3mf',
+							value: '3mf',
+						},
+						{
+							name: 'Blend',
+							value: 'blend',
+						},
+						{
+							name: 'Fbx',
+							value: 'fbx',
+						},
+						{
+							name: 'Glb',
+							value: 'glb',
+						},
+						{
+							name: 'Obj',
+							value: 'obj',
+						},
+						{
+							name: 'Stl',
+							value: 'stl',
+						},
+						{
+							name: 'Usdz',
+							value: 'usdz',
+						},
+					],
+				},
+				{
+					displayName: 'Target Polycount',
+					name: 'targetPolycount',
+					type: 'number',
+					default: 30000,
+					description: 'Target polygon count',
+					typeOptions: {
+						minValue: 100,
+						maxValue: 300000,
+					},
+				},
+				{
+					displayName: 'Topology',
+					name: 'topology',
+					type: 'options',
+					default: 'triangle',
+					description: 'Output mesh topology',
+					options: [
+						{
+							name: 'Quad',
+							value: 'quad',
+						},
+						{
+							name: 'Triangle',
+							value: 'triangle',
+						},
+					],
+				},
+			],
+		},
+	],
+	convert: [
+		{
+			displayName: 'Target Formats',
+			name: 'targetFormats',
+			type: 'multiOptions',
+			default: [],
+			description: 'Output formats (at least one)',
+			options: [
+				{
+					name: '3mf',
+					value: '3mf',
+				},
+				{
+					name: 'Blend',
+					value: 'blend',
+				},
+				{
+					name: 'Fbx',
+					value: 'fbx',
+				},
+				{
+					name: 'Glb',
+					value: 'glb',
+				},
+				{
+					name: 'Obj',
+					value: 'obj',
+				},
+				{
+					name: 'Stl',
+					value: 'stl',
+				},
+				{
+					name: 'Usdz',
+					value: 'usdz',
+				},
+			],
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['convert'],
+					operation: ['create'],
+				},
+			},
+		},
+	],
+	resize: [
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['resize'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					displayName: 'Auto Size',
+					name: 'autoSize',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to auto-estimate real-world size',
+				},
+				{
+					displayName: 'Origin At',
+					name: 'originAt',
+					type: 'options',
+					default: 'bottom',
+					description: 'Where to place the model origin',
+					options: [
+						{
+							name: 'Bottom',
+							value: 'bottom',
+						},
+						{
+							name: 'Center',
+							value: 'center',
+						},
+					],
+				},
+				{
+					displayName: 'Resize Height',
+					name: 'resizeHeight',
+					type: 'number',
+					default: 0,
+					description: 'Target height (meters). Mutually exclusive with auto_size.',
+					typeOptions: {
+						minValue: 0,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Resize Longest Side',
+					name: 'resizeLongestSide',
+					type: 'number',
+					default: 0,
+					description:
+						'Target longest side (meters). Mutually exclusive with the other sizing options.',
+					typeOptions: {
+						minValue: 0,
+						numberPrecision: 2,
+					},
+				},
+			],
+		},
+	],
+	uvUnwrap: [],
+	rigging: [
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['rigging'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					displayName: 'Animation Type',
+					name: 'animationType',
+					type: 'options',
+					default: 'biped',
+					description:
+						'The kind of character to rig: `biped` (a humanoid) or `quadruped` (a four-legged animal). A quadruped rig takes no `skeleton_template` or `include_fingers: true` (each returns 400).',
+					options: [
+						{
+							name: 'Biped',
+							value: 'biped',
+						},
+						{
+							name: 'Quadruped',
+							value: 'quadruped',
+						},
+					],
+				},
+				{
+					displayName: 'Height Meters',
+					name: 'heightMeters',
+					type: 'number',
+					default: 0,
+					description:
+						"The model's height in meters. Meshy scales the rigged model to this height. Biped rig: defaults to 1.7. Quadruped rig: no default; without it, or with 0, the animal keeps its own size. A negative value returns 400.",
+					typeOptions: {
+						minValue: 0,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Include Fingers',
+					name: 'includeFingers',
+					type: 'boolean',
+					default: false,
+					description:
+						"Whether to whether to add finger bones to a biped character's hands. `true` with a quadruped rig, `texture_image_url`, or a quad-topology input task returns 400.",
+				},
+				{
+					displayName: 'Name',
+					name: 'name',
+					type: 'string',
+					default: '',
+					description: 'Task name',
+				},
+				{
+					displayName: 'Skeleton Template',
+					name: 'skeletonTemplate',
+					type: 'options',
+					default: 'meshyrig',
+					description:
+						'Skeleton to deliver the biped rig on. Sending it with a quadruped rig returns 400.',
+					options: [
+						{
+							name: 'Blender_rigify_basic_human',
+							value: 'blender_rigify_basic_human',
+						},
+						{
+							name: 'Cc5_hd_neutral_base',
+							value: 'cc5_hd_neutral_base',
+						},
+						{
+							name: 'Daz_genesis9',
+							value: 'daz_genesis9',
+						},
+						{
+							name: 'Max_biped',
+							value: 'max_biped',
+						},
+						{
+							name: 'Maya_human_ik',
+							value: 'maya_human_ik',
+						},
+						{
+							name: 'Meshyrig',
+							value: 'meshyrig',
+						},
+						{
+							name: 'Mixamo',
+							value: 'mixamo',
+						},
+						{
+							name: 'Ue5_mannequin',
+							value: 'ue5_mannequin',
+						},
+						{
+							name: 'Unity_humanoid',
+							value: 'unity_humanoid',
+						},
+					],
+				},
+			],
+		},
+	],
+	animation: [
+		{
+			displayName: 'Rig Task ID',
+			name: 'rigTaskId',
+			type: 'string',
+			default: '',
+			description: 'A completed Rigging task ID',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['animation'],
+					operation: ['create'],
+				},
+			},
+		},
+		{
+			displayName: 'Action ID',
+			name: 'actionId',
+			type: 'number',
+			default: 0,
+			description:
+				'Library animation to apply. Use the Get Library operation to list IDs. Ignored when Action IDs or Motion Task ID is set.',
+			typeOptions: {
+				minValue: 0,
+				maxValue: 32767,
+			},
+			displayOptions: {
+				show: {
+					resource: ['animation'],
+					operation: ['create'],
+				},
+			},
+		},
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['animation'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					displayName: 'Action IDs',
+					name: 'actionIds',
+					type: 'string',
+					default: '',
+					description:
+						"Several animations to apply at once, returned as a single file with one clip per action, in the order given here. Costs 3 credits per action. Valid IDs are data-driven; see the Animation Library at https://docs.meshy.ai/en/api/animation-library. Each animation's `rig_type` must match the rig; another returns 400. Separate several values with commas.",
+				},
+				{
+					displayName: 'Motion Task ID',
+					name: 'motionTaskId',
+					type: 'string',
+					default: '',
+					description:
+						'ID of a SUCCEEDED Text to Motion task you own, whose clip to apply instead of a library animation. The rig must be a biped. Meshy keeps the clip for 3 days; an expired clip returns 404.',
+				},
+				{
+					displayName: 'Name',
+					name: 'name',
+					type: 'string',
+					default: '',
+					description: 'Task name',
+				},
+				{
+					displayName: 'Post Process',
+					name: 'postProcess',
+					type: 'collection',
+					default: {},
+					description:
+						'Optional post-processing. Applies to the merged file when action_ids is used.',
+					placeholder: 'Add Option',
+					options: [
+						{
+							displayName: 'FPS',
+							name: 'fps',
+							type: 'options',
+							default: 30,
+							description: 'Frame rate for change_fps',
+							options: [
 								{
-									"name": "24",
-									"value": 24
+									name: '24',
+									value: 24,
 								},
 								{
-									"name": "25",
-									"value": 25
+									name: '25',
+									value: 25,
 								},
 								{
-									"name": "30",
-									"value": 30
+									name: '30',
+									value: 30,
 								},
 								{
-									"name": "60",
-									"value": 60
-								}
-							]
+									name: '60',
+									value: 60,
+								},
+							],
 						},
 						{
-							"displayName": "Operation Type",
-							"name": "operationType",
-							"type": "options",
-							"default": "change_fps",
-							"description": "Post-processing operation.",
-							"options": [
+							displayName: 'Operation Type',
+							name: 'operationType',
+							type: 'options',
+							default: 'change_fps',
+							description: 'Post-processing operation',
+							options: [
 								{
-									"name": "change_fps",
-									"value": "change_fps"
+									name: 'Change_fps',
+									value: 'change_fps',
 								},
 								{
-									"name": "extract_armature",
-									"value": "extract_armature"
+									name: 'Extract_armature',
+									value: 'extract_armature',
 								},
 								{
-									"name": "fbx2usdz",
-									"value": "fbx2usdz"
-								}
-							]
-						}
-					]
-				}
-			]
-		}
-	],
-	"textToImage": [
-		{
-			"displayName": "AI Model",
-			"name": "aiModel",
-			"type": "options",
-			"default": "nano-banana",
-			"description": "Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.",
-			"options": [
-				{
-					"name": "gpt-image-2",
-					"value": "gpt-image-2"
+									name: 'Fbx2usdz',
+									value: 'fbx2usdz',
+								},
+							],
+						},
+					],
 				},
-				{
-					"name": "gpt-image-2-5-flare",
-					"value": "gpt-image-2-5-flare"
-				},
-				{
-					"name": "gpt-image-2-5-sunburst",
-					"value": "gpt-image-2-5-sunburst"
-				},
-				{
-					"name": "gpt-image-2-6-flare",
-					"value": "gpt-image-2-6-flare"
-				},
-				{
-					"name": "gpt-image-2-6-sunburst",
-					"value": "gpt-image-2-6-sunburst"
-				},
-				{
-					"name": "nano-banana",
-					"value": "nano-banana"
-				},
-				{
-					"name": "nano-banana-2",
-					"value": "nano-banana-2"
-				},
-				{
-					"name": "nano-banana-2-1",
-					"value": "nano-banana-2-1"
-				},
-				{
-					"name": "nano-banana-2-lite",
-					"value": "nano-banana-2-lite"
-				},
-				{
-					"name": "nano-banana-pro",
-					"value": "nano-banana-pro"
-				},
-				{
-					"name": "Custom",
-					"value": "__custom"
-				}
 			],
-			"required": true,
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"textToImage"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
 		},
-		{
-			"displayName": "Custom AI Model",
-			"name": "customAiModel",
-			"type": "string",
-			"required": true,
-			"default": "",
-			"placeholder": "e.g. meshy-7.1",
-			"description": "Any model name Meshy accepts",
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"textToImage"
-					],
-					"operation": [
-						"create"
-					],
-					"aiModel": [
-						"__custom"
-					]
-				}
-			}
-		},
-		{
-			"displayName": "Prompt",
-			"name": "prompt",
-			"type": "string",
-			"default": "",
-			"description": "Text prompt.",
-			"required": true,
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"textToImage"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
-		},
-		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"textToImage"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			},
-			"options": [
-				{
-					"displayName": "Aspect Ratio",
-					"name": "aspectRatio",
-					"type": "options",
-					"default": "1:1",
-					"description": "Output aspect ratio. Supported values depend on the model (GPT Image models: 1:1,16:9,9:16,4:3,3:4,3:2,2:3; nano-banana family: 1:1,16:9,9:16,4:3,3:4). Cannot be combined with generate_multi_view.",
-					"options": [
-						{
-							"name": "1:1",
-							"value": "1:1"
-						},
-						{
-							"name": "16:9",
-							"value": "16:9"
-						},
-						{
-							"name": "2:3",
-							"value": "2:3"
-						},
-						{
-							"name": "3:2",
-							"value": "3:2"
-						},
-						{
-							"name": "3:4",
-							"value": "3:4"
-						},
-						{
-							"name": "4:3",
-							"value": "4:3"
-						},
-						{
-							"name": "9:16",
-							"value": "9:16"
-						}
-					]
-				},
-				{
-					"displayName": "Generate Multi View",
-					"name": "generateMultiView",
-					"type": "boolean",
-					"default": false,
-					"description": "Produce a 4-view split image instead of a single image."
-				},
-				{
-					"displayName": "Pose Mode",
-					"name": "poseMode",
-					"type": "options",
-					"default": "a-pose",
-					"description": "Force a rest pose (may upgrade the model and require a higher tier).",
-					"options": [
-						{
-							"name": "a-pose",
-							"value": "a-pose"
-						},
-						{
-							"name": "t-pose",
-							"value": "t-pose"
-						}
-					]
-				},
-				{
-					"displayName": "Remove Background",
-					"name": "removeBackground",
-					"type": "boolean",
-					"default": false,
-					"description": "Return a transparent RGBA cutout (single-image only)."
-				}
-			]
-		}
 	],
-	"imageToImage": [
+	textToImage: [
 		{
-			"displayName": "AI Model",
-			"name": "aiModel",
-			"type": "options",
-			"default": "nano-banana",
-			"description": "Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.",
-			"options": [
+			displayName: 'AI Model',
+			name: 'aiModel',
+			type: 'options',
+			default: 'nano-banana',
+			description:
+				'Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.',
+			options: [
 				{
-					"name": "gpt-image-2",
-					"value": "gpt-image-2"
+					name: 'Custom',
+					value: '__custom',
 				},
 				{
-					"name": "gpt-image-2-5-flare",
-					"value": "gpt-image-2-5-flare"
+					name: 'Gpt-Image-2',
+					value: 'gpt-image-2',
 				},
 				{
-					"name": "gpt-image-2-5-sunburst",
-					"value": "gpt-image-2-5-sunburst"
+					name: 'Gpt-Image-2-5-Flare',
+					value: 'gpt-image-2-5-flare',
 				},
 				{
-					"name": "gpt-image-2-6-flare",
-					"value": "gpt-image-2-6-flare"
+					name: 'Gpt-Image-2-5-Sunburst',
+					value: 'gpt-image-2-5-sunburst',
 				},
 				{
-					"name": "gpt-image-2-6-sunburst",
-					"value": "gpt-image-2-6-sunburst"
+					name: 'Gpt-Image-2-6-Flare',
+					value: 'gpt-image-2-6-flare',
 				},
 				{
-					"name": "nano-banana",
-					"value": "nano-banana"
+					name: 'Gpt-Image-2-6-Sunburst',
+					value: 'gpt-image-2-6-sunburst',
 				},
 				{
-					"name": "nano-banana-2",
-					"value": "nano-banana-2"
+					name: 'Nano-Banana',
+					value: 'nano-banana',
 				},
 				{
-					"name": "nano-banana-2-1",
-					"value": "nano-banana-2-1"
+					name: 'Nano-Banana-2',
+					value: 'nano-banana-2',
 				},
 				{
-					"name": "nano-banana-2-lite",
-					"value": "nano-banana-2-lite"
+					name: 'Nano-Banana-2-1',
+					value: 'nano-banana-2-1',
 				},
 				{
-					"name": "nano-banana-pro",
-					"value": "nano-banana-pro"
+					name: 'Nano-Banana-2-Lite',
+					value: 'nano-banana-2-lite',
 				},
 				{
-					"name": "Custom",
-					"value": "__custom"
-				}
+					name: 'Nano-Banana-Pro',
+					value: 'nano-banana-pro',
+				},
 			],
-			"required": true,
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"imageToImage"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['textToImage'],
+					operation: ['create'],
+				},
+			},
 		},
 		{
-			"displayName": "Custom AI Model",
-			"name": "customAiModel",
-			"type": "string",
-			"required": true,
-			"default": "",
-			"placeholder": "e.g. meshy-7.1",
-			"description": "Any model name Meshy accepts",
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"imageToImage"
-					],
-					"operation": [
-						"create"
-					],
-					"aiModel": [
-						"__custom"
-					]
-				}
-			}
+			displayName: 'Custom AI Model',
+			name: 'customAiModel',
+			type: 'string',
+			required: true,
+			default: '',
+			placeholder: 'e.g. meshy-7.1',
+			description: 'Any model name Meshy accepts',
+			displayOptions: {
+				show: {
+					resource: ['textToImage'],
+					operation: ['create'],
+					aiModel: ['__custom'],
+				},
+			},
 		},
 		{
-			"displayName": "Prompt",
-			"name": "prompt",
-			"type": "string",
-			"default": "",
-			"description": "Edit prompt.",
-			"required": true,
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"imageToImage"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
+			displayName: 'Prompt',
+			name: 'prompt',
+			type: 'string',
+			default: '',
+			description: 'Text prompt',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['textToImage'],
+					operation: ['create'],
+				},
+			},
 		},
 		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"imageToImage"
-					],
-					"operation": [
-						"create"
-					]
-				}
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['textToImage'],
+					operation: ['create'],
+				},
 			},
-			"options": [
+			options: [
 				{
-					"displayName": "Aspect Ratio",
-					"name": "aspectRatio",
-					"type": "options",
-					"default": "1:1",
-					"description": "Output aspect ratio (model-dependent; cannot be combined with generate_multi_view).",
-					"options": [
+					displayName: 'Aspect Ratio',
+					name: 'aspectRatio',
+					type: 'options',
+					default: '1:1',
+					description:
+						'Output aspect ratio. Supported values depend on the model (GPT Image models: 1:1,16:9,9:16,4:3,3:4,3:2,2:3; nano-banana family: 1:1,16:9,9:16,4:3,3:4). Cannot be combined with generate_multi_view.',
+					options: [
 						{
-							"name": "1:1",
-							"value": "1:1"
+							name: '1:1',
+							value: '1:1',
 						},
 						{
-							"name": "16:9",
-							"value": "16:9"
+							name: '16:9',
+							value: '16:9',
 						},
 						{
-							"name": "2:3",
-							"value": "2:3"
+							name: '2:3',
+							value: '2:3',
 						},
 						{
-							"name": "3:2",
-							"value": "3:2"
+							name: '3:2',
+							value: '3:2',
 						},
 						{
-							"name": "3:4",
-							"value": "3:4"
+							name: '3:4',
+							value: '3:4',
 						},
 						{
-							"name": "4:3",
-							"value": "4:3"
+							name: '4:3',
+							value: '4:3',
 						},
 						{
-							"name": "9:16",
-							"value": "9:16"
-						}
-					]
-				},
-				{
-					"displayName": "Generate Multi View",
-					"name": "generateMultiView",
-					"type": "boolean",
-					"default": false,
-					"description": "Produce a 4-view split image instead of a single image."
-				},
-				{
-					"displayName": "Remove Background",
-					"name": "removeBackground",
-					"type": "boolean",
-					"default": false,
-					"description": "Return a transparent RGBA cutout (single-image only)."
-				}
-			]
-		}
-	],
-	"printMultiColor": [
-		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"printMultiColor"
+							name: '9:16',
+							value: '9:16',
+						},
 					],
-					"operation": [
-						"create"
-					]
-				}
+				},
+				{
+					displayName: 'Generate Multi View',
+					name: 'generateMultiView',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to produce a 4-view split image instead of a single image',
+				},
+				{
+					displayName: 'Pose Mode',
+					name: 'poseMode',
+					type: 'options',
+					default: 'a-pose',
+					description: 'Force a rest pose (may upgrade the model and require a higher tier)',
+					options: [
+						{
+							name: 'A-Pose',
+							value: 'a-pose',
+						},
+						{
+							name: 'T-Pose',
+							value: 't-pose',
+						},
+					],
+				},
+				{
+					displayName: 'Remove Background',
+					name: 'removeBackground',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to return a transparent RGBA cutout (single-image only)',
+				},
+			],
+		},
+	],
+	imageToImage: [
+		{
+			displayName: 'AI Model',
+			name: 'aiModel',
+			type: 'options',
+			default: 'nano-banana',
+			description:
+				'Model to use. Model names change often, so pick Custom to type any name Meshy accepts. See https://docs.meshy.ai/api/models.',
+			options: [
+				{
+					name: 'Custom',
+					value: '__custom',
+				},
+				{
+					name: 'Gpt-Image-2',
+					value: 'gpt-image-2',
+				},
+				{
+					name: 'Gpt-Image-2-5-Flare',
+					value: 'gpt-image-2-5-flare',
+				},
+				{
+					name: 'Gpt-Image-2-5-Sunburst',
+					value: 'gpt-image-2-5-sunburst',
+				},
+				{
+					name: 'Gpt-Image-2-6-Flare',
+					value: 'gpt-image-2-6-flare',
+				},
+				{
+					name: 'Gpt-Image-2-6-Sunburst',
+					value: 'gpt-image-2-6-sunburst',
+				},
+				{
+					name: 'Nano-Banana',
+					value: 'nano-banana',
+				},
+				{
+					name: 'Nano-Banana-2',
+					value: 'nano-banana-2',
+				},
+				{
+					name: 'Nano-Banana-2-1',
+					value: 'nano-banana-2-1',
+				},
+				{
+					name: 'Nano-Banana-2-Lite',
+					value: 'nano-banana-2-lite',
+				},
+				{
+					name: 'Nano-Banana-Pro',
+					value: 'nano-banana-pro',
+				},
+			],
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['imageToImage'],
+					operation: ['create'],
+				},
 			},
-			"options": [
-				{
-					"displayName": "Max Colors",
-					"name": "maxColors",
-					"type": "number",
-					"default": 4,
-					"description": "Target color count.",
-					"typeOptions": {
-						"minValue": 1,
-						"maxValue": 16
-					}
-				},
-				{
-					"displayName": "Max Depth",
-					"name": "maxDepth",
-					"type": "number",
-					"default": 4,
-					"description": "Quadtree depth (realistic style only).",
-					"typeOptions": {
-						"minValue": 3,
-						"maxValue": 6
-					}
-				},
-				{
-					"displayName": "Printer Brand",
-					"name": "printerBrand",
-					"type": "options",
-					"default": "bambu",
-					"description": "Printer brand whose slicer preset (default printer, 0.4 mm nozzle) is written into the 3MF.",
-					"options": [
-						{
-							"name": "ankermake",
-							"value": "ankermake"
-						},
-						{
-							"name": "anycubic",
-							"value": "anycubic"
-						},
-						{
-							"name": "bambu",
-							"value": "bambu"
-						},
-						{
-							"name": "creality",
-							"value": "creality"
-						},
-						{
-							"name": "elegoo",
-							"value": "elegoo"
-						},
-						{
-							"name": "flashforge",
-							"value": "flashforge"
-						},
-						{
-							"name": "prusa",
-							"value": "prusa"
-						},
-						{
-							"name": "qidi",
-							"value": "qidi"
-						},
-						{
-							"name": "snapmaker",
-							"value": "snapmaker"
-						}
-					]
-				},
-				{
-					"displayName": "Style",
-					"name": "style",
-					"type": "options",
-					"default": "realistic",
-					"description": "Color-placement algorithm.",
-					"options": [
-						{
-							"name": "cartoon",
-							"value": "cartoon"
-						},
-						{
-							"name": "realistic",
-							"value": "realistic"
-						}
-					]
-				}
-			]
-		}
-	],
-	"printSplit": [
-		{
-			"displayName": "Input Task ID",
-			"name": "inputTaskId",
-			"type": "string",
-			"default": "",
-			"description": "Prior task whose model to split. A textured model is accepted; its texture is carried into the result only with keep_texture: true.",
-			"required": true,
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"printSplit"
-					],
-					"operation": [
-						"create"
-					]
-				}
-			}
 		},
 		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"printSplit"
-					],
-					"operation": [
-						"create"
-					]
-				}
+			displayName: 'Custom AI Model',
+			name: 'customAiModel',
+			type: 'string',
+			required: true,
+			default: '',
+			placeholder: 'e.g. meshy-7.1',
+			description: 'Any model name Meshy accepts',
+			displayOptions: {
+				show: {
+					resource: ['imageToImage'],
+					operation: ['create'],
+					aiModel: ['__custom'],
+				},
 			},
-			"options": [
-				{
-					"displayName": "Connector Height",
-					"name": "connectorHeight",
-					"type": "number",
-					"default": 0.1,
-					"description": "Connector height relative to the cut surface (only when connectors is true).",
-					"typeOptions": {
-						"minValue": 0.1,
-						"maxValue": 0.8,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Connector Size",
-					"name": "connectorSize",
-					"type": "number",
-					"default": 0.5,
-					"description": "Connector size relative to the cut surface (only when connectors is true).",
-					"typeOptions": {
-						"minValue": 0.1,
-						"maxValue": 0.8,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Connector Type",
-					"name": "connectorType",
-					"type": "options",
-					"default": "cube",
-					"description": "Connector shape (only when connectors is true).",
-					"options": [
-						{
-							"name": "cube",
-							"value": "cube"
-						},
-						{
-							"name": "cylinder",
-							"value": "cylinder"
-						}
-					]
-				},
-				{
-					"displayName": "Connectors",
-					"name": "connectors",
-					"type": "boolean",
-					"default": false,
-					"description": "Add mortise-and-tenon connectors at each cut."
-				},
-				{
-					"displayName": "Keep Texture",
-					"name": "keepTexture",
-					"type": "boolean",
-					"default": false,
-					"description": "Keep the input model's texture on every part. The task then returns the shared maps in texture_urls, and an obj comes with model_urls.mtl; stl and 3mf hold geometry only. Takes about twice as long; the credit cost is unchanged. An untextured input splits as with false."
-				},
-				{
-					"displayName": "Layout",
-					"name": "layout",
-					"type": "options",
-					"default": "assembled",
-					"description": "Arrangement baked into every output format: assembled keeps the source pose; on_plate lays the parts flat and spread on the build plate.",
-					"options": [
-						{
-							"name": "assembled",
-							"value": "assembled"
-						},
-						{
-							"name": "on_plate",
-							"value": "on_plate"
-						}
-					]
-				},
-				{
-					"displayName": "Mode",
-					"name": "mode",
-					"type": "options",
-					"default": "auto",
-					"description": "auto lets Meshy choose the cuts; by_parts / by_color cut along the parts or color regions named in `prompt`.",
-					"options": [
-						{
-							"name": "auto",
-							"value": "auto"
-						},
-						{
-							"name": "by_color",
-							"value": "by_color"
-						},
-						{
-							"name": "by_parts",
-							"value": "by_parts"
-						}
-					]
-				},
-				{
-					"displayName": "Prompt",
-					"name": "prompt",
-					"type": "string",
-					"default": "",
-					"description": "Names the parts to split into (1-10); naming a single part leaves the unnamed remainder as its own part. Required for by_parts / by_color; ignored for auto.",
-					"typeOptions": {
-						"rows": 3
-					}
-				},
-				{
-					"displayName": "Target Formats",
-					"name": "targetFormats",
-					"type": "multiOptions",
-					"default": [
-						"glb"
-					],
-					"description": "Export formats. Formats that support scene objects carry each part as a separate object; stl fuses all parts into one solid.",
-					"options": [
-						{
-							"name": "3mf",
-							"value": "3mf"
-						},
-						{
-							"name": "blend",
-							"value": "blend"
-						},
-						{
-							"name": "fbx",
-							"value": "fbx"
-						},
-						{
-							"name": "glb",
-							"value": "glb"
-						},
-						{
-							"name": "obj",
-							"value": "obj"
-						},
-						{
-							"name": "stl",
-							"value": "stl"
-						},
-						{
-							"name": "usdz",
-							"value": "usdz"
-						}
-					]
-				}
-			]
-		}
-	],
-	"relief": [
+		},
 		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"relief"
-					],
-					"operation": [
-						"create"
-					]
-				}
+			displayName: 'Prompt',
+			name: 'prompt',
+			type: 'string',
+			default: '',
+			description: 'Edit prompt',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['imageToImage'],
+					operation: ['create'],
+				},
 			},
-			"options": [
-				{
-					"displayName": "Base Thickness (mm)",
-					"name": "baseThicknessMm",
-					"type": "number",
-					"default": 0,
-					"description": "The thickness of the base plate, from 0.1 to 10 millimeters. Defaults to 1, or 0 with remove_base true. With remove_base true, leave it out or send 0; any other value returns 400.",
-					"typeOptions": {
-						"minValue": 0,
-						"maxValue": 10,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Bend Angle",
-					"name": "bendAngle",
-					"type": "number",
-					"default": 60,
-					"description": "The arc the bend spans, in degrees. Below 1, the relief stays flat. Only used when bend_mode is not off, but checked even when it is off.",
-					"typeOptions": {
-						"minValue": 0,
-						"maxValue": 360,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Bend Axis",
-					"name": "bendAxis",
-					"type": "options",
-					"default": "xz",
-					"description": "Which edges the bend curls. xz: the left and right edges. yz: the top and bottom edges. Only used when bend_mode is not off, but checked even when it is off.",
-					"options": [
-						{
-							"name": "xz",
-							"value": "xz"
-						},
-						{
-							"name": "yz",
-							"value": "yz"
-						}
-					]
-				},
-				{
-					"displayName": "Bend Mode",
-					"name": "bendMode",
-					"type": "options",
-					"default": "off",
-					"description": "Whether to bend the relief. off: flat. convex: the front bulges outward. concave: the front curves inward.",
-					"options": [
-						{
-							"name": "concave",
-							"value": "concave"
-						},
-						{
-							"name": "convex",
-							"value": "convex"
-						},
-						{
-							"name": "off",
-							"value": "off"
-						}
-					]
-				},
-				{
-					"displayName": "Carving Depth (mm)",
-					"name": "carvingDepthMm",
-					"type": "number",
-					"default": 0,
-					"description": "How deep the relief is carved, in millimeters. Defaults to 6 for high and 3 for low. With remove_base true, 0 leaves an empty model; the task still succeeds and is charged.",
-					"typeOptions": {
-						"minValue": 0,
-						"maxValue": 60,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Carving Mode",
-					"name": "carvingMode",
-					"type": "options",
-					"default": "emboss",
-					"description": "emboss: the nearer parts of the photo stand out. engrave: the depth is inverted, so the nearer parts are cut in. The depth map is the same in both modes.",
-					"options": [
-						{
-							"name": "emboss",
-							"value": "emboss"
-						},
-						{
-							"name": "engrave",
-							"value": "engrave"
-						}
-					]
-				},
-				{
-					"displayName": "Color Mapping",
-					"name": "colorMapping",
-					"type": "boolean",
-					"default": false,
-					"description": "Whether to color the model with the photo. The GLB, OBJ, FBX, and USDZ files carry color. STL and 3MF files stay white. The texture is returned in texture_urls."
-				},
-				{
-					"displayName": "Mesh Resolution",
-					"name": "meshResolution",
-					"type": "number",
-					"default": 1024,
-					"description": "The number of mesh points along the photo's longer side. A higher value keeps finer detail and makes larger files. At the default 1024, the GLB file is about 40 to 50 MB and the STL file about 80 to 105 MB, and a square photo gives the larger sizes; at 2048, about 150 MB and 300 MB.",
-					"typeOptions": {
-						"minValue": 512,
-						"maxValue": 2048
-					}
-				},
-				{
-					"displayName": "Removal Threshold",
-					"name": "removalThreshold",
-					"type": "number",
-					"default": 0.01,
-					"description": "The depth below which remove_base cuts the background away, where the depth map runs from 0 to 1. Only used when remove_base is true, but checked even when it is false. A high value can cut away the whole relief and leave an empty model; the task still succeeds and is charged.",
-					"typeOptions": {
-						"minValue": 0.01,
-						"maxValue": 1,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Remove Base",
-					"name": "removeBase",
-					"type": "boolean",
-					"default": false,
-					"description": "Whether to cut away the background below removal_threshold and build no base plate."
-				},
-				{
-					"displayName": "Should Generate Model",
-					"name": "shouldGenerateModel",
-					"type": "boolean",
-					"default": true,
-					"description": "Whether to build the relief model. false makes the depth map only: model_urls is {} and thumbnail_url is empty. The geometry parameters are still checked, but unused. It does not change the credit cost."
-				},
-				{
-					"displayName": "Size (mm)",
-					"name": "sizeMm",
-					"type": "number",
-					"default": 60,
-					"description": "The length of the photo's longer side on the model, measured flat before any bend, in millimeters. With remove_base, the model can be smaller.",
-					"typeOptions": {
-						"minValue": 20,
-						"maxValue": 250,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Target Formats",
-					"name": "targetFormats",
-					"type": "multiOptions",
-					"default": [
-						"glb",
-						"stl"
-					],
-					"description": "The file formats to generate and return in model_urls; listing fewer can shorten the task. An obj comes with an mtl. STL and 3MF files keep the relief's real size.",
-					"options": [
-						{
-							"name": "3mf",
-							"value": "3mf"
-						},
-						{
-							"name": "fbx",
-							"value": "fbx"
-						},
-						{
-							"name": "glb",
-							"value": "glb"
-						},
-						{
-							"name": "obj",
-							"value": "obj"
-						},
-						{
-							"name": "stl",
-							"value": "stl"
-						},
-						{
-							"name": "usdz",
-							"value": "usdz"
-						}
-					]
-				},
-				{
-					"displayName": "Variant",
-					"name": "variant",
-					"type": "options",
-					"default": "low",
-					"description": "The relief style; it shapes the depth map and sets the default carving_depth_mm. high: deeper carving, for 3D-printed pieces. low: shallow carving, for laser engraving, CNC carving, and thin plaques. Any other non-empty value returns 400.",
-					"options": [
-						{
-							"name": "high",
-							"value": "high"
-						},
-						{
-							"name": "low",
-							"value": "low"
-						}
-					]
-				}
-			]
-		}
-	],
-	"printRepair": [
+		},
 		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"printRepair"
-					],
-					"operation": [
-						"create"
-					]
-				}
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['imageToImage'],
+					operation: ['create'],
+				},
 			},
-			"options": [
+			options: [
 				{
-					"displayName": "Alpha Thumbnail",
-					"name": "alphaThumbnail",
-					"type": "boolean",
-					"default": false,
-					"description": "Opt in to a transparent-background preview."
-				},
-				{
-					"displayName": "Intended Print Height (mm)",
-					"name": "intendedPrintHeightMm",
-					"type": "number",
-					"default": 1,
-					"description": "Planned print height in millimeters, rounded to a whole mm. GLB input only (a .glb model_url or any input_task_id). Mutually exclusive with intended_print_longest_side_mm.",
-					"typeOptions": {
-						"minValue": 1,
-						"maxValue": 1000,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Intended Print Longest Side (mm)",
-					"name": "intendedPrintLongestSideMm",
-					"type": "number",
-					"default": 1,
-					"description": "Planned print longest side in millimeters, rounded to a whole mm. Mutually exclusive with intended_print_height_mm.",
-					"typeOptions": {
-						"minValue": 1,
-						"maxValue": 1000,
-						"numberPrecision": 2
-					}
-				},
-				{
-					"displayName": "Printer Type",
-					"name": "printerType",
-					"type": "options",
-					"default": "fdm",
-					"description": "Printer that sets the minimum wall thickness for the size-aware check. fdm when a print size is sent without it, unless an analyze task passed as input_task_id supplies the printer.",
-					"options": [
+					displayName: 'Aspect Ratio',
+					name: 'aspectRatio',
+					type: 'options',
+					default: '1:1',
+					description:
+						'Output aspect ratio (model-dependent; cannot be combined with generate_multi_view)',
+					options: [
 						{
-							"name": "fdm",
-							"value": "fdm"
+							name: '1:1',
+							value: '1:1',
 						},
 						{
-							"name": "full_color",
-							"value": "full_color"
+							name: '16:9',
+							value: '16:9',
 						},
 						{
-							"name": "sla",
-							"value": "sla"
-						}
-					]
-				}
-			]
-		}
+							name: '2:3',
+							value: '2:3',
+						},
+						{
+							name: '3:2',
+							value: '3:2',
+						},
+						{
+							name: '3:4',
+							value: '3:4',
+						},
+						{
+							name: '4:3',
+							value: '4:3',
+						},
+						{
+							name: '9:16',
+							value: '9:16',
+						},
+					],
+				},
+				{
+					displayName: 'Generate Multi View',
+					name: 'generateMultiView',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to produce a 4-view split image instead of a single image',
+				},
+				{
+					displayName: 'Remove Background',
+					name: 'removeBackground',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to return a transparent RGBA cutout (single-image only)',
+				},
+			],
+		},
 	],
-	"printAnalyze": [
+	printMultiColor: [
 		{
-			"displayName": "Additional Fields",
-			"name": "additionalFields",
-			"type": "collection",
-			"placeholder": "Add Field",
-			"default": {},
-			"displayOptions": {
-				"show": {
-					"resource": [
-						"printAnalyze"
-					],
-					"operation": [
-						"create"
-					]
-				}
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['printMultiColor'],
+					operation: ['create'],
+				},
 			},
-			"options": [
+			options: [
 				{
-					"displayName": "Intended Print Height (mm)",
-					"name": "intendedPrintHeightMm",
-					"type": "number",
-					"default": 1,
-					"description": "Planned print height in millimeters, rounded to a whole mm. GLB input only (a .glb model_url or any input_task_id). Mutually exclusive with intended_print_longest_side_mm.",
-					"typeOptions": {
-						"minValue": 1,
-						"maxValue": 1000,
-						"numberPrecision": 2
-					}
+					displayName: 'Max Colors',
+					name: 'maxColors',
+					type: 'number',
+					default: 4,
+					description: 'Target color count',
+					typeOptions: {
+						minValue: 1,
+						maxValue: 16,
+					},
 				},
 				{
-					"displayName": "Intended Print Longest Side (mm)",
-					"name": "intendedPrintLongestSideMm",
-					"type": "number",
-					"default": 1,
-					"description": "Planned print longest side in millimeters, rounded to a whole mm. Mutually exclusive with intended_print_height_mm.",
-					"typeOptions": {
-						"minValue": 1,
-						"maxValue": 1000,
-						"numberPrecision": 2
-					}
+					displayName: 'Max Depth',
+					name: 'maxDepth',
+					type: 'number',
+					default: 4,
+					description: 'Quadtree depth (realistic style only)',
+					typeOptions: {
+						minValue: 3,
+						maxValue: 6,
+					},
 				},
 				{
-					"displayName": "Printer Type",
-					"name": "printerType",
-					"type": "options",
-					"default": "fdm",
-					"description": "Printer that sets the minimum wall thickness for the size-aware check. fdm when a print size is sent without it.",
-					"options": [
+					displayName: 'Printer Brand',
+					name: 'printerBrand',
+					type: 'options',
+					default: 'bambu',
+					description:
+						'Printer brand whose slicer preset (default printer, 0.4 mm nozzle) is written into the 3MF',
+					options: [
 						{
-							"name": "fdm",
-							"value": "fdm"
+							name: 'Ankermake',
+							value: 'ankermake',
 						},
 						{
-							"name": "full_color",
-							"value": "full_color"
+							name: 'Anycubic',
+							value: 'anycubic',
 						},
 						{
-							"name": "sla",
-							"value": "sla"
-						}
-					]
-				}
-			]
-		}
-	]
+							name: 'Bambu',
+							value: 'bambu',
+						},
+						{
+							name: 'Creality',
+							value: 'creality',
+						},
+						{
+							name: 'Elegoo',
+							value: 'elegoo',
+						},
+						{
+							name: 'Flashforge',
+							value: 'flashforge',
+						},
+						{
+							name: 'Prusa',
+							value: 'prusa',
+						},
+						{
+							name: 'Qidi',
+							value: 'qidi',
+						},
+						{
+							name: 'Snapmaker',
+							value: 'snapmaker',
+						},
+					],
+				},
+				{
+					displayName: 'Style',
+					name: 'style',
+					type: 'options',
+					default: 'realistic',
+					description: 'Color-placement algorithm',
+					options: [
+						{
+							name: 'Cartoon',
+							value: 'cartoon',
+						},
+						{
+							name: 'Realistic',
+							value: 'realistic',
+						},
+					],
+				},
+			],
+		},
+	],
+	printSplit: [
+		{
+			displayName: 'Input Task ID',
+			name: 'inputTaskId',
+			type: 'string',
+			default: '',
+			description:
+				'Prior task whose model to split. A textured model is accepted; its texture is carried into the result only with keep_texture: true.',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['printSplit'],
+					operation: ['create'],
+				},
+			},
+		},
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['printSplit'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					displayName: 'Connector Height',
+					name: 'connectorHeight',
+					type: 'number',
+					default: 0.1,
+					description:
+						'Connector height relative to the cut surface (only when connectors is true)',
+					typeOptions: {
+						minValue: 0.1,
+						maxValue: 0.8,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Connector Size',
+					name: 'connectorSize',
+					type: 'number',
+					default: 0.5,
+					description: 'Connector size relative to the cut surface (only when connectors is true)',
+					typeOptions: {
+						minValue: 0.1,
+						maxValue: 0.8,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Connector Type',
+					name: 'connectorType',
+					type: 'options',
+					default: 'cube',
+					description: 'Connector shape (only when connectors is true)',
+					options: [
+						{
+							name: 'Cube',
+							value: 'cube',
+						},
+						{
+							name: 'Cylinder',
+							value: 'cylinder',
+						},
+					],
+				},
+				{
+					displayName: 'Connectors',
+					name: 'connectors',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to add mortise-and-tenon connectors at each cut',
+				},
+				{
+					displayName: 'Keep Texture',
+					name: 'keepTexture',
+					type: 'boolean',
+					default: false,
+					description:
+						"Whether to keep the input model's texture on every part. The task then returns the shared maps in texture_urls, and an obj comes with model_urls.mtl; stl and 3mf hold geometry only. Takes about twice as long; the credit cost is unchanged. An untextured input splits as with false.",
+				},
+				{
+					displayName: 'Layout',
+					name: 'layout',
+					type: 'options',
+					default: 'assembled',
+					description:
+						'Arrangement baked into every output format: assembled keeps the source pose; on_plate lays the parts flat and spread on the build plate',
+					options: [
+						{
+							name: 'Assembled',
+							value: 'assembled',
+						},
+						{
+							name: 'On_plate',
+							value: 'on_plate',
+						},
+					],
+				},
+				{
+					displayName: 'Mode',
+					name: 'mode',
+					type: 'options',
+					default: 'auto',
+					description:
+						'Auto lets Meshy choose the cuts; by_parts / by_color cut along the parts or color regions named in `prompt`',
+					options: [
+						{
+							name: 'Auto',
+							value: 'auto',
+						},
+						{
+							name: 'By_color',
+							value: 'by_color',
+						},
+						{
+							name: 'By_parts',
+							value: 'by_parts',
+						},
+					],
+				},
+				{
+					displayName: 'Prompt',
+					name: 'prompt',
+					type: 'string',
+					default: '',
+					description:
+						'Names the parts to split into (1-10); naming a single part leaves the unnamed remainder as its own part. Required for by_parts / by_color; ignored for auto.',
+					typeOptions: {
+						rows: 3,
+					},
+				},
+				{
+					displayName: 'Target Formats',
+					name: 'targetFormats',
+					type: 'multiOptions',
+					default: ['glb'],
+					description:
+						'Export formats. Formats that support scene objects carry each part as a separate object; stl fuses all parts into one solid.',
+					options: [
+						{
+							name: '3mf',
+							value: '3mf',
+						},
+						{
+							name: 'Blend',
+							value: 'blend',
+						},
+						{
+							name: 'Fbx',
+							value: 'fbx',
+						},
+						{
+							name: 'Glb',
+							value: 'glb',
+						},
+						{
+							name: 'Obj',
+							value: 'obj',
+						},
+						{
+							name: 'Stl',
+							value: 'stl',
+						},
+						{
+							name: 'Usdz',
+							value: 'usdz',
+						},
+					],
+				},
+			],
+		},
+	],
+	relief: [
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['relief'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					displayName: 'Base Thickness (Mm)',
+					name: 'baseThicknessMm',
+					type: 'number',
+					default: 0,
+					description:
+						'The thickness of the base plate, from 0.1 to 10 millimeters. Defaults to 1, or 0 with remove_base true. With remove_base true, leave it out or send 0; any other value returns 400.',
+					typeOptions: {
+						minValue: 0,
+						maxValue: 10,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Bend Angle',
+					name: 'bendAngle',
+					type: 'number',
+					default: 60,
+					description:
+						'The arc the bend spans, in degrees. Below 1, the relief stays flat. Only used when bend_mode is not off, but checked even when it is off.',
+					typeOptions: {
+						minValue: 0,
+						maxValue: 360,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Bend Axis',
+					name: 'bendAxis',
+					type: 'options',
+					default: 'xz',
+					description:
+						'Which edges the bend curls. xz: the left and right edges. yz: the top and bottom edges. Only used when bend_mode is not off, but checked even when it is off.',
+					options: [
+						{
+							name: 'Xz',
+							value: 'xz',
+						},
+						{
+							name: 'Yz',
+							value: 'yz',
+						},
+					],
+				},
+				{
+					displayName: 'Bend Mode',
+					name: 'bendMode',
+					type: 'options',
+					default: 'off',
+					description:
+						'Whether to bend the relief. off: flat. convex: the front bulges outward. concave: the front curves inward.',
+					options: [
+						{
+							name: 'Concave',
+							value: 'concave',
+						},
+						{
+							name: 'Convex',
+							value: 'convex',
+						},
+						{
+							name: 'Off',
+							value: 'off',
+						},
+					],
+				},
+				{
+					displayName: 'Carving Depth (Mm)',
+					name: 'carvingDepthMm',
+					type: 'number',
+					default: 0,
+					description:
+						'How deep the relief is carved, in millimeters. Defaults to 6 for high and 3 for low. With remove_base true, 0 leaves an empty model; the task still succeeds and is charged.',
+					typeOptions: {
+						minValue: 0,
+						maxValue: 60,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Carving Mode',
+					name: 'carvingMode',
+					type: 'options',
+					default: 'emboss',
+					description:
+						'Emboss: the nearer parts of the photo stand out. engrave: the depth is inverted, so the nearer parts are cut in. The depth map is the same in both modes.',
+					options: [
+						{
+							name: 'Emboss',
+							value: 'emboss',
+						},
+						{
+							name: 'Engrave',
+							value: 'engrave',
+						},
+					],
+				},
+				{
+					displayName: 'Color Mapping',
+					name: 'colorMapping',
+					type: 'boolean',
+					default: false,
+					description:
+						'Whether to whether to color the model with the photo. The GLB, OBJ, FBX, and USDZ files carry color. STL and 3MF files stay white. The texture is returned in texture_urls.',
+				},
+				{
+					displayName: 'Mesh Resolution',
+					name: 'meshResolution',
+					type: 'number',
+					default: 1024,
+					description:
+						"The number of mesh points along the photo's longer side. A higher value keeps finer detail and makes larger files. At the default 1024, the GLB file is about 40 to 50 MB and the STL file about 80 to 105 MB, and a square photo gives the larger sizes; at 2048, about 150 MB and 300 MB.",
+					typeOptions: {
+						minValue: 512,
+						maxValue: 2048,
+					},
+				},
+				{
+					displayName: 'Removal Threshold',
+					name: 'removalThreshold',
+					type: 'number',
+					default: 0.01,
+					description:
+						'The depth below which remove_base cuts the background away, where the depth map runs from 0 to 1. Only used when remove_base is true, but checked even when it is false. A high value can cut away the whole relief and leave an empty model; the task still succeeds and is charged.',
+					typeOptions: {
+						minValue: 0.01,
+						maxValue: 1,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Remove Base',
+					name: 'removeBase',
+					type: 'boolean',
+					default: false,
+					description:
+						'Whether to whether to cut away the background below removal_threshold and build no base plate',
+				},
+				{
+					displayName: 'Should Generate Model',
+					name: 'shouldGenerateModel',
+					type: 'boolean',
+					default: true,
+					description:
+						'Whether to whether to build the relief model. false makes the depth map only: model_urls is {} and thumbnail_url is empty. The geometry parameters are still checked, but unused. It does not change the credit cost.',
+				},
+				{
+					displayName: 'Size (Mm)',
+					name: 'sizeMm',
+					type: 'number',
+					default: 60,
+					description:
+						"The length of the photo's longer side on the model, measured flat before any bend, in millimeters. With remove_base, the model can be smaller.",
+					typeOptions: {
+						minValue: 20,
+						maxValue: 250,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Target Formats',
+					name: 'targetFormats',
+					type: 'multiOptions',
+					default: ['glb', 'stl'],
+					description:
+						"The file formats to generate and return in model_urls; listing fewer can shorten the task. An obj comes with an mtl. STL and 3MF files keep the relief's real size.",
+					options: [
+						{
+							name: '3mf',
+							value: '3mf',
+						},
+						{
+							name: 'Fbx',
+							value: 'fbx',
+						},
+						{
+							name: 'Glb',
+							value: 'glb',
+						},
+						{
+							name: 'Obj',
+							value: 'obj',
+						},
+						{
+							name: 'Stl',
+							value: 'stl',
+						},
+						{
+							name: 'Usdz',
+							value: 'usdz',
+						},
+					],
+				},
+				{
+					displayName: 'Variant',
+					name: 'variant',
+					type: 'options',
+					default: 'low',
+					description:
+						'The relief style; it shapes the depth map and sets the default carving_depth_mm. high: deeper carving, for 3D-printed pieces. low: shallow carving, for laser engraving, CNC carving, and thin plaques. Any other non-empty value returns 400.',
+					options: [
+						{
+							name: 'High',
+							value: 'high',
+						},
+						{
+							name: 'Low',
+							value: 'low',
+						},
+					],
+				},
+			],
+		},
+	],
+	printRepair: [
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['printRepair'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					displayName: 'Alpha Thumbnail',
+					name: 'alphaThumbnail',
+					type: 'boolean',
+					default: false,
+					description: 'Whether to also make a preview image with a transparent background',
+				},
+				{
+					displayName: 'Intended Print Height (Mm)',
+					name: 'intendedPrintHeightMm',
+					type: 'number',
+					default: 1,
+					description:
+						'Planned print height in millimeters, rounded to a whole mm. GLB input only (a .glb model_url or any input_task_id). Mutually exclusive with intended_print_longest_side_mm.',
+					typeOptions: {
+						minValue: 1,
+						maxValue: 1000,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Intended Print Longest Side (Mm)',
+					name: 'intendedPrintLongestSideMm',
+					type: 'number',
+					default: 1,
+					description:
+						'Planned print longest side in millimeters, rounded to a whole mm. Mutually exclusive with intended_print_height_mm.',
+					typeOptions: {
+						minValue: 1,
+						maxValue: 1000,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Printer Type',
+					name: 'printerType',
+					type: 'options',
+					default: 'fdm',
+					description:
+						'Printer that sets the minimum wall thickness for the size-aware check. fdm when a print size is sent without it, unless an analyze task passed as input_task_id supplies the printer.',
+					options: [
+						{
+							name: 'Fdm',
+							value: 'fdm',
+						},
+						{
+							name: 'Full_color',
+							value: 'full_color',
+						},
+						{
+							name: 'Sla',
+							value: 'sla',
+						},
+					],
+				},
+			],
+		},
+	],
+	printAnalyze: [
+		{
+			displayName: 'Additional Fields',
+			name: 'additionalFields',
+			type: 'collection',
+			placeholder: 'Add Field',
+			default: {},
+			displayOptions: {
+				show: {
+					resource: ['printAnalyze'],
+					operation: ['create'],
+				},
+			},
+			options: [
+				{
+					displayName: 'Intended Print Height (Mm)',
+					name: 'intendedPrintHeightMm',
+					type: 'number',
+					default: 1,
+					description:
+						'Planned print height in millimeters, rounded to a whole mm. GLB input only (a .glb model_url or any input_task_id). Mutually exclusive with intended_print_longest_side_mm.',
+					typeOptions: {
+						minValue: 1,
+						maxValue: 1000,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Intended Print Longest Side (Mm)',
+					name: 'intendedPrintLongestSideMm',
+					type: 'number',
+					default: 1,
+					description:
+						'Planned print longest side in millimeters, rounded to a whole mm. Mutually exclusive with intended_print_height_mm.',
+					typeOptions: {
+						minValue: 1,
+						maxValue: 1000,
+						numberPrecision: 2,
+					},
+				},
+				{
+					displayName: 'Printer Type',
+					name: 'printerType',
+					type: 'options',
+					default: 'fdm',
+					description:
+						'Printer that sets the minimum wall thickness for the size-aware check. fdm when a print size is sent without it.',
+					options: [
+						{
+							name: 'Fdm',
+							value: 'fdm',
+						},
+						{
+							name: 'Full_color',
+							value: 'full_color',
+						},
+						{
+							name: 'Sla',
+							value: 'sla',
+						},
+					],
+				},
+			],
+		},
+	],
 };
 
 export const bodyFields: Record<string, BodyField[]> = {
-	"textTo3d": [
+	textTo3d: [
 		{
-			"param": "mode",
-			"api": "mode",
-			"kind": "options",
-			"top": true
+			param: 'mode',
+			api: 'mode',
+			kind: 'options',
+			top: true,
 		},
 		{
-			"param": "prompt",
-			"api": "prompt",
-			"kind": "string",
-			"top": true
+			param: 'prompt',
+			api: 'prompt',
+			kind: 'string',
+			top: true,
 		},
 		{
-			"param": "texturePrompt",
-			"api": "texture_prompt",
-			"kind": "string",
-			"top": false
+			param: 'texturePrompt',
+			api: 'texture_prompt',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "textureImageUrl",
-			"api": "texture_image_url",
-			"kind": "string",
-			"top": false
+			param: 'textureImageUrl',
+			api: 'texture_image_url',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "name",
-			"api": "name",
-			"kind": "string",
-			"top": false
+			param: 'name',
+			api: 'name',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "previewTaskId",
-			"api": "preview_task_id",
-			"kind": "string",
-			"top": true
+			param: 'previewTaskId',
+			api: 'preview_task_id',
+			kind: 'string',
+			top: true,
 		},
 		{
-			"param": "aiModel",
-			"api": "ai_model",
-			"kind": "options",
-			"top": true,
-			"allowCustom": true
+			param: 'aiModel',
+			api: 'ai_model',
+			kind: 'options',
+			top: true,
+			allowCustom: true,
 		},
 		{
-			"param": "modelType",
-			"api": "model_type",
-			"kind": "options",
-			"top": false
+			param: 'modelType',
+			api: 'model_type',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "topology",
-			"api": "topology",
-			"kind": "options",
-			"top": false
+			param: 'topology',
+			api: 'topology',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "targetPolycount",
-			"api": "target_polycount",
-			"kind": "number",
-			"top": false
+			param: 'targetPolycount',
+			api: 'target_polycount',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "shouldRemesh",
-			"api": "should_remesh",
-			"kind": "boolean",
-			"top": false
+			param: 'shouldRemesh',
+			api: 'should_remesh',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "shouldTexture",
-			"api": "should_texture",
-			"kind": "boolean",
-			"top": false
+			param: 'shouldTexture',
+			api: 'should_texture',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "enablePbr",
-			"api": "enable_pbr",
-			"kind": "boolean",
-			"top": false
+			param: 'enablePbr',
+			api: 'enable_pbr',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "moderation",
-			"api": "moderation",
-			"kind": "boolean",
-			"top": false
+			param: 'moderation',
+			api: 'moderation',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "poseMode",
-			"api": "pose_mode",
-			"kind": "options",
-			"top": false
+			param: 'poseMode',
+			api: 'pose_mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "seed",
-			"api": "seed",
-			"kind": "number",
-			"top": false
+			param: 'seed',
+			api: 'seed',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "originAt",
-			"api": "origin_at",
-			"kind": "options",
-			"top": false
+			param: 'originAt',
+			api: 'origin_at',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "decimationMode",
-			"api": "decimation_mode",
-			"kind": "options",
-			"top": false
+			param: 'decimationMode',
+			api: 'decimation_mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "targetFormats",
-			"api": "target_formats",
-			"kind": "multiOptions",
-			"top": false
+			param: 'targetFormats',
+			api: 'target_formats',
+			kind: 'multiOptions',
+			top: false,
 		},
 		{
-			"param": "textureResolution",
-			"api": "texture_resolution",
-			"kind": "options",
-			"top": false
+			param: 'textureResolution',
+			api: 'texture_resolution',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "geometryResolution",
-			"api": "geometry_resolution",
-			"kind": "options",
-			"top": false
+			param: 'geometryResolution',
+			api: 'geometry_resolution',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "removeLighting",
-			"api": "remove_lighting",
-			"kind": "boolean",
-			"top": false
+			param: 'removeLighting',
+			api: 'remove_lighting',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "autoSize",
-			"api": "auto_size",
-			"kind": "boolean",
-			"top": false
+			param: 'autoSize',
+			api: 'auto_size',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "experimental",
-			"api": "experimental",
-			"kind": "object",
-			"top": false,
-			"children": [
+			param: 'experimental',
+			api: 'experimental',
+			kind: 'object',
+			top: false,
+			children: [
 				{
-					"param": "turbo",
-					"api": "turbo",
-					"kind": "boolean",
-					"top": false
+					param: 'turbo',
+					api: 'turbo',
+					kind: 'boolean',
+					top: false,
 				},
 				{
-					"param": "enableTsr",
-					"api": "enable_tsr",
-					"kind": "boolean",
-					"top": false
+					param: 'enableTsr',
+					api: 'enable_tsr',
+					kind: 'boolean',
+					top: false,
 				},
 				{
-					"param": "optimizeTextureSeams",
-					"api": "optimize_texture_seams",
-					"kind": "boolean",
-					"top": false
-				}
-			]
+					param: 'optimizeTextureSeams',
+					api: 'optimize_texture_seams',
+					kind: 'boolean',
+					top: false,
+				},
+			],
 		},
 		{
-			"param": "alphaThumbnail",
-			"api": "alpha_thumbnail",
-			"kind": "boolean",
-			"top": false
-		}
+			param: 'alphaThumbnail',
+			api: 'alpha_thumbnail',
+			kind: 'boolean',
+			top: false,
+		},
 	],
-	"imageTo3d": [
+	imageTo3d: [
 		{
-			"param": "name",
-			"api": "name",
-			"kind": "string",
-			"top": false
+			param: 'name',
+			api: 'name',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "aiModel",
-			"api": "ai_model",
-			"kind": "options",
-			"top": true,
-			"allowCustom": true
+			param: 'aiModel',
+			api: 'ai_model',
+			kind: 'options',
+			top: true,
+			allowCustom: true,
 		},
 		{
-			"param": "modelType",
-			"api": "model_type",
-			"kind": "options",
-			"top": false
+			param: 'modelType',
+			api: 'model_type',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "topology",
-			"api": "topology",
-			"kind": "options",
-			"top": false
+			param: 'topology',
+			api: 'topology',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "targetPolycount",
-			"api": "target_polycount",
-			"kind": "number",
-			"top": false
+			param: 'targetPolycount',
+			api: 'target_polycount',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "shouldRemesh",
-			"api": "should_remesh",
-			"kind": "boolean",
-			"top": false
+			param: 'shouldRemesh',
+			api: 'should_remesh',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "shouldTexture",
-			"api": "should_texture",
-			"kind": "boolean",
-			"top": false
+			param: 'shouldTexture',
+			api: 'should_texture',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "enablePbr",
-			"api": "enable_pbr",
-			"kind": "boolean",
-			"top": false
+			param: 'enablePbr',
+			api: 'enable_pbr',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "geometryResolution",
-			"api": "geometry_resolution",
-			"kind": "options",
-			"top": false
+			param: 'geometryResolution',
+			api: 'geometry_resolution',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "texturePrompt",
-			"api": "texture_prompt",
-			"kind": "string",
-			"top": false
+			param: 'texturePrompt',
+			api: 'texture_prompt',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "textureImageUrl",
-			"api": "texture_image_url",
-			"kind": "string",
-			"top": false
+			param: 'textureImageUrl',
+			api: 'texture_image_url',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "textureModel",
-			"api": "texture_model",
-			"kind": "options",
-			"top": false
+			param: 'textureModel',
+			api: 'texture_model',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "imageEnhancement",
-			"api": "image_enhancement",
-			"kind": "boolean",
-			"top": false
+			param: 'imageEnhancement',
+			api: 'image_enhancement',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "removeLighting",
-			"api": "remove_lighting",
-			"kind": "boolean",
-			"top": false
+			param: 'removeLighting',
+			api: 'remove_lighting',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "moderation",
-			"api": "moderation",
-			"kind": "boolean",
-			"top": false
+			param: 'moderation',
+			api: 'moderation',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "poseMode",
-			"api": "pose_mode",
-			"kind": "options",
-			"top": false
+			param: 'poseMode',
+			api: 'pose_mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "savePreRemeshedModel",
-			"api": "save_pre_remeshed_model",
-			"kind": "boolean",
-			"top": false
+			param: 'savePreRemeshedModel',
+			api: 'save_pre_remeshed_model',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "autoSize",
-			"api": "auto_size",
-			"kind": "boolean",
-			"top": false
+			param: 'autoSize',
+			api: 'auto_size',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "originAt",
-			"api": "origin_at",
-			"kind": "options",
-			"top": false
+			param: 'originAt',
+			api: 'origin_at',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "decimationMode",
-			"api": "decimation_mode",
-			"kind": "options",
-			"top": false
+			param: 'decimationMode',
+			api: 'decimation_mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "targetFormats",
-			"api": "target_formats",
-			"kind": "multiOptions",
-			"top": false
+			param: 'targetFormats',
+			api: 'target_formats',
+			kind: 'multiOptions',
+			top: false,
 		},
 		{
-			"param": "textureResolution",
-			"api": "texture_resolution",
-			"kind": "options",
-			"top": false
+			param: 'textureResolution',
+			api: 'texture_resolution',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "multiViewThumbnails",
-			"api": "multi_view_thumbnails",
-			"kind": "boolean",
-			"top": false
+			param: 'multiViewThumbnails',
+			api: 'multi_view_thumbnails',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "experimental",
-			"api": "experimental",
-			"kind": "object",
-			"top": false,
-			"children": [
+			param: 'experimental',
+			api: 'experimental',
+			kind: 'object',
+			top: false,
+			children: [
 				{
-					"param": "turbo",
-					"api": "turbo",
-					"kind": "boolean",
-					"top": false
+					param: 'turbo',
+					api: 'turbo',
+					kind: 'boolean',
+					top: false,
 				},
 				{
-					"param": "enableTsr",
-					"api": "enable_tsr",
-					"kind": "boolean",
-					"top": false
+					param: 'enableTsr',
+					api: 'enable_tsr',
+					kind: 'boolean',
+					top: false,
 				},
 				{
-					"param": "optimizeTextureSeams",
-					"api": "optimize_texture_seams",
-					"kind": "boolean",
-					"top": false
-				}
-			]
+					param: 'optimizeTextureSeams',
+					api: 'optimize_texture_seams',
+					kind: 'boolean',
+					top: false,
+				},
+			],
 		},
 		{
-			"param": "alphaThumbnail",
-			"api": "alpha_thumbnail",
-			"kind": "boolean",
-			"top": false
-		}
+			param: 'alphaThumbnail',
+			api: 'alpha_thumbnail',
+			kind: 'boolean',
+			top: false,
+		},
 	],
-	"multiImageTo3d": [
+	multiImageTo3d: [
 		{
-			"param": "name",
-			"api": "name",
-			"kind": "string",
-			"top": false
+			param: 'name',
+			api: 'name',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "aiModel",
-			"api": "ai_model",
-			"kind": "options",
-			"top": true,
-			"allowCustom": true
+			param: 'aiModel',
+			api: 'ai_model',
+			kind: 'options',
+			top: true,
+			allowCustom: true,
 		},
 		{
-			"param": "geometryResolution",
-			"api": "geometry_resolution",
-			"kind": "options",
-			"top": false
+			param: 'geometryResolution',
+			api: 'geometry_resolution',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "topology",
-			"api": "topology",
-			"kind": "options",
-			"top": false
+			param: 'topology',
+			api: 'topology',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "targetPolycount",
-			"api": "target_polycount",
-			"kind": "number",
-			"top": false
+			param: 'targetPolycount',
+			api: 'target_polycount',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "shouldRemesh",
-			"api": "should_remesh",
-			"kind": "boolean",
-			"top": false
+			param: 'shouldRemesh',
+			api: 'should_remesh',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "shouldTexture",
-			"api": "should_texture",
-			"kind": "boolean",
-			"top": false
+			param: 'shouldTexture',
+			api: 'should_texture',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "enablePbr",
-			"api": "enable_pbr",
-			"kind": "boolean",
-			"top": false
+			param: 'enablePbr',
+			api: 'enable_pbr',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "texturePrompt",
-			"api": "texture_prompt",
-			"kind": "string",
-			"top": false
+			param: 'texturePrompt',
+			api: 'texture_prompt',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "textureImageUrl",
-			"api": "texture_image_url",
-			"kind": "string",
-			"top": false
+			param: 'textureImageUrl',
+			api: 'texture_image_url',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "textureImageUrls",
-			"api": "texture_image_urls",
-			"kind": "stringList",
-			"top": false
+			param: 'textureImageUrls',
+			api: 'texture_image_urls',
+			kind: 'stringList',
+			top: false,
 		},
 		{
-			"param": "textureModel",
-			"api": "texture_model",
-			"kind": "options",
-			"top": false
+			param: 'textureModel',
+			api: 'texture_model',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "imageEnhancement",
-			"api": "image_enhancement",
-			"kind": "boolean",
-			"top": false
+			param: 'imageEnhancement',
+			api: 'image_enhancement',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "removeLighting",
-			"api": "remove_lighting",
-			"kind": "boolean",
-			"top": false
+			param: 'removeLighting',
+			api: 'remove_lighting',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "moderation",
-			"api": "moderation",
-			"kind": "boolean",
-			"top": false
+			param: 'moderation',
+			api: 'moderation',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "poseMode",
-			"api": "pose_mode",
-			"kind": "options",
-			"top": false
+			param: 'poseMode',
+			api: 'pose_mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "savePreRemeshedModel",
-			"api": "save_pre_remeshed_model",
-			"kind": "boolean",
-			"top": false
+			param: 'savePreRemeshedModel',
+			api: 'save_pre_remeshed_model',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "autoSize",
-			"api": "auto_size",
-			"kind": "boolean",
-			"top": false
+			param: 'autoSize',
+			api: 'auto_size',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "originAt",
-			"api": "origin_at",
-			"kind": "options",
-			"top": false
+			param: 'originAt',
+			api: 'origin_at',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "decimationMode",
-			"api": "decimation_mode",
-			"kind": "options",
-			"top": false
+			param: 'decimationMode',
+			api: 'decimation_mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "targetFormats",
-			"api": "target_formats",
-			"kind": "multiOptions",
-			"top": false
+			param: 'targetFormats',
+			api: 'target_formats',
+			kind: 'multiOptions',
+			top: false,
 		},
 		{
-			"param": "textureResolution",
-			"api": "texture_resolution",
-			"kind": "options",
-			"top": false
+			param: 'textureResolution',
+			api: 'texture_resolution',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "multiViewThumbnails",
-			"api": "multi_view_thumbnails",
-			"kind": "boolean",
-			"top": false
+			param: 'multiViewThumbnails',
+			api: 'multi_view_thumbnails',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "alphaThumbnail",
-			"api": "alpha_thumbnail",
-			"kind": "boolean",
-			"top": false
-		}
+			param: 'alphaThumbnail',
+			api: 'alpha_thumbnail',
+			kind: 'boolean',
+			top: false,
+		},
 	],
-	"retexture": [
+	retexture: [
 		{
-			"param": "textStylePrompt",
-			"api": "text_style_prompt",
-			"kind": "string",
-			"top": true
+			param: 'textStylePrompt',
+			api: 'text_style_prompt',
+			kind: 'string',
+			top: true,
 		},
 		{
-			"param": "imageStyleUrl",
-			"api": "image_style_url",
-			"kind": "string",
-			"top": false
+			param: 'imageStyleUrl',
+			api: 'image_style_url',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "multiviewImageUrls",
-			"api": "multiview_image_urls",
-			"kind": "stringList",
-			"top": false
+			param: 'multiviewImageUrls',
+			api: 'multiview_image_urls',
+			kind: 'stringList',
+			top: false,
 		},
 		{
-			"param": "aiModel",
-			"api": "ai_model",
-			"kind": "options",
-			"top": true,
-			"allowCustom": true
+			param: 'aiModel',
+			api: 'ai_model',
+			kind: 'options',
+			top: true,
+			allowCustom: true,
 		},
 		{
-			"param": "artStyle",
-			"api": "art_style",
-			"kind": "options",
-			"top": false
+			param: 'artStyle',
+			api: 'art_style',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "enableOriginalUv",
-			"api": "enable_original_uv",
-			"kind": "boolean",
-			"top": false
+			param: 'enableOriginalUv',
+			api: 'enable_original_uv',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "enablePbr",
-			"api": "enable_pbr",
-			"kind": "boolean",
-			"top": false
+			param: 'enablePbr',
+			api: 'enable_pbr',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "removeLighting",
-			"api": "remove_lighting",
-			"kind": "boolean",
-			"top": false
+			param: 'removeLighting',
+			api: 'remove_lighting',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "targetFormats",
-			"api": "target_formats",
-			"kind": "multiOptions",
-			"top": false
+			param: 'targetFormats',
+			api: 'target_formats',
+			kind: 'multiOptions',
+			top: false,
 		},
 		{
-			"param": "textureResolution",
-			"api": "texture_resolution",
-			"kind": "options",
-			"top": false
+			param: 'textureResolution',
+			api: 'texture_resolution',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "alphaThumbnail",
-			"api": "alpha_thumbnail",
-			"kind": "boolean",
-			"top": false
-		}
+			param: 'alphaThumbnail',
+			api: 'alpha_thumbnail',
+			kind: 'boolean',
+			top: false,
+		},
 	],
-	"remesh": [
+	remesh: [
 		{
-			"param": "targetFormats",
-			"api": "target_formats",
-			"kind": "multiOptions",
-			"top": false
+			param: 'targetFormats',
+			api: 'target_formats',
+			kind: 'multiOptions',
+			top: false,
 		},
 		{
-			"param": "topology",
-			"api": "topology",
-			"kind": "options",
-			"top": false
+			param: 'topology',
+			api: 'topology',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "targetPolycount",
-			"api": "target_polycount",
-			"kind": "number",
-			"top": false
+			param: 'targetPolycount',
+			api: 'target_polycount',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "decimationMode",
-			"api": "decimation_mode",
-			"kind": "options",
-			"top": false
+			param: 'decimationMode',
+			api: 'decimation_mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "resizeHeight",
-			"api": "resize_height",
-			"kind": "number",
-			"top": false
+			param: 'resizeHeight',
+			api: 'resize_height',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "resizeLongestSide",
-			"api": "resize_longest_side",
-			"kind": "number",
-			"top": false
+			param: 'resizeLongestSide',
+			api: 'resize_longest_side',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "autoSize",
-			"api": "auto_size",
-			"kind": "boolean",
-			"top": false
+			param: 'autoSize',
+			api: 'auto_size',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "originAt",
-			"api": "origin_at",
-			"kind": "options",
-			"top": false
+			param: 'originAt',
+			api: 'origin_at',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "convertFormatOnly",
-			"api": "convert_format_only",
-			"kind": "boolean",
-			"top": false
+			param: 'convertFormatOnly',
+			api: 'convert_format_only',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "alphaThumbnail",
-			"api": "alpha_thumbnail",
-			"kind": "boolean",
-			"top": false
-		}
+			param: 'alphaThumbnail',
+			api: 'alpha_thumbnail',
+			kind: 'boolean',
+			top: false,
+		},
 	],
-	"convert": [
+	convert: [
 		{
-			"param": "targetFormats",
-			"api": "target_formats",
-			"kind": "multiOptions",
-			"top": true
-		}
+			param: 'targetFormats',
+			api: 'target_formats',
+			kind: 'multiOptions',
+			top: true,
+		},
 	],
-	"resize": [
+	resize: [
 		{
-			"param": "resizeHeight",
-			"api": "resize_height",
-			"kind": "number",
-			"top": false
+			param: 'resizeHeight',
+			api: 'resize_height',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "resizeLongestSide",
-			"api": "resize_longest_side",
-			"kind": "number",
-			"top": false
+			param: 'resizeLongestSide',
+			api: 'resize_longest_side',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "autoSize",
-			"api": "auto_size",
-			"kind": "boolean",
-			"top": false
+			param: 'autoSize',
+			api: 'auto_size',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "originAt",
-			"api": "origin_at",
-			"kind": "options",
-			"top": false
-		}
+			param: 'originAt',
+			api: 'origin_at',
+			kind: 'options',
+			top: false,
+		},
 	],
-	"uvUnwrap": [],
-	"rigging": [
+	uvUnwrap: [],
+	rigging: [
 		{
-			"param": "name",
-			"api": "name",
-			"kind": "string",
-			"top": false
+			param: 'name',
+			api: 'name',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "animationType",
-			"api": "animation_type",
-			"kind": "options",
-			"top": false
+			param: 'animationType',
+			api: 'animation_type',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "heightMeters",
-			"api": "height_meters",
-			"kind": "number",
-			"top": false
+			param: 'heightMeters',
+			api: 'height_meters',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "skeletonTemplate",
-			"api": "skeleton_template",
-			"kind": "options",
-			"top": false
+			param: 'skeletonTemplate',
+			api: 'skeleton_template',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "includeFingers",
-			"api": "include_fingers",
-			"kind": "boolean",
-			"top": false
-		}
+			param: 'includeFingers',
+			api: 'include_fingers',
+			kind: 'boolean',
+			top: false,
+		},
 	],
-	"animation": [
+	animation: [
 		{
-			"param": "rigTaskId",
-			"api": "rig_task_id",
-			"kind": "string",
-			"top": true
+			param: 'rigTaskId',
+			api: 'rig_task_id',
+			kind: 'string',
+			top: true,
 		},
 		{
-			"param": "name",
-			"api": "name",
-			"kind": "string",
-			"top": false
+			param: 'name',
+			api: 'name',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "actionId",
-			"api": "action_id",
-			"kind": "number",
-			"top": true
+			param: 'actionId',
+			api: 'action_id',
+			kind: 'number',
+			top: true,
 		},
 		{
-			"param": "actionIds",
-			"api": "action_ids",
-			"kind": "numberList",
-			"top": false
+			param: 'actionIds',
+			api: 'action_ids',
+			kind: 'numberList',
+			top: false,
 		},
 		{
-			"param": "motionTaskId",
-			"api": "motion_task_id",
-			"kind": "string",
-			"top": false
+			param: 'motionTaskId',
+			api: 'motion_task_id',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "postProcess",
-			"api": "post_process",
-			"kind": "object",
-			"top": false,
-			"children": [
+			param: 'postProcess',
+			api: 'post_process',
+			kind: 'object',
+			top: false,
+			children: [
 				{
-					"param": "operationType",
-					"api": "operation_type",
-					"kind": "options",
-					"top": false
+					param: 'operationType',
+					api: 'operation_type',
+					kind: 'options',
+					top: false,
 				},
 				{
-					"param": "fps",
-					"api": "fps",
-					"kind": "options",
-					"top": false
-				}
-			]
-		}
+					param: 'fps',
+					api: 'fps',
+					kind: 'options',
+					top: false,
+				},
+			],
+		},
 	],
-	"textToImage": [
+	textToImage: [
 		{
-			"param": "aiModel",
-			"api": "ai_model",
-			"kind": "options",
-			"top": true,
-			"allowCustom": true
+			param: 'aiModel',
+			api: 'ai_model',
+			kind: 'options',
+			top: true,
+			allowCustom: true,
 		},
 		{
-			"param": "prompt",
-			"api": "prompt",
-			"kind": "string",
-			"top": true
+			param: 'prompt',
+			api: 'prompt',
+			kind: 'string',
+			top: true,
 		},
 		{
-			"param": "generateMultiView",
-			"api": "generate_multi_view",
-			"kind": "boolean",
-			"top": false
+			param: 'generateMultiView',
+			api: 'generate_multi_view',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "poseMode",
-			"api": "pose_mode",
-			"kind": "options",
-			"top": false
+			param: 'poseMode',
+			api: 'pose_mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "aspectRatio",
-			"api": "aspect_ratio",
-			"kind": "options",
-			"top": false
+			param: 'aspectRatio',
+			api: 'aspect_ratio',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "removeBackground",
-			"api": "remove_background",
-			"kind": "boolean",
-			"top": false
-		}
+			param: 'removeBackground',
+			api: 'remove_background',
+			kind: 'boolean',
+			top: false,
+		},
 	],
-	"imageToImage": [
+	imageToImage: [
 		{
-			"param": "aiModel",
-			"api": "ai_model",
-			"kind": "options",
-			"top": true,
-			"allowCustom": true
+			param: 'aiModel',
+			api: 'ai_model',
+			kind: 'options',
+			top: true,
+			allowCustom: true,
 		},
 		{
-			"param": "prompt",
-			"api": "prompt",
-			"kind": "string",
-			"top": true
+			param: 'prompt',
+			api: 'prompt',
+			kind: 'string',
+			top: true,
 		},
 		{
-			"param": "generateMultiView",
-			"api": "generate_multi_view",
-			"kind": "boolean",
-			"top": false
+			param: 'generateMultiView',
+			api: 'generate_multi_view',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "aspectRatio",
-			"api": "aspect_ratio",
-			"kind": "options",
-			"top": false
+			param: 'aspectRatio',
+			api: 'aspect_ratio',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "removeBackground",
-			"api": "remove_background",
-			"kind": "boolean",
-			"top": false
-		}
+			param: 'removeBackground',
+			api: 'remove_background',
+			kind: 'boolean',
+			top: false,
+		},
 	],
-	"printMultiColor": [
+	printMultiColor: [
 		{
-			"param": "style",
-			"api": "style",
-			"kind": "options",
-			"top": false
+			param: 'style',
+			api: 'style',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "maxColors",
-			"api": "max_colors",
-			"kind": "number",
-			"top": false
+			param: 'maxColors',
+			api: 'max_colors',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "maxDepth",
-			"api": "max_depth",
-			"kind": "number",
-			"top": false
+			param: 'maxDepth',
+			api: 'max_depth',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "printerBrand",
-			"api": "printer_brand",
-			"kind": "options",
-			"top": false
-		}
+			param: 'printerBrand',
+			api: 'printer_brand',
+			kind: 'options',
+			top: false,
+		},
 	],
-	"printSplit": [
+	printSplit: [
 		{
-			"param": "inputTaskId",
-			"api": "input_task_id",
-			"kind": "string",
-			"top": true
+			param: 'inputTaskId',
+			api: 'input_task_id',
+			kind: 'string',
+			top: true,
 		},
 		{
-			"param": "mode",
-			"api": "mode",
-			"kind": "options",
-			"top": false
+			param: 'mode',
+			api: 'mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "prompt",
-			"api": "prompt",
-			"kind": "string",
-			"top": false
+			param: 'prompt',
+			api: 'prompt',
+			kind: 'string',
+			top: false,
 		},
 		{
-			"param": "targetFormats",
-			"api": "target_formats",
-			"kind": "multiOptions",
-			"top": false
+			param: 'targetFormats',
+			api: 'target_formats',
+			kind: 'multiOptions',
+			top: false,
 		},
 		{
-			"param": "layout",
-			"api": "layout",
-			"kind": "options",
-			"top": false
+			param: 'layout',
+			api: 'layout',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "keepTexture",
-			"api": "keep_texture",
-			"kind": "boolean",
-			"top": false
+			param: 'keepTexture',
+			api: 'keep_texture',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "connectors",
-			"api": "connectors",
-			"kind": "boolean",
-			"top": false
+			param: 'connectors',
+			api: 'connectors',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "connectorType",
-			"api": "connector_type",
-			"kind": "options",
-			"top": false
+			param: 'connectorType',
+			api: 'connector_type',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "connectorSize",
-			"api": "connector_size",
-			"kind": "number",
-			"top": false
+			param: 'connectorSize',
+			api: 'connector_size',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "connectorHeight",
-			"api": "connector_height",
-			"kind": "number",
-			"top": false
-		}
+			param: 'connectorHeight',
+			api: 'connector_height',
+			kind: 'number',
+			top: false,
+		},
 	],
-	"relief": [
+	relief: [
 		{
-			"param": "variant",
-			"api": "variant",
-			"kind": "options",
-			"top": false
+			param: 'variant',
+			api: 'variant',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "shouldGenerateModel",
-			"api": "should_generate_model",
-			"kind": "boolean",
-			"top": false
+			param: 'shouldGenerateModel',
+			api: 'should_generate_model',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "sizeMm",
-			"api": "size_mm",
-			"kind": "number",
-			"top": false
+			param: 'sizeMm',
+			api: 'size_mm',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "carvingMode",
-			"api": "carving_mode",
-			"kind": "options",
-			"top": false
+			param: 'carvingMode',
+			api: 'carving_mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "carvingDepthMm",
-			"api": "carving_depth_mm",
-			"kind": "number",
-			"top": false
+			param: 'carvingDepthMm',
+			api: 'carving_depth_mm',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "removeBase",
-			"api": "remove_base",
-			"kind": "boolean",
-			"top": false
+			param: 'removeBase',
+			api: 'remove_base',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "removalThreshold",
-			"api": "removal_threshold",
-			"kind": "number",
-			"top": false
+			param: 'removalThreshold',
+			api: 'removal_threshold',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "baseThicknessMm",
-			"api": "base_thickness_mm",
-			"kind": "number",
-			"top": false
+			param: 'baseThicknessMm',
+			api: 'base_thickness_mm',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "bendMode",
-			"api": "bend_mode",
-			"kind": "options",
-			"top": false
+			param: 'bendMode',
+			api: 'bend_mode',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "bendAxis",
-			"api": "bend_axis",
-			"kind": "options",
-			"top": false
+			param: 'bendAxis',
+			api: 'bend_axis',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "bendAngle",
-			"api": "bend_angle",
-			"kind": "number",
-			"top": false
+			param: 'bendAngle',
+			api: 'bend_angle',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "meshResolution",
-			"api": "mesh_resolution",
-			"kind": "number",
-			"top": false
+			param: 'meshResolution',
+			api: 'mesh_resolution',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "targetFormats",
-			"api": "target_formats",
-			"kind": "multiOptions",
-			"top": false
+			param: 'targetFormats',
+			api: 'target_formats',
+			kind: 'multiOptions',
+			top: false,
 		},
 		{
-			"param": "colorMapping",
-			"api": "color_mapping",
-			"kind": "boolean",
-			"top": false
-		}
+			param: 'colorMapping',
+			api: 'color_mapping',
+			kind: 'boolean',
+			top: false,
+		},
 	],
-	"printRepair": [
+	printRepair: [
 		{
-			"param": "alphaThumbnail",
-			"api": "alpha_thumbnail",
-			"kind": "boolean",
-			"top": false
+			param: 'alphaThumbnail',
+			api: 'alpha_thumbnail',
+			kind: 'boolean',
+			top: false,
 		},
 		{
-			"param": "printerType",
-			"api": "printer_type",
-			"kind": "options",
-			"top": false
+			param: 'printerType',
+			api: 'printer_type',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "intendedPrintHeightMm",
-			"api": "intended_print_height_mm",
-			"kind": "number",
-			"top": false
+			param: 'intendedPrintHeightMm',
+			api: 'intended_print_height_mm',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "intendedPrintLongestSideMm",
-			"api": "intended_print_longest_side_mm",
-			"kind": "number",
-			"top": false
-		}
+			param: 'intendedPrintLongestSideMm',
+			api: 'intended_print_longest_side_mm',
+			kind: 'number',
+			top: false,
+		},
 	],
-	"printAnalyze": [
+	printAnalyze: [
 		{
-			"param": "printerType",
-			"api": "printer_type",
-			"kind": "options",
-			"top": false
+			param: 'printerType',
+			api: 'printer_type',
+			kind: 'options',
+			top: false,
 		},
 		{
-			"param": "intendedPrintHeightMm",
-			"api": "intended_print_height_mm",
-			"kind": "number",
-			"top": false
+			param: 'intendedPrintHeightMm',
+			api: 'intended_print_height_mm',
+			kind: 'number',
+			top: false,
 		},
 		{
-			"param": "intendedPrintLongestSideMm",
-			"api": "intended_print_longest_side_mm",
-			"kind": "number",
-			"top": false
-		}
-	]
+			param: 'intendedPrintLongestSideMm',
+			api: 'intended_print_longest_side_mm',
+			kind: 'number',
+			top: false,
+		},
+	],
 };

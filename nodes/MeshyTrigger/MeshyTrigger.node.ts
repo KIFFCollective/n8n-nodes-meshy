@@ -21,7 +21,8 @@ export class MeshyTrigger implements INodeType {
 		group: ['trigger'],
 		version: 1,
 		subtitle: 'Task updates',
-		description: 'Starts the workflow when a Meshy API task makes progress or finishes (unofficial)',
+		description:
+			'Starts the workflow when a Meshy API task makes progress or finishes (unofficial)',
 		defaults: { name: 'Meshy Trigger' },
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
@@ -37,7 +38,7 @@ export class MeshyTrigger implements INodeType {
 		properties: [
 			{
 				displayName:
-					'Meshy cannot register webhooks through its API. Copy the Production URL above, create a webhook at meshy.ai/developers/webhooks with it as the Payload URL, then put that webhook\'s secret in the Meshy credential. Every active Meshy webhook receives every API task.',
+					"Meshy cannot register webhooks through its API. Copy the Production URL above, create a webhook at meshy.ai/developers/webhooks with it as the Payload URL, then put that webhook's secret in the Meshy credential. Every active Meshy webhook receives every API task.",
 				name: 'setupNotice',
 				type: 'notice',
 				default: '',
@@ -46,7 +47,9 @@ export class MeshyTrigger implements INodeType {
 				displayName: 'Task Types',
 				name: 'taskTypes',
 				type: 'multiOptions',
-				options: FAMILIES.map((f) => ({ name: f.name, value: f.value })).sort((a, b) => a.name.localeCompare(b.name)),
+				options: FAMILIES.map((f) => ({ name: f.name, value: f.value })).sort((a, b) =>
+					a.name.localeCompare(b.name),
+				),
 				default: [],
 				description: 'Only start for these task types. Leave empty for all.',
 			},
@@ -100,7 +103,9 @@ export class MeshyTrigger implements INodeType {
 
 		const task = this.getBodyData() as IDataObject;
 		const familyValues = this.getNodeParameter('taskTypes', []) as string[];
-		const taskTypes = FAMILIES.filter((f) => familyValues.includes(f.value)).flatMap((f) => f.taskTypes);
+		const taskTypes = FAMILIES.filter((f) => familyValues.includes(f.value)).flatMap(
+			(f) => f.taskTypes,
+		);
 		const statuses = this.getNodeParameter('statuses', []) as string[];
 
 		const staticData = this.getWorkflowStaticData('node');
@@ -112,7 +117,9 @@ export class MeshyTrigger implements INodeType {
 		if (!decision.accept) return { webhookResponse: { received: true, ignored: decision.reason } };
 
 		const type = String(task.type ?? '');
-		const family = FAMILIES.find((f) => f.taskTypes.some((t) => type === t || type.startsWith(`${t}-`)));
+		const family = FAMILIES.find((f) =>
+			f.taskTypes.some((t) => type === t || type.startsWith(`${t}-`)),
+		);
 		const json = normalizeTask(task, family?.value ?? type, family?.output ?? 'model');
 		return { workflowData: [[{ json }]] };
 	}

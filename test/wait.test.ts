@@ -59,7 +59,10 @@ describe('pollUntilTerminal', () => {
 	it('times out with an error that says the task is still running and shows its id', async () => {
 		const clock = fakeClock();
 		const fetch = sequence([{ task: { status: 'IN_PROGRESS' }, retryAfterSeconds: 30 }]);
-		const error = await pollUntilTerminal('task-123', fetch, { timeoutMs: 120_000, ...clock }).catch((e) => e);
+		const error = await pollUntilTerminal('task-123', fetch, {
+			timeoutMs: 120_000,
+			...clock,
+		}).catch((e) => e);
 		expect(error).toBeInstanceOf(WaitTimeoutError);
 		expect(error.message).toContain('task-123');
 		expect(error.message).toContain('still IN_PROGRESS');

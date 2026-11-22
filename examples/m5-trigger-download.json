@@ -1,0 +1,71 @@
+{
+	"name": "Meshy: download models when tasks finish",
+	"nodes": [
+		{
+			"id": "meshy-download-models-when-tasks-finish-0",
+			"name": "Meshy Trigger",
+			"type": "n8n-nodes-meshy.meshyTrigger",
+			"typeVersion": 1,
+			"position": [
+				0,
+				0
+			],
+			"parameters": {
+				"taskTypes": [
+					"imageTo3d",
+					"textTo3d"
+				],
+				"statuses": [
+					"SUCCEEDED"
+				]
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		},
+		{
+			"id": "meshy-download-models-when-tasks-finish-1",
+			"name": "Download GLB",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				240,
+				0
+			],
+			"parameters": {
+				"resource": "task",
+				"taskType": "={{ $json.family }}",
+				"operation": "download",
+				"downloadSource": "item",
+				"format": "glb",
+				"binaryPropertyOutput": "data"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		}
+	],
+	"connections": {
+		"Meshy Trigger": {
+			"main": [
+				[
+					{
+						"node": "Download GLB",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"pinData": {}
+}

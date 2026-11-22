@@ -19,7 +19,11 @@ export interface ParamReader {
 export class InputError extends Error {}
 
 export function splitList(value: unknown): string[] {
-	if (Array.isArray(value)) return value.map(String).map((s) => s.trim()).filter(Boolean);
+	if (Array.isArray(value))
+		return value
+			.map(String)
+			.map((s) => s.trim())
+			.filter(Boolean);
 	if (typeof value !== 'string') return [];
 	return value
 		.split(/[,\n]/)
@@ -39,7 +43,9 @@ function convert(field: BodyField, value: unknown, reader: ParamReader): unknown
 		case 'options': {
 			if (value === '') return undefined;
 			if (field.allowCustom && value === '__custom') {
-				const custom = reader.get(`custom${field.param.charAt(0).toUpperCase()}${field.param.slice(1)}`);
+				const custom = reader.get(
+					`custom${field.param.charAt(0).toUpperCase()}${field.param.slice(1)}`,
+				);
 				return typeof custom === 'string' && custom.trim() ? custom.trim() : undefined;
 			}
 			return value;
@@ -73,7 +79,11 @@ function convert(field: BodyField, value: unknown, reader: ParamReader): unknown
 	}
 }
 
-async function applySource(familyValue: string, body: IDataObject, reader: ParamReader): Promise<void> {
+async function applySource(
+	familyValue: string,
+	body: IDataObject,
+	reader: ParamReader,
+): Promise<void> {
 	const source = getFamily(familyValue).source;
 	if (!source) return;
 	const mode = (reader.get('inputType') as SourceMode | null) ?? source.modes[0];
@@ -89,7 +99,9 @@ async function applySource(familyValue: string, body: IDataObject, reader: Param
 			const urls = splitList(reader.get('sourceUrls'));
 			if (!urls.length) throw new InputError('Enter at least one URL.');
 			if (source.maxItems && urls.length > source.maxItems) {
-				throw new InputError(`Meshy accepts at most ${source.maxItems} images here, got ${urls.length}.`);
+				throw new InputError(
+					`Meshy accepts at most ${source.maxItems} images here, got ${urls.length}.`,
+				);
 			}
 			body[source.urlsField as string] = urls;
 			break;
@@ -103,7 +115,9 @@ async function applySource(familyValue: string, body: IDataObject, reader: Param
 			const props = splitList(reader.get('binaryPropertyNames'));
 			if (!props.length) throw new InputError('Enter at least one binary property name.');
 			if (source.maxItems && props.length > source.maxItems) {
-				throw new InputError(`Meshy accepts at most ${source.maxItems} images here, got ${props.length}.`);
+				throw new InputError(
+					`Meshy accepts at most ${source.maxItems} images here, got ${props.length}.`,
+				);
 			}
 			const uris: string[] = [];
 			for (const prop of props) uris.push(await reader.binaryToDataUri(prop, source.asset));
@@ -119,7 +133,10 @@ async function applySource(familyValue: string, body: IDataObject, reader: Param
 	}
 }
 
-export async function buildCreateBody(familyValue: string, reader: ParamReader): Promise<IDataObject> {
+export async function buildCreateBody(
+	familyValue: string,
+	reader: ParamReader,
+): Promise<IDataObject> {
 	const body: IDataObject = {};
 	await applySource(familyValue, body, reader);
 
@@ -132,7 +149,10 @@ export async function buildCreateBody(familyValue: string, reader: ParamReader):
 
 	// Animation takes exactly one of action_id, action_ids or motion_task_id.
 	// action_id is a top-level field with a default, so it gives way to the others.
-	if (familyValue === 'animation' && (body.action_ids !== undefined || body.motion_task_id !== undefined)) {
+	if (
+		familyValue === 'animation' &&
+		(body.action_ids !== undefined || body.motion_task_id !== undefined)
+	) {
 		delete body.action_id;
 	}
 	return body;
