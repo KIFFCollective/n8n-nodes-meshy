@@ -119,3 +119,17 @@ describe('runOperation', () => {
 		expect(item.json).toMatchObject({ status: 'FAILED', error: { message: 'nope' } });
 	});
 });
+
+describe('Task ID guard', () => {
+	it.each(['get', 'cancel', 'wait'])(
+		'%s refuses an empty Task ID instead of hitting the list endpoint',
+		async (op) => {
+			const { ctx, httpRequestWithAuthentication } = ctxWith(
+				{ taskId: '  ', timeoutMinutes: 10, waitOptions: {} },
+				[],
+			);
+			await expect(runOperation(ctx, 'remesh', op, 0)).rejects.toThrow(/Task ID is empty/);
+			expect(httpRequestWithAuthentication).not.toHaveBeenCalled();
+		},
+	);
+});

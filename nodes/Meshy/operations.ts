@@ -27,6 +27,7 @@ import { meshyRequest, retryAfterSeconds } from './transport';
 import { MAX_WAIT_MINUTES, pollUntilTerminal, WaitTimeoutError } from './wait';
 
 const PAGE_SIZE = 100;
+const MAX_PAGES = 255; // the API rejects page_num above 255
 
 /** Turns our own error types into n8n errors that show up properly in the UI. */
 export function asNodeError(
@@ -43,7 +44,6 @@ export function asNodeError(
 	}
 	return new NodeOperationError(ctx.getNode(), error as Error, { itemIndex: i });
 }
-const MAX_PAGES = 255; // the API rejects page_num above 255
 
 function reader(ctx: IExecuteFunctions, i: number): ParamReader {
 	return {
@@ -66,6 +66,13 @@ async function fetchTask(ctx: IExecuteFunctions, family: FamilyDef, id: string, 
 		itemIndex: i,
 	});
 	return { task: res.body as IDataObject, retryAfterSeconds: retryAfterSeconds(res.headers ?? {}) };
+}
+
+/** Reads the Task ID. An empty ID would turn GET /family/{id} into the list endpoint. */
+function taskIdParam(ctx: IExecuteFunctions, i: number): string {
+	const id = String(ctx.getNodeParameter('taskId', i) ?? '').trim();
+	if (!id) throw new NodeOperationError(ctx.getNode(), 'Task ID is empty.', { itemIndex: i });
+	return id;
 }
 
 const one = (json: IDataObject, i: number): INodeExecutionData[] => [
@@ -131,7 +138,7 @@ export async function get(
 	family: FamilyDef,
 	i: number,
 ): Promise<INodeExecutionData[]> {
-	const id = ctx.getNodeParameter('taskId', i) as string;
+	const id = taskIdParam(ctx, i);
 	const { task } = await fetchTask(ctx, family, id, i);
 	return one(normalizeTask(task, family.value, family.output), i);
 }
@@ -154,7 +161,7 @@ export async function cancel(
 	family: FamilyDef,
 	i: number,
 ): Promise<INodeExecutionData[]> {
-	const id = ctx.getNodeParameter('taskId', i) as string;
+	const id = taskIdParam(ctx, i);
 	await meshyRequest.call(ctx, 'DELETE', `${family.path}/${encodeURIComponent(id)}`, {
 		itemIndex: i,
 	});
@@ -166,7 +173,7 @@ export async function wait(
 	family: FamilyDef,
 	i: number,
 ): Promise<INodeExecutionData[]> {
-	const id = (ctx.getNodeParameter('taskId', i) as string).trim();
+	const id = taskIdParam(ctx, i);
 	const minutes = Math.min(
 		Math.max(ctx.getNodeParameter('timeoutMinutes', i, 10) as number, 1),
 		MAX_WAIT_MINUTES,
@@ -224,7 +231,7 @@ export async function download(
 			);
 		}
 	} else {
-		const id = ctx.getNodeParameter('taskId', i) as string;
+		const id = taskIdParam(ctx, i);
 		const { task: raw } = await fetchTask(ctx, family, id, i);
 		task = normalizeTask(raw, family.value, family.output);
 	}
