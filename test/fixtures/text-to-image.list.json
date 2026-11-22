@@ -1,0 +1,17 @@
+[
+	{
+		"id": "018a210d-8ba4-705c-b111-1f1776f7f578",
+		"type": "text-to-image",
+		"ai_model": "nano-banana",
+		"prompt": "A majestic dragon soaring through clouds at sunset",
+		"status": "SUCCEEDED",
+		"progress": 100,
+		"created_at": 1692771650657,
+		"started_at": 1692771667037,
+		"finished_at": 1692771669037,
+		"expires_at": 1692771679037,
+		"image_urls": [
+			"https://assets.meshy.ai/***/tasks/018a210d-8ba4-705c-b111-1f1776f7f578/output/image.png?Expires=***"
+		]
+	}
+]

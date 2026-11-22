@@ -1,0 +1,37 @@
+{
+	"id": "0193bfc5-ee4f-73f8-8525-44b398884ce9",
+	"type": "print-repair",
+	"status": "SUCCEEDED",
+	"progress": 100,
+	"preceding_tasks": 0,
+	"created_at": 1699999999000,
+	"started_at": 1700000000000,
+	"finished_at": 1700000090000,
+	"expires_at": 1715725490000,
+	"task_error": null,
+	"model_urls": {
+		"glb": "https://assets.meshy.ai/***/tasks/0193bfc5-ee4f-73f8-8525-44b398884ce9/output/model.glb?Expires=***"
+	},
+	"thumbnail_url": "https://assets.meshy.ai/***/tasks/0193bfc5-ee4f-73f8-8525-44b398884ce9/output/preview.png?Expires=***",
+	"texture_urls": [],
+	"consumed_credits": 10,
+	"intended_print": {
+		"printer_type": "sla",
+		"height_mm": 100,
+		"longest_side_mm": 118,
+		"wall_thickness_mm": 0.8,
+		"dimensions_mm": [
+			118,
+			72.41,
+			99.87
+		]
+	},
+	"print_repair_report": {
+		"route": "thin_wall",
+		"applied": true,
+		"faces_before": 243112,
+		"faces_after": 251870,
+		"thin_area_ratio_before": 0.083,
+		"thin_area_ratio_after": 0.004
+	}
+}

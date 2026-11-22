@@ -1,0 +1,20 @@
+[
+	{
+		"id": "0199c3d2-5a7e-7b14-9e2f-3c8d1a6b4f20",
+		"type": "relief",
+		"model_urls": {
+			"glb": "https://assets.meshy.ai/***/tasks/0199c3d2-5a7e-7b14-9e2f-3c8d1a6b4f20/output/model.glb?Expires=***",
+			"stl": "https://assets.meshy.ai/***/tasks/0199c3d2-5a7e-7b14-9e2f-3c8d1a6b4f20/output/model.stl?Expires=***"
+		},
+		"depth_map_url": "https://assets.meshy.ai/***/tasks/0199c3d2-5a7e-7b14-9e2f-3c8d1a6b4f20/output/depth.png?Expires=***",
+		"thumbnail_url": "https://assets.meshy.ai/***/tasks/0199c3d2-5a7e-7b14-9e2f-3c8d1a6b4f20/output/preview.png?Expires=***",
+		"progress": 100,
+		"status": "SUCCEEDED",
+		"created_at": 1699999999000,
+		"started_at": 1700000000000,
+		"finished_at": 1700000060000,
+		"expires_at": 1700259260000,
+		"task_error": null,
+		"consumed_credits": 20
+	}
+]

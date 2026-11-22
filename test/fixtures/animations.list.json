@@ -1,0 +1,20 @@
+[
+	{
+		"action_id": 4,
+		"name": "Attack",
+		"key": "Attack",
+		"category": "Fighting",
+		"sub_category": "AttackingwithWeapon",
+		"preview_url": "https://cdn.meshy.ai/webapp-assets/feature-demo/animation/preview/biped/Attack.gif",
+		"rig_type": "biped"
+	},
+	{
+		"action_id": 92,
+		"name": "Double Combo Attack",
+		"key": "Double_Combo_Attack",
+		"category": "Fighting",
+		"sub_category": "AttackingwithWeapon",
+		"preview_url": "https://cdn.meshy.ai/webapp-assets/feature-demo/animation/preview/biped/Double_Combo_Attack.gif",
+		"rig_type": "biped"
+	}
+]

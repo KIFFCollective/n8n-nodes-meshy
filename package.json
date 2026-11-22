@@ -1,0 +1,66 @@
+{
+	"name": "n8n-nodes-meshy",
+	"version": "0.1.0",
+	"description": "Unofficial n8n community node for the Meshy 3D generation API",
+	"license": "MIT",
+	"homepage": "https://github.com/ProbablePrime/n8n-nodes-meshy#readme",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"meshy",
+		"3d",
+		"text-to-3d",
+		"image-to-3d"
+	],
+	"author": {
+		"name": "ProbablePrime",
+		"email": "richard.fox@ahref.co.uk"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ProbablePrime/n8n-nodes-meshy.git"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"generate": "tsx scripts/generate-from-openapi.mts",
+		"generate:check": "tsx scripts/generate-from-openapi.mts --check",
+		"fixtures": "node scripts/extract-fixtures.mjs"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/MeshyApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/Meshy/Meshy.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "*",
+		"eslint": "9.32.0",
+		"prettier": "3.6.2",
+		"release-it": "^21.1.0",
+		"tsx": "^4.23.15",
+		"typescript": "5.9.2",
+		"vitest": "^3.2.7",
+		"yaml": "^2.9.1"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	},
+	"engines": {
+		"node": ">=22"
+	}
+}

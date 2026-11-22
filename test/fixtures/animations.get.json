@@ -1,0 +1,19 @@
+{
+	"id": "018c425b-b2c6-727e-d333-3c1887i9h791",
+	"type": "animate",
+	"status": "SUCCEEDED",
+	"created_at": 1747032440896,
+	"progress": 100,
+	"started_at": 1747032441210,
+	"finished_at": 1747032457530,
+	"expires_at": 1747291657530,
+	"task_error": null,
+	"consumed_credits": 3,
+	"result": {
+		"animation_glb_url": "https://assets.meshy.ai/***/tasks/018c425b-b2c6-727e-d333-3c1887i9h791/output/Animation_Reaping_Swing_withSkin.glb?Expires=...",
+		"animation_fbx_url": "https://assets.meshy.ai/***/tasks/018c425b-b2c6-727e-d333-3c1887i9h791/output/Animation_Reaping_Swing_withSkin.fbx?Expires=...",
+		"processed_usdz_url": "https://assets.meshy.ai/***/tasks/018c425b-b2c6-727e-d333-3c1887i9h791/output/processed.usdz?Expires=...",
+		"processed_armature_fbx_url": "https://assets.meshy.ai/***/tasks/018c425b-b2c6-727e-d333-3c1887i9h791/output/processed_armature.fbx?Expires=...",
+		"processed_animation_fps_fbx_url": "https://assets.meshy.ai/***/tasks/018c425b-b2c6-727e-d333-3c1887i9h791/output/processed_60fps.fbx?Expires=..."
+	}
+}

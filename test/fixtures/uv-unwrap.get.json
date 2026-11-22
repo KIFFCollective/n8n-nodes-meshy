@@ -1,0 +1,19 @@
+{
+	"id": "019361c6-9b34-7b23-bef2-d0107c4d92e2",
+	"type": "uv-unwrap",
+	"model_urls": {
+		"glb": "https://assets.meshy.ai/***/tasks/019361c6-9b34-7b23-bef2-d0107c4d92e2/output/model.glb?Expires=***"
+	},
+	"thumbnail_url": "https://assets.meshy.ai/***/tasks/019361c6-9b34-7b23-bef2-d0107c4d92e2/output/preview.png?Expires=***",
+	"progress": 100,
+	"status": "SUCCEEDED",
+	"preceding_tasks": 0,
+	"created_at": 1716579120000,
+	"started_at": 1716579122000,
+	"finished_at": 1716579180000,
+	"expires_at": 1716665580000,
+	"task_error": {
+		"message": ""
+	},
+	"consumed_credits": 5
+}

@@ -1,0 +1,27 @@
+[
+	{
+		"task_id": "018a210d-8ba4-705c-b111-1f1776f7f578",
+		"endpoint": "image-to-3d",
+		"status": "SUCCEEDED",
+		"created_at": 1755787000000,
+		"finished_at": 1755787045000,
+		"consumed_credits": 20,
+		"api_key_name": "production",
+		"api_key_suffix": "a1b2",
+		"metadata": {
+			"user": "alex@example.com",
+			"team": "fab"
+		}
+	},
+	{
+		"task_id": "018a210d-1c22-7e0f-9d3a-4a5b6c7d8e9f",
+		"endpoint": "text-to-3d-refine",
+		"status": "FAILED",
+		"created_at": 1755786000000,
+		"finished_at": 1755786030000,
+		"consumed_credits": 0,
+		"api_key_name": "production",
+		"api_key_suffix": "a1b2",
+		"metadata": {}
+	}
+]
