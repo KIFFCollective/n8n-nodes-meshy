@@ -10,7 +10,6 @@ This package is **unofficial**. It is not made or supported by Meshy.
 
 These items are not verified yet, or are not covered:
 
-- Print Multi-Color, Auto Split, Relief and Repair are tested against example responses from the Meshy docs, not against live tasks. Every other family, including Print Analyze, has been run live.
 - Get Usage needs a Studio or Enterprise team key. It is not tested live.
 - Meshy's docs say `Retry-After` is sent while a task is PENDING or IN_PROGRESS. The node uses it when present and waits 5 seconds when it is absent. Live tasks finished too quickly to observe the header.
 - Creative Lab and Text to Motion are not covered, because they are not in Meshy's OpenAPI spec. Animation still accepts a `motion_task_id`.
