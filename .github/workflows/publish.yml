@@ -108,3 +108,27 @@ jobs:
           npm run release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Runs n8n's own community package scanner (provenance, source match, code analysis)
+  # on the version that was just published. It has to run on Linux; it fails on Windows.
+  scan:
+    name: n8n security scan
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Wait for the new version on npm
+        run: |
+          for i in $(seq 1 40); do
+            [ "$(npm view n8n-nodes-meshy version 2>/dev/null)" = "${GITHUB_REF_NAME#v}" ] && exit 0
+            sleep 15
+          done
+          echo "Version ${GITHUB_REF_NAME} did not appear on npm within 10 minutes" && exit 1
+
+      - name: Scan
+        run: npx -y @n8n/scan-community-package n8n-nodes-meshy
