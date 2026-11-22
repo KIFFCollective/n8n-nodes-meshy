@@ -10,7 +10,7 @@ This package is **unofficial**. It is not made or supported by Meshy.
 
 These items are not verified yet, or are not covered:
 
-- The Meshy Trigger node has unit tests, but it has not received a real delivery from Meshy yet. That needs a webhook created by hand in the Meshy dashboard, pointed at a webhook proxy such as smee.io.
+- The Meshy Trigger node was tested in a real n8n with simulated deliveries (wrong secret, valid, duplicate, stale), but it has not received a delivery from Meshy itself yet. That needs a webhook created by hand in the Meshy dashboard, pointed at a webhook proxy such as smee.io.
 - The Print family (multi-color, split, relief, repair, analyze), Convert, Resize, UV Unwrap, Retexture, Multi-Image to 3D, Image to Image and Text to 3D are tested against example responses from the Meshy docs, not against live tasks.
 - Get Usage needs a Studio or Enterprise team key. It is not tested live.
 - Meshy's docs say `Retry-After` is sent while a task is PENDING or IN_PROGRESS. The node uses it when present and waits 5 seconds when it is absent. Live tasks finished too quickly to observe the header.

@@ -31,3 +31,5 @@ One line per decision: date, decision, reason.
 - 2026-11-22: The package.json repository and homepage point at github.com/ProbablePrime/n8n-nodes-meshy. That repo URL is assumed. Fix it if the repo lives elsewhere before publishing.
 - 2026-11-22: Pre-commit hook lives in `.githooks/` and is enabled with `npm run hooks:install`, not a `prepare` script. Lifecycle scripts are restricted for community nodes, and this adds no dependency.
 - 2026-11-22: `.gitattributes` forces LF line endings. The repo is developed on Windows but CI runs on Linux.
+- 2026-11-22: Verified in n8n 2.48.7 (Docker): the M1 example workflow produced a 1.08 MB GLB. The run-task sub-workflow worked when called from a parent, both with the Wait operation and with the stock IF and Wait polling loop. The trigger rejected a wrong secret with 401, started exactly one execution for a valid delivery (which downloaded the GLB), and ignored the duplicate and the stale IN_PROGRESS. Sub-workflows must be published before a parent can call them.
+- 2026-11-22: Total live spend today: 36 credits (balance 1225 to 1189).

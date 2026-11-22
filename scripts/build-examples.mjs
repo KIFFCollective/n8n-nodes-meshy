@@ -17,6 +17,7 @@ function workflow(name, steps, extraConnections = {}) {
 		typeVersion: s.typeVersion ?? 1,
 		position: s.position ?? [i * 240, 0],
 		parameters: s.parameters,
+		...(s.webhookId ? { webhookId: s.webhookId } : {}),
 		...(s.type && !s.credentials ? {} : { credentials: CREDS }),
 	}));
 	const connections = {};
@@ -295,6 +296,7 @@ const examples = {
 		{
 			name: 'Meshy Trigger',
 			type: 'n8n-nodes-meshy.meshyTrigger',
+			webhookId: '5b0e7d4a-6f1c-4c39-9a51-2d7f3e8b9c10',
 			credentials: true,
 			parameters: { taskTypes: ['imageTo3d', 'textTo3d'], statuses: ['SUCCEEDED'] },
 		},
