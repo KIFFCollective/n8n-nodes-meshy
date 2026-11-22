@@ -3,6 +3,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { IDataObject, IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
+import { expect } from 'vitest';
 import { Meshy } from '../../nodes/Meshy/Meshy.node.ts';
 import { fakeNode } from '../helpers.ts';
 
@@ -33,7 +34,9 @@ export function saveState() {
 /** Refuses to start a paid task that would take the run over its credit cap. */
 export function spend(credits: number, what: string) {
 	if (state.spent + credits > MAX_CREDITS) {
-		throw new Error(`Live spend cap: ${what} costs ${credits}, already spent ${state.spent} of ${MAX_CREDITS}.`);
+		throw new Error(
+			`Live spend cap: ${what} costs ${credits}, already spent ${state.spent} of ${MAX_CREDITS}.`,
+		);
 	}
 	state.spent += credits;
 	saveState();
@@ -52,7 +55,8 @@ interface RequestOptions {
 
 async function realRequest(opts: RequestOptions, apiKey?: string) {
 	const url = new URL(opts.url);
-	for (const [k, v] of Object.entries(opts.qs ?? {})) if (v !== undefined) url.searchParams.set(k, String(v));
+	for (const [k, v] of Object.entries(opts.qs ?? {}))
+		if (v !== undefined) url.searchParams.set(k, String(v));
 	const headers: Record<string, string> = { ...(opts.headers ?? {}) };
 	if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
 	if (opts.body !== undefined) headers['content-type'] = 'application/json';
@@ -72,7 +76,8 @@ async function realRequest(opts: RequestOptions, apiKey?: string) {
 			body = text;
 		}
 	}
-	if (!opts.ignoreHttpStatusErrors && res.status >= 400) throw new Error(`HTTP ${res.status} from ${url.host}`);
+	if (!opts.ignoreHttpStatusErrors && res.status >= 400)
+		throw new Error(`HTTP ${res.status} from ${url.host}`);
 	return opts.returnFullResponse ? { statusCode: res.status, headers: resHeaders, body } : body;
 }
 
@@ -91,14 +96,16 @@ export async function runNode(params: IDataObject, input: INodeExecutionData[] =
 		getNode: () => fakeNode,
 		continueOnFail: () => false,
 		helpers: {
-			httpRequestWithAuthentication: (_cred: string, opts: RequestOptions) => realRequest(opts, apiKey),
+			httpRequestWithAuthentication: (_cred: string, opts: RequestOptions) =>
+				realRequest(opts, apiKey),
 			httpRequest: (opts: RequestOptions) => realRequest(opts),
 			assertBinaryData: (i: number, prop: string) => {
 				const bin = input[i].binary?.[prop];
 				if (!bin) throw new Error(`No binary property ${prop}`);
 				return bin;
 			},
-			getBinaryDataBuffer: async (i: number, prop: string) => Buffer.from(input[i].binary![prop].data, 'base64'),
+			getBinaryDataBuffer: async (i: number, prop: string) =>
+				Buffer.from(input[i].binary![prop].data, 'base64'),
 			prepareBinaryData: async (buffer: Buffer, fileName: string, mimeType: string) => ({
 				data: buffer.toString('base64'),
 				fileName,
@@ -109,4 +116,32 @@ export async function runNode(params: IDataObject, input: INodeExecutionData[] =
 	} as unknown as IExecuteFunctions;
 	const [out] = await new Meshy().execute.call(ctx);
 	return out;
+}
+
+/** Creates a task once (remembering its id), then waits for it with the real Wait operation. */
+export async function createAndWait(
+	key: string,
+	cost: number,
+	resource: string,
+	params: IDataObject,
+	input?: INodeExecutionData[],
+) {
+	if (!state[key]) {
+		spend(cost, key);
+		const [created] = await runNode({ resource, operation: 'create', ...params }, input);
+		expect(created.json.status).toBe('PENDING');
+		state[key] = created.json.id;
+		saveState();
+		console.log(`${key}: created ${created.json.id}`);
+	}
+	const [done] = await runNode({
+		resource,
+		operation: 'wait',
+		taskId: state[key],
+		timeoutMinutes: 25,
+	});
+	console.log(
+		`${key}: ${done.json.status}, formats: ${Object.keys(done.json.model_urls as object).join(',')}`,
+	);
+	return done;
 }
