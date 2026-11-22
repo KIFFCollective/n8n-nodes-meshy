@@ -1,0 +1,63 @@
+{
+	"name": "Meshy: image to 3D GLB in one node",
+	"nodes": [
+		{
+			"id": "meshy-image-to-3d-glb-in-one-node-0",
+			"name": "Start",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [
+				0,
+				0
+			],
+			"parameters": {}
+		},
+		{
+			"id": "meshy-image-to-3d-glb-in-one-node-1",
+			"name": "Image to 3D GLB",
+			"type": "n8n-nodes-meshy.meshy",
+			"typeVersion": 1,
+			"position": [
+				240,
+				0
+			],
+			"parameters": {
+				"resource": "imageTo3d",
+				"operation": "create",
+				"inputType": "url",
+				"sourceUrl": "https://cdn.meshy.ai/webapp-assets/doc/image-to-3d-p0-1.webp",
+				"aiModel": "meshy-6-lite",
+				"additionalFields": {
+					"shouldTexture": false
+				},
+				"stopAfter": "downloaded",
+				"timeoutMinutes": 15,
+				"format": "glb",
+				"binaryPropertyOutput": "data"
+			},
+			"credentials": {
+				"meshyApi": {
+					"id": "REPLACE_ME",
+					"name": "Meshy account"
+				}
+			}
+		}
+	],
+	"connections": {
+		"Start": {
+			"main": [
+				[
+					{
+						"node": "Image to 3D GLB",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"pinData": {}
+}

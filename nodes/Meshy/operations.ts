@@ -21,9 +21,10 @@ import {
 	type DownloadFormat,
 	type DownloadSource,
 } from './download';
+import { runBatch, type BatchOutcome, type CreatedTask } from './batch';
 import { getFamily, type FamilyDef } from './families';
 import { normalizeTask, type NormalizedTask } from './normalize';
-import { meshyRequest, retryAfterSeconds } from './transport';
+import { meshyRequest, PendingLimitError, retryAfterSeconds } from './transport';
 import { MAX_WAIT_MINUTES, pollUntilTerminal, WaitTimeoutError } from './wait';
 
 const PAGE_SIZE = 100;
@@ -112,24 +113,43 @@ function rawBody(ctx: IExecuteFunctions, i: number): IDataObject {
 	return parsed as IDataObject;
 }
 
+/** Builds the create body for one item. Input errors are thrown before anything is sent. */
+async function createBody(
+	ctx: IExecuteFunctions,
+	family: FamilyDef,
+	i: number,
+	generic: boolean,
+): Promise<IDataObject> {
+	try {
+		return generic ? rawBody(ctx, i) : await buildCreateBody(family.value, reader(ctx, i));
+	} catch (error) {
+		throw asNodeError(ctx, error, i);
+	}
+}
+
+/** Sends one create request. Never retried: Meshy has no idempotency key. */
+async function postCreate(
+	ctx: IExecuteFunctions,
+	family: FamilyDef,
+	body: IDataObject,
+	i: number,
+): Promise<string> {
+	const res = await meshyRequest.call(ctx, 'POST', family.path, {
+		body,
+		isCreate: true,
+		itemIndex: i,
+	});
+	return String((res.body as IDataObject)?.result ?? '');
+}
+
 export async function create(
 	ctx: IExecuteFunctions,
 	family: FamilyDef,
 	i: number,
 	generic = false,
 ): Promise<INodeExecutionData[]> {
-	let body: IDataObject;
-	try {
-		body = generic ? rawBody(ctx, i) : await buildCreateBody(family.value, reader(ctx, i));
-	} catch (error) {
-		throw asNodeError(ctx, error, i);
-	}
-	const res = await meshyRequest.call(ctx, 'POST', family.path, {
-		body,
-		isCreate: true,
-		itemIndex: i,
-	});
-	const id = String((res.body as IDataObject)?.result ?? '');
+	const body = await createBody(ctx, family, i, generic);
+	const id = await postCreate(ctx, family, body, i);
 	return one({ id, status: 'PENDING', family: family.value }, i);
 }
 
@@ -168,44 +188,66 @@ export async function cancel(
 	return one({ id, family: family.value, canceled: true }, i);
 }
 
+function timeoutMs(ctx: IExecuteFunctions, i: number): number {
+	const minutes = Math.min(
+		Math.max(ctx.getNodeParameter('timeoutMinutes', i, 10) as number, 1),
+		MAX_WAIT_MINUTES,
+	);
+	return minutes * 60_000;
+}
+
+interface WaitSettings {
+	failOnTaskError: boolean;
+	returnTaskOnTimeout: boolean;
+}
+
+function waitSettings(ctx: IExecuteFunctions, i: number): WaitSettings {
+	const options = ctx.getNodeParameter('waitOptions', i, {}) as IDataObject;
+	return {
+		failOnTaskError: options.failOnTaskError !== false,
+		returnTaskOnTimeout: options.returnTaskOnTimeout === true,
+	};
+}
+
+/** The error for a task that ended FAILED or CANCELED while "Error on Failed Task" is on. */
+function taskEndedError(ctx: IExecuteFunctions, task: NormalizedTask, i: number) {
+	const reason = task.error
+		? `: ${task.error.message}${task.error.code ? ` (code: ${task.error.code})` : ''}`
+		: '';
+	return new NodeOperationError(
+		ctx.getNode(),
+		`Meshy task ${task.id} ended as ${task.status}${reason}`,
+		{
+			itemIndex: i,
+			description:
+				task.status === 'FAILED' ? 'Meshy refunds the credits for failed tasks.' : undefined,
+		},
+	);
+}
+
 export async function wait(
 	ctx: IExecuteFunctions,
 	family: FamilyDef,
 	i: number,
 ): Promise<INodeExecutionData[]> {
 	const id = taskIdParam(ctx, i);
-	const minutes = Math.min(
-		Math.max(ctx.getNodeParameter('timeoutMinutes', i, 10) as number, 1),
-		MAX_WAIT_MINUTES,
-	);
-	const options = ctx.getNodeParameter('waitOptions', i, {}) as IDataObject;
-	const failOnTaskError = options.failOnTaskError !== false;
+	const settings = waitSettings(ctx, i);
 
 	let raw: IDataObject;
 	try {
 		raw = await pollUntilTerminal(id, () => fetchTask(ctx, family, id, i), {
-			timeoutMs: minutes * 60_000,
+			timeoutMs: timeoutMs(ctx, i),
 			sleep: (ms) => sleepUnlessExecutionCancelled(ctx, ms),
 		});
 	} catch (error) {
+		if (error instanceof WaitTimeoutError && settings.returnTaskOnTimeout && error.lastTask) {
+			return one(normalizeTask(error.lastTask, family.value, family.output), i);
+		}
 		throw asNodeError(ctx, error, i);
 	}
 
 	const task = normalizeTask(raw, family.value, family.output);
-	if (failOnTaskError && task.status !== 'SUCCEEDED') {
-		const reason = task.error
-			? `: ${task.error.message}${task.error.code ? ` (code: ${task.error.code})` : ''}`
-			: '';
-		throw new NodeOperationError(
-			ctx.getNode(),
-			`Meshy task ${task.id} ended as ${task.status}${reason}`,
-			{
-				itemIndex: i,
-				description:
-					task.status === 'FAILED' ? 'Meshy refunds the credits for failed tasks.' : undefined,
-			},
-		);
-	}
+	if (settings.failOnTaskError && task.status !== 'SUCCEEDED') throw taskEndedError(ctx, task, i);
 	return one(task, i);
 }
 
@@ -215,10 +257,6 @@ export async function download(
 	i: number,
 ): Promise<INodeExecutionData[]> {
 	const sourceMode = ctx.getNodeParameter('downloadSource', i, 'taskId') as string;
-	const format = ctx.getNodeParameter('format', i) as DownloadFormat;
-	const imageIndex = ctx.getNodeParameter('imageIndex', i, 0) as number;
-	const property = ctx.getNodeParameter('binaryPropertyOutput', i, 'data') as string;
-	const options = ctx.getNodeParameter('downloadOptions', i, {}) as IDataObject;
 
 	let task: DownloadSource & IDataObject;
 	if (sourceMode === 'item') {
@@ -235,6 +273,22 @@ export async function download(
 		const { task: raw } = await fetchTask(ctx, family, id, i);
 		task = normalizeTask(raw, family.value, family.output);
 	}
+
+	const json: IDataObject = sourceMode === 'item' ? { ...task } : (task as NormalizedTask);
+	return [await downloadTask(ctx, task, json, i)];
+}
+
+/** Downloads the file chosen by the Format parameter and attaches it to the output item. */
+async function downloadTask(
+	ctx: IExecuteFunctions,
+	task: DownloadSource,
+	json: IDataObject,
+	i: number,
+): Promise<INodeExecutionData> {
+	const format = ctx.getNodeParameter('format', i) as DownloadFormat;
+	const imageIndex = ctx.getNodeParameter('imageIndex', i, 0) as number;
+	const property = ctx.getNodeParameter('binaryPropertyOutput', i, 'data') as string;
+	const options = ctx.getNodeParameter('downloadOptions', i, {}) as IDataObject;
 
 	let url: URL;
 	try {
@@ -259,9 +313,7 @@ export async function download(
 		fileName,
 		mimeFor(fileName, res.headers?.['content-type']),
 	);
-
-	const json: IDataObject = sourceMode === 'item' ? { ...task } : (task as NormalizedTask);
-	return [{ json, binary: { [property]: binary }, pairedItem: { item: i } }];
+	return { json, binary: { [property]: binary }, pairedItem: { item: i } };
 }
 
 export async function getLibrary(ctx: IExecuteFunctions, i: number): Promise<INodeExecutionData[]> {
@@ -329,4 +381,133 @@ export async function runOperation(
 			itemIndex: i,
 		},
 	);
+}
+
+export type StopAfter = 'created' | 'finished' | 'downloaded';
+
+/** Lists the tasks created before an error, so none of them is lost. */
+function createdList(created: CreatedTask[], itemOf: (job: number) => number): string {
+	if (!created.length) return 'No tasks were created, so no credits were charged.';
+	const rows = created.map((c) => `${c.taskId} (item ${itemOf(c.job)}, ${c.status})`);
+	return `Tasks created in this run: ${rows.join(', ')}. They keep running on Meshy and are not charged again. Use Get or Wait with these IDs instead of running this node again.`;
+}
+
+/**
+ * Create with "Stop After" set to Task Finished or File Downloaded. Works in phases
+ * so a batch takes about as long as its slowest task: check every item's input,
+ * create every task, poll them all, then download.
+ */
+export async function runCreateBatch(
+	ctx: IExecuteFunctions,
+	resource: string,
+	stopAfter: Exclude<StopAfter, 'created'>,
+): Promise<INodeExecutionData[]> {
+	const items = ctx.getInputData();
+	const continueOnFail = ctx.continueOnFail();
+	const generic = resource === 'task';
+	const results: INodeExecutionData[][] = new Array(items.length);
+
+	const errorItem = (i: number, error: unknown, id?: string): INodeExecutionData[] => {
+		const nodeError = asNodeError(ctx, error, i);
+		return [
+			{
+				json: {
+					...(id ? { id } : {}),
+					error: nodeError.message,
+					description: nodeError.description ?? undefined,
+				},
+				pairedItem: { item: i },
+			},
+		];
+	};
+
+	// Phase 1: check every input first, so a bad item 5 does not spend credits on items 1 to 4.
+	const jobs: Array<{ i: number; family: FamilyDef; body: IDataObject }> = [];
+	for (let i = 0; i < items.length; i++) {
+		try {
+			const family = getFamily(
+				generic ? (ctx.getNodeParameter('taskType', i) as string) : resource,
+			);
+			jobs.push({ i, family, body: await createBody(ctx, family, i, generic) });
+		} catch (error) {
+			if (!continueOnFail) throw asNodeError(ctx, error, i);
+			results[i] = errorItem(i, error);
+		}
+	}
+	const itemOf = (job: number) => jobs[job].i;
+
+	// Phase 2: create everything, then poll everything.
+	let outcomes: BatchOutcome[] = [];
+	if (jobs.length) {
+		const result = await runBatch({
+			count: jobs.length,
+			create: async (job) => await postCreate(ctx, jobs[job].family, jobs[job].body, jobs[job].i),
+			fetch: async (job, id) => await fetchTask(ctx, jobs[job].family, id, jobs[job].i),
+			isPendingLimit: (error) => error instanceof PendingLimitError,
+			stopOnError: !continueOnFail,
+			// The timeout is one deadline for the whole batch, so it is read from the first item.
+			timeoutMs: timeoutMs(ctx, jobs[0].i),
+			sleep: async (ms) => await sleepUnlessExecutionCancelled(ctx, ms),
+		});
+		if (result.abort) {
+			const { abort } = result;
+			const i = abort.job === undefined ? jobs[0].i : itemOf(abort.job);
+			const cause = asNodeError(ctx, abort.cause, i);
+			throw new NodeOperationError(ctx.getNode(), cause.message, {
+				itemIndex: i,
+				description: [cause.description, createdList(abort.created, itemOf)]
+					.filter(Boolean)
+					.join(' '),
+			});
+		}
+		outcomes = result.outcomes;
+	}
+
+	// From here on, every task ID is known. Without Continue On Fail, the first error
+	// stops the node and names every task created.
+	const allCreated: CreatedTask[] = outcomes.flatMap((o, job) =>
+		'taskId' in o && o.taskId
+			? [{ job, taskId: o.taskId, status: o.kind === 'done' ? String(o.task.status) : o.kind }]
+			: [],
+	);
+	const stop = (error: unknown, job: number): never => {
+		const i = itemOf(job);
+		const cause = asNodeError(ctx, error, i);
+		throw new NodeOperationError(ctx.getNode(), cause.message, {
+			itemIndex: i,
+			description: [cause.description, createdList(allCreated, itemOf)].filter(Boolean).join(' '),
+		});
+	};
+
+	// Phase 3: build the output, downloading where asked.
+	for (let job = 0; job < jobs.length; job++) {
+		const { i, family } = jobs[job];
+		const outcome = outcomes[job];
+		const settings = waitSettings(ctx, i);
+		try {
+			if (outcome.kind === 'error' || outcome.kind === 'notStarted') throw outcome.error;
+			if (outcome.kind === 'timeout') {
+				if (settings.returnTaskOnTimeout && outcome.error.lastTask) {
+					results[i] = one(normalizeTask(outcome.error.lastTask, family.value, family.output), i);
+					continue;
+				}
+				throw outcome.error;
+			}
+			const task = normalizeTask(outcome.task, family.value, family.output);
+			if (task.status !== 'SUCCEEDED') {
+				if (settings.failOnTaskError) throw taskEndedError(ctx, task, i);
+				results[i] = one(task, i);
+			} else if (stopAfter === 'finished') {
+				results[i] = one(task, i);
+			} else {
+				results[i] = [await downloadTask(ctx, task, task, i)];
+			}
+		} catch (error) {
+			if (!continueOnFail) stop(error, job);
+			const id = outcome.kind === 'notStarted' ? undefined : outcome.taskId;
+			results[i] = errorItem(i, error, id);
+		}
+	}
+
+	return results.flat();
 }

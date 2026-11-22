@@ -28,7 +28,7 @@ Each of these resources has the same operations:
 
 | Operation | What it does |
 | --- | --- |
-| Create | Starts a task and returns its ID straight away. Credits are charged at this point. |
+| Create | Starts a task. By default it returns the ID straight away. Set **Stop After** to also wait for the task, or to wait and download the file. Credits are charged when the task is created. |
 | Get | Gets a task by ID. |
 | Get Many | Lists tasks, newest first. |
 | Cancel | Cancels a task that is still PENDING. Meshy refuses to cancel a running task. |
@@ -80,6 +80,35 @@ Built with `@n8n/node-cli` 0.57. Tested on n8n 2.48.7 (self-hosted, Docker) with
 
 ## Usage
 
+### One node: create, wait and download
+
+Create has a **Stop After** setting:
+
+| Stop After | What you get |
+| --- | --- |
+| Task Created (default) | `{ id, status: "PENDING", family }`, straight away. This is how Create worked before 0.2.0. |
+| Task Finished | The finished task, the same as Wait returns. |
+| File Downloaded | The finished task and the chosen file as binary data, the same as Download returns. |
+
+So a text prompt to a GLB file can be one Meshy node (Create, Stop After: File Downloaded) instead of three (Create, Wait, Download). The fields that appear (Timeout, Format, Put Output File in Field and the options) work the same as on Wait and Download. For Text to Image and Image to Image, Format defaults to Image.
+
+With several input items, the node creates every task first, then checks them all together, so a batch takes about as long as its slowest task. If your Meshy plan is already running as many tasks as it allows, the node waits for one of its tasks to finish before it creates the next. Meshy refuses those creates before making a task, so nothing is charged twice. The timeout covers the whole batch.
+
+If something goes wrong after tasks were created, the error lists every task ID from the run. Those tasks keep running on Meshy, so use Get or Wait with the IDs instead of running the node again. With **Continue On Fail** on, each item gets its own result or error instead.
+
+Turn on **Return Task on Timeout** to get a still-running task as normal output instead of an error. You can check its `status` and run Get later. Turn off **Error on Failed Task** to get a failed task as output. No file is downloaded for it.
+
+For long jobs, holding an execution open for many minutes is not ideal. Use Task Created with the Meshy Trigger instead.
+
+| Need | Setup |
+| --- | --- |
+| Run it and get the file | Create with Stop After: File Downloaded |
+| Look at the task before choosing a format | Create with Stop After: Task Finished, then Download with Download From: Input Item |
+| Fire and forget, react later | Create with Stop After: Task Created, plus the Meshy Trigger |
+| Textured model from text | Two Meshy nodes: preview, then refine with the preview's `id` as Preview Task ID |
+
+`examples/one-node-image-to-3d.json` does the same job as `examples/m1-image-to-3d.json` with one Meshy node.
+
 ### Chaining tasks
 
 Most tasks can take the ID of an earlier task as their input. Pick **Previous Task** as the Input Type and use an expression such as `{{ $json.id }}`. A typical chain looks like this:
@@ -104,9 +133,9 @@ Reads (Get, Get Many, Wait, Download) wait for `Retry-After` and retry when Mesh
 
 ### Wait
 
-Wait stops after 10 minutes by default, and at most after 50 minutes. Your n8n instance may have its own execution time limit, which can be shorter, for example on n8n Cloud. When it stops, the task keeps running on Meshy and is not charged again. The error message shows the task ID, so you can run Wait or Get again later.
+Wait (and Create with Stop After past Task Created) stops after 10 minutes by default, and at most after 50 minutes. Your n8n instance may have its own execution time limit, which can be shorter, for example on n8n Cloud. When it stops, the task keeps running on Meshy and is not charged again. The error message shows the task ID, so you can run Wait or Get again later.
 
-By default, Wait stops with an error when a task fails or is canceled. Turn off **Error on Failed Task** to get the task as normal output instead. Meshy refunds credits for failed tasks.
+By default, Wait stops with an error when a task fails or is canceled. Turn off **Error on Failed Task** to get the task as normal output instead. Meshy refunds credits for failed tasks. Turn on **Return Task on Timeout** to get the still-running task as output when the timeout runs out.
 
 ### Downloads expire
 

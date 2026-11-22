@@ -79,6 +79,18 @@ export function describeError(statusCode: number, apiMessage: string, isCreate: 
 	return `Meshy returned HTTP ${statusCode}.`;
 }
 
+/**
+ * The 429 Meshy sends when the plan's limit on PENDING or IN_PROGRESS tasks is full.
+ * Meshy checks this limit before it creates a task, so no task exists and no credits
+ * were charged. `NoMoreConcurrentTasks` is not included: it means no credits are left.
+ */
+export function isPendingLimit(statusCode: number, apiMessage: string): boolean {
+	return statusCode === 429 && apiMessage.toLowerCase().startsWith('nomorependingtasks');
+}
+
+/** Thrown for the concurrent task limit, so a batch create can wait and try again safely. */
+export class PendingLimitError extends NodeApiError {}
+
 function errorBody(body: unknown): JsonObject {
 	if (body && typeof body === 'object' && !Array.isArray(body)) return body as JsonObject;
 	return { message: typeof body === 'string' ? body : '' };
@@ -122,7 +134,8 @@ export async function meshyRequest<T = unknown>(
 		}
 
 		const code = body.code ? ` (code: ${String(body.code)})` : '';
-		throw new NodeApiError(this.getNode(), body, {
+		const ErrorClass = isPendingLimit(statusCode, apiMessage) ? PendingLimitError : NodeApiError;
+		throw new ErrorClass(this.getNode(), body, {
 			message: describeError(statusCode, apiMessage, Boolean(options.isCreate)),
 			description: apiMessage ? `Meshy says: ${apiMessage}${code}` : undefined,
 			httpCode: String(statusCode),

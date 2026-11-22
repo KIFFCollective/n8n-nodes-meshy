@@ -23,6 +23,8 @@ export class WaitTimeoutError extends Error {
 		readonly taskId: string,
 		readonly lastStatus: string,
 		readonly waitedMs: number,
+		/** The last task object Meshy returned, for "Return Task On Timeout". */
+		readonly lastTask?: IDataObject,
 	) {
 		super(
 			`Stopped waiting after ${Math.round(waitedMs / 1000)} seconds. Task ${taskId} is still ${lastStatus} on Meshy and has not failed. Use Get or Wait again later with this ID.`,
@@ -51,7 +53,7 @@ export async function pollUntilTerminal(
 		const delayMs = (retryAfterSeconds ?? DEFAULT_RETRY_AFTER_SECONDS) * 1000;
 		const elapsed = now() - started;
 		if (elapsed + delayMs > options.timeoutMs) {
-			throw new WaitTimeoutError(taskId, status || 'UNKNOWN', elapsed);
+			throw new WaitTimeoutError(taskId, status || 'UNKNOWN', elapsed, task);
 		}
 		await options.sleep(delayMs);
 	}

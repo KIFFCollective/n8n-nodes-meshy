@@ -63,6 +63,26 @@ const examples = {
 		},
 	]),
 
+	// 0.2.0: the same job as M1 in one Meshy node, using Stop After.
+	'one-node-image-to-3d': workflow('Meshy: image to 3D GLB in one node', [
+		manual,
+		{
+			name: 'Image to 3D GLB',
+			parameters: {
+				resource: 'imageTo3d',
+				operation: 'create',
+				inputType: 'url',
+				sourceUrl: 'https://cdn.meshy.ai/webapp-assets/doc/image-to-3d-p0-1.webp',
+				aiModel: 'meshy-6-lite',
+				additionalFields: { shouldTexture: false },
+				stopAfter: 'downloaded',
+				timeoutMinutes: 15,
+				format: 'glb',
+				binaryPropertyOutput: 'data',
+			},
+		},
+	]),
+
 	// M2: image to 3D, remesh, rig, animate, download FBX, chained by task id.
 	'm2-rig-and-animate': workflow('Meshy: image to animated FBX', [
 		manual,

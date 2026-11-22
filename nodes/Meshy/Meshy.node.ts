@@ -6,7 +6,7 @@ import type {
 } from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
 import { nodeProperties } from './descriptions';
-import { asNodeError, runOperation } from './operations';
+import { asNodeError, runCreateBatch, runOperation, type StopAfter } from './operations';
 
 // Programmatic style because Download returns binary data and Wait runs a polling
 // loop; neither fits declarative routing.
@@ -33,6 +33,18 @@ export class Meshy implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
+
+		// Create with "Stop After" past Task Created handles all items together, so
+		// their tasks run side by side instead of one after another. Resource,
+		// operation and Stop After cannot be expressions, so item 0 speaks for all.
+		if (items.length) {
+			const resource = this.getNodeParameter('resource', 0) as string;
+			const operation = this.getNodeParameter('operation', 0) as string;
+			if (operation === 'create' && resource !== 'account') {
+				const stopAfter = this.getNodeParameter('stopAfter', 0, 'created') as StopAfter;
+				if (stopAfter !== 'created') return [await runCreateBatch(this, resource, stopAfter)];
+			}
+		}
 
 		for (let i = 0; i < items.length; i++) {
 			try {

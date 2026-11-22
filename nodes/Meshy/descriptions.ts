@@ -204,6 +204,50 @@ function sourceProperties(family: FamilyDef): INodeProperties[] {
 	return props;
 }
 
+const waitOptionFields: INodeProperties[] = [
+	{
+		displayName: 'Error on Failed Task',
+		name: 'failOnTaskError',
+		type: 'boolean',
+		default: true,
+		description:
+			'Whether to stop with an error when the task ends as FAILED or CANCELED. Turn off to get the task as normal output instead.',
+	},
+	{
+		displayName: 'Return Task on Timeout',
+		name: 'returnTaskOnTimeout',
+		type: 'boolean',
+		default: false,
+		description:
+			'Whether to return the still-running task as normal output when the timeout runs out, instead of stopping with an error. Check its status and run Get later.',
+	},
+];
+
+const downloadOptionFields: INodeProperties[] = [
+	{
+		displayName: 'Allow Any HTTPS Host',
+		name: 'allowAnyHost',
+		type: 'boolean',
+		default: false,
+		description:
+			'Whether to allow downloads from hosts other than meshy.ai. Off by default for safety.',
+	},
+];
+
+const formatOptions: INodePropertyOptions[] = DOWNLOAD_FORMATS.map((f) => ({
+	name:
+		f === 'pre_remeshed_glb'
+			? 'GLB (Before Remesh)'
+			: f === 'depth_map'
+				? 'Depth Map (Relief)'
+				: f === 'image'
+					? 'Image (Image Tasks)'
+					: f === 'thumbnail'
+						? 'Thumbnail'
+						: f.toUpperCase(),
+	value: f,
+})).sort((a, b) => a.name.localeCompare(b.name));
+
 const taskOps = (ops: string[]) => ({ show: { resource: taskResources, operation: ops } });
 
 const sharedTaskProperties: INodeProperties[] = [
@@ -290,19 +334,7 @@ const sharedTaskProperties: INodeProperties[] = [
 		displayName: 'Format',
 		name: 'format',
 		type: 'options',
-		options: DOWNLOAD_FORMATS.map((f) => ({
-			name:
-				f === 'pre_remeshed_glb'
-					? 'GLB (Before Remesh)'
-					: f === 'depth_map'
-						? 'Depth Map (Relief)'
-						: f === 'image'
-							? 'Image (Image Tasks)'
-							: f === 'thumbnail'
-								? 'Thumbnail'
-								: f.toUpperCase(),
-			value: f,
-		})).sort((a, b) => a.name.localeCompare(b.name)),
+		options: formatOptions,
 		default: 'glb',
 		description: 'File to download. Only formats Meshy produced for the task exist.',
 		displayOptions: taskOps(['download']),
@@ -334,16 +366,7 @@ const sharedTaskProperties: INodeProperties[] = [
 		placeholder: 'Add Option',
 		default: {},
 		displayOptions: taskOps(['download']),
-		options: [
-			{
-				displayName: 'Allow Any HTTPS Host',
-				name: 'allowAnyHost',
-				type: 'boolean',
-				default: false,
-				description:
-					'Whether to allow downloads from hosts other than meshy.ai. Off by default for safety.',
-			},
-		],
+		options: downloadOptionFields,
 	},
 
 	// Wait
@@ -363,16 +386,116 @@ const sharedTaskProperties: INodeProperties[] = [
 		placeholder: 'Add Option',
 		default: {},
 		displayOptions: taskOps(['wait']),
+		options: waitOptionFields,
+	},
+];
+
+// Create with "Stop After": one node creates the task, waits for it and downloads
+// the file. Field names match Wait and Download so they behave the same everywhere.
+const IMAGE_FAMILIES = FAMILIES.filter((f) => f.output === 'image').map((f) => f.value);
+const NON_IMAGE_RESOURCES = taskResources.filter((r) => !IMAGE_FAMILIES.includes(r));
+const createStop = (stopAfter: string[], resource: string[] = taskResources) => ({
+	show: { resource, operation: ['create'], stopAfter },
+});
+const WAITING = ['finished', 'downloaded'];
+
+const stopAfterProperties: INodeProperties[] = [
+	{
+		displayName: 'Stop After',
+		name: 'stopAfter',
+		type: 'options',
+		noDataExpression: true,
 		options: [
 			{
-				displayName: 'Error on Failed Task',
-				name: 'failOnTaskError',
-				type: 'boolean',
-				default: true,
-				description:
-					'Whether to stop with an error when the task ends as FAILED or CANCELED. Turn off to get the task as normal output instead.',
+				name: 'Task Created',
+				value: 'created',
+				description: 'Return the task ID right away. Use Wait or the Meshy Trigger later.',
+			},
+			{
+				name: 'Task Finished',
+				value: 'finished',
+				description: 'Wait until the task succeeds, fails or is canceled, then return it',
+			},
+			{
+				name: 'File Downloaded',
+				value: 'downloaded',
+				description: 'Wait for the task, then download a result file into binary data',
 			},
 		],
+		default: 'created',
+		description:
+			'How far this node goes. With several items, every task is created first, then all are checked together. Credits are charged when a task is created. Do not turn on Retry On Fail: Meshy has no idempotency key, so a retry can create and bill a second task. For jobs that take many minutes, Task Created plus the Meshy Trigger avoids holding the execution open.',
+		displayOptions: { show: { resource: taskResources, operation: ['create'] } },
+	},
+	{
+		displayName: 'Timeout (Minutes)',
+		name: 'timeoutMinutes',
+		type: 'number',
+		typeOptions: { minValue: 1, maxValue: MAX_WAIT_MINUTES },
+		default: DEFAULT_WAIT_MINUTES,
+		description: `How long to wait for all tasks together, at most ${MAX_WAIT_MINUTES}. Giving up does not cancel a task; it keeps running on Meshy.`,
+		displayOptions: createStop(WAITING),
+	},
+	{
+		displayName: 'Format',
+		name: 'format',
+		type: 'options',
+		options: formatOptions,
+		default: 'glb',
+		description: 'File to download. Only formats Meshy produced for the task exist.',
+		displayOptions: createStop(['downloaded'], NON_IMAGE_RESOURCES),
+	},
+	{
+		displayName: 'Format',
+		name: 'format',
+		type: 'options',
+		options: formatOptions,
+		default: 'image',
+		description: 'File to download. Only formats Meshy produced for the task exist.',
+		displayOptions: createStop(['downloaded'], IMAGE_FAMILIES),
+	},
+	{
+		displayName: 'Image Index',
+		name: 'imageIndex',
+		type: 'number',
+		typeOptions: { minValue: 0 },
+		default: 0,
+		description: 'Which image to download, starting at 0, when the task made several',
+		displayOptions: {
+			show: {
+				resource: taskResources,
+				operation: ['create'],
+				stopAfter: ['downloaded'],
+				format: ['image'],
+			},
+		},
+	},
+	{
+		displayName: 'Put Output File in Field',
+		name: 'binaryPropertyOutput',
+		type: 'string',
+		required: true,
+		default: 'data',
+		description: 'Name of the binary property to write the file to',
+		displayOptions: createStop(['downloaded']),
+	},
+	{
+		displayName: 'Wait Options',
+		name: 'waitOptions',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: createStop(WAITING),
+		options: waitOptionFields,
+	},
+	{
+		displayName: 'Download Options',
+		name: 'downloadOptions',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: createStop(['downloaded']),
+		options: downloadOptionFields,
 	},
 ];
 
@@ -498,6 +621,7 @@ export const nodeProperties: INodeProperties[] = [
 	...operationProperties,
 	...FAMILIES.flatMap((f) => [...sourceProperties(f), ...(createFields[f.value] ?? [])]),
 	...anyTaskProperties,
+	...stopAfterProperties,
 	...sharedTaskProperties,
 	...animationLibraryProperties,
 	...usageProperties,
