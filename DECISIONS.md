@@ -23,3 +23,11 @@ One line per decision: date, decision, reason.
 - 2026-11-22: The concurrency 429 (`NoMorePendingTasks`) has no `Retry-After` and is never retried. The error message tells the user to wait for a running task to finish.
 - 2026-11-22: Text to Motion is out of scope. It is not in openapi.yaml, the same as Creative Lab. Animation still accepts `motion_task_id`.
 - 2026-11-22: The family is a "Resource" selector, and the operations (Create, Get, List, Cancel, Download, Wait) are shared by all families. Fewer resources would mean a giant operation list.
+- 2026-11-22: The generator is `scripts/generate-from-openapi.mts`, not `.ts`. Strict mode lints every `*.ts` file with the runtime rules (no fs, no process) and forbids changing the ESLint config. `.mts` keeps TypeScript while staying outside that glob.
+- 2026-11-22: The generator applies n8n's casing, final-period and "Whether" description rules itself, using the same `title-case` library the lint rule uses. This keeps generated code lint-clean without hand edits.
+- 2026-11-22: The generator drift check compares the exported data, not the file text, so Prettier formatting does not count as drift.
+- 2026-11-22: Added an "Any Task Type" resource. Its task type is an expression-capable option, and its Create takes a raw JSON body. Per-family resources use `noDataExpression`, so a generic family-plus-body sub-workflow (M4) was not possible without it.
+- 2026-11-22: Live run, verified: text to image, image to 3D from a base64 data URI, remesh, rig, animate, and FBX download all worked through the node code in 84 seconds for about 21 credits. This settles the data URI question.
+- 2026-11-22: The package.json repository and homepage point at github.com/ProbablePrime/n8n-nodes-meshy. That repo URL is assumed. Fix it if the repo lives elsewhere before publishing.
+- 2026-11-22: Pre-commit hook lives in `.githooks/` and is enabled with `npm run hooks:install`, not a `prepare` script. Lifecycle scripts are restricted for community nodes, and this adds no dependency.
+- 2026-11-22: `.gitattributes` forces LF line endings. The repo is developed on Windows but CI runs on Linux.
