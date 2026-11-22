@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-meshy",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Unofficial n8n community node for the Meshy 3D generation API",
 	"license": "MIT",
 	"homepage": "https://github.com/KIFFCollective/n8n-nodes-meshy#readme",

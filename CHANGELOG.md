@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- Published from GitHub Actions with npm provenance, which n8n needs for verification. No code changes.
+
 ## 0.1.0 (2026-11-22)
 
 First version.
