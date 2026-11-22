@@ -84,6 +84,13 @@ jobs:
       - name: Install dependencies
         run: 'npm ci'
 
+      # Lint and build run inside `npm run release`; tests and the generator check do not, so run them first.
+      - name: Test
+        run: npm test
+
+      - name: Generator drift check
+        run: npm run generate:check
+
       - name: Release
         # Publishes to npm with a provenance attestation (requires id-token: write above).
         # Lint and build run automatically as part of the release process.

@@ -77,7 +77,7 @@ Meshy retired its shared test-mode key in September 2026. Every task you create 
 
 ## Compatibility
 
-Built with `@n8n/node-cli` 0.57 and tested against n8n-workflow 2.48 on Node.js 22.
+Built with `@n8n/node-cli` 0.57. Tested on n8n 2.48.7 (self-hosted, Docker) with Node.js 22.
 
 ## Usage
 
@@ -105,7 +105,7 @@ Reads (Get, Get Many, Wait, Download) wait for `Retry-After` and retry when Mesh
 
 ### Wait
 
-Wait stops after 10 minutes by default, and at most after 50 minutes. When it stops, the task keeps running on Meshy and is not charged again. The error message shows the task ID, so you can run Wait or Get again later.
+Wait stops after 10 minutes by default, and at most after 50 minutes. Your n8n instance may have its own execution time limit, which can be shorter, for example on n8n Cloud. When it stops, the task keeps running on Meshy and is not charged again. The error message shows the task ID, so you can run Wait or Get again later.
 
 By default, Wait stops with an error when a task fails or is canceled. Turn off **Error on Failed Task** to get the task as normal output instead. Meshy refunds credits for failed tasks.
 
