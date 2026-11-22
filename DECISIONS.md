@@ -28,7 +28,7 @@ One line per decision: date, decision, reason.
 - 2026-11-22: The generator drift check compares the exported data, not the file text, so Prettier formatting does not count as drift.
 - 2026-11-22: Added an "Any Task Type" resource. Its task type is an expression-capable option, and its Create takes a raw JSON body. Per-family resources use `noDataExpression`, so a generic family-plus-body sub-workflow (M4) was not possible without it.
 - 2026-11-22: Live run, verified: text to image, image to 3D from a base64 data URI, remesh, rig, animate, and FBX download all worked through the node code in 84 seconds for about 21 credits. This settles the data URI question.
-- 2026-11-22: The package.json repository and homepage point at github.com/ProbablePrime/n8n-nodes-meshy. That repo URL is assumed. Fix it if the repo lives elsewhere before publishing.
+- 2026-11-22: Repository is github.com/KIFFCollective/n8n-nodes-meshy (confirmed by Richard).
 - 2026-11-22: Pre-commit hook lives in `.githooks/` and is enabled with `npm run hooks:install`, not a `prepare` script. Lifecycle scripts are restricted for community nodes, and this adds no dependency.
 - 2026-11-22: `.gitattributes` forces LF line endings. The repo is developed on Windows but CI runs on Linux.
 - 2026-11-22: Verified in n8n 2.48.7 (Docker): the M1 example workflow produced a 1.08 MB GLB. The run-task sub-workflow worked when called from a parent, both with the Wait operation and with the stock IF and Wait polling loop. The trigger rejected a wrong secret with 401, started exactly one execution for a valid delivery (which downloaded the GLB), and ignored the duplicate and the stale IN_PROGRESS. Sub-workflows must be published before a parent can call them.

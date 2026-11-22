@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"description": "Unofficial n8n community node for the Meshy 3D generation API",
 	"license": "MIT",
-	"homepage": "https://github.com/ProbablePrime/n8n-nodes-meshy#readme",
+	"homepage": "https://github.com/KIFFCollective/n8n-nodes-meshy#readme",
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n",
@@ -18,7 +18,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ProbablePrime/n8n-nodes-meshy.git"
+		"url": "https://github.com/KIFFCollective/n8n-nodes-meshy.git"
 	},
 	"scripts": {
 		"build": "n8n-node build",
